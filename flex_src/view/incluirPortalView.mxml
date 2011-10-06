@@ -35,12 +35,15 @@
 			import entity.Portal;
 			import entity.UF;
 			
+			import flash.sampler.NewObjectSample;
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.EventPriority;
 			import mx.core.INavigatorContent;
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
+			import mx.managers.CursorManager;
 			import mx.rpc.AsyncToken;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
@@ -142,6 +145,11 @@
 				geocoder = new ClientGeocoder();
 				geocoder.addEventListener(GeocodingEvent.GEOCODING_SUCCESS,sucessoGeocode);				
 				geocoder.addEventListener(GeocodingEvent.GEOCODING_FAILURE,falhaGeocode);
+				
+				carregarPortais();
+				
+				
+				
 			}
 			
 			protected function onItemDoubleClickHandler(event:ListEvent):void
@@ -211,11 +219,12 @@
 				
 			}
 			
-			protected function carregarLista(event:MouseEvent):void
+			protected function carregarPortais():void
 			{
 				var portalService: RemoteObject = new RemoteObject("portalService");
 				var token: AsyncToken; 
 				
+				CursorManager.setBusyCursor();
 				
 				token = portalService.findPortal();
 				token.addResponder(new mx.rpc.Responder(handleResultDataProviderList, handleFaultDataProviderList));
@@ -225,10 +234,22 @@
 			private function handleResultDataProviderList(event : ResultEvent) : void 
 			{
 				portais = ArrayCollection(event.result);
+				
+				if(portais.length > 0)
+				{
+					for each(var itemPortal:Portal in  portais)
+					{
+						var markerPortal:MarkerPortal = new MarkerPortal(new LatLng(itemPortal.latitude,itemPortal.longitude));
+						map.addOverlay(markerPortal);
+					}
+				}
+							
+				CursorManager.removeBusyCursor();	
 			}
 			
 			private function handleFaultDataProviderList(event : FaultEvent) : void 
 			{
+				CursorManager.removeBusyCursor();
 				Alert.show(event.fault.message);
 			}
 
@@ -285,7 +306,7 @@
 					
 					<s:Button id="btSalvar" label="Salvar no Banco" click="enviarAoBackEnd(event)"/>
 					<s:Button id="btEditar" label="mudar" click="editarPortal(event)"/>
-					<s:Button id="btCarregarLista" label="Carregar Lista" click="carregarLista(event)"/>
+					<s:Button id="btCarregarLista" label="Carregar Lista" click="carregarPortais()"/>
 					
 				</s:HGroup>
 			</s:NavigatorContent>
