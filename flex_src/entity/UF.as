@@ -7,10 +7,8 @@ package entity
 		private var _nome:String;
 		private var _sigla:String;
 		
-		public function UF(sigla:String, nome:String = null)
+		public function UF()
 		{
-			_sigla = sigla;
-			_nome = nome;
 		}
 		
 		public function get idUF():Number

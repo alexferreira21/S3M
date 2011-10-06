@@ -23,7 +23,7 @@ public class HibernateUtil {
 		.addAnnotatedClass(UF.class);
 		config.configure("hibernate.cfg.xml");
 		
-		new SchemaExport(config).create(true, true);
+		//new SchemaExport(config).create(true, true);
 		
 		SessionFactory factory = config.buildSessionFactory();
 		session = factory.openSession();
@@ -32,7 +32,8 @@ public class HibernateUtil {
 	
 	public static HibernateUtil getInstance(){
 		if(instance == null){
-			return new HibernateUtil();
+			instance =  new HibernateUtil();
+			return instance;
 		}
 		else{
 			return instance;

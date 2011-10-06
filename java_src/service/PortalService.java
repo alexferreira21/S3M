@@ -1,5 +1,7 @@
 package service;
 
+import java.util.List;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
@@ -25,5 +27,12 @@ public class PortalService {
 		session.getTransaction().commit();
 	}
 	
+	public List<Portal> findPortal(){
+		Session session = HibernateUtil.getInstance().getSession();
+		List<Portal> portais = session.createQuery("from Portal").list();
+		
+		return portais;
+		
+	}
 	
 }

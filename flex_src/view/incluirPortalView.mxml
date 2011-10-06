@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			   xmlns:s="library://ns.adobe.com/flex/spark" 
-			   xmlns:mx="library://ns.adobe.com/flex/mx" height="100%" width="100%" xmlns:maps="com.google.maps.*" xmlns:services="com.google.maps.services.*">
+			   xmlns:mx="library://ns.adobe.com/flex/mx" height="100%" width="100%" xmlns:maps="com.google.maps.*" xmlns:services="com.google.maps.services.*"
+			   >
 	
 
 	
@@ -37,6 +38,8 @@
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.EventPriority;
+			import mx.core.INavigatorContent;
+			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
 			import mx.rpc.AsyncToken;
 			import mx.rpc.events.FaultEvent;
@@ -92,7 +95,7 @@
 			
 			protected function sucessoGeocode(event:GeocodingEvent):void
 			{
-				var municipioGeocodificado:Municipio = new Municipio(null);
+				var municipioGeocodificado:Municipio = new Municipio();
 				var placemark:Placemark = Placemark(event.response.placemarks[0]);
 				var ultimoPortalInserido:Portal = Portal(portais.getItemAt(portais.length-1));
 				
@@ -102,7 +105,9 @@
 					if(country.hasOwnProperty("AdministrativeArea"))
 					{
 						var administrativeArea:Object = country.AdministrativeArea;
-						municipioGeocodificado.uf = new UF(administrativeArea.AdministrativeAreaName);
+						var uf:UF = new UF();
+						uf.sigla = administrativeArea.AdministrativeAreaName;
+						municipioGeocodificado.uf = uf;
 						ultimoPortalInserido.municipio = municipioGeocodificado;
 						if(administrativeArea.hasOwnProperty("Locality"))
 						{
@@ -200,6 +205,33 @@
 				
 			}
 			
+			protected function editarPortal(event:MouseEvent):void
+			{
+				vsInserirPortal.selectedChild = INavigatorContent(vsInserirPortal.getChildByName("edicao")); 
+				
+			}
+			
+			protected function carregarLista(event:MouseEvent):void
+			{
+				var portalService: RemoteObject = new RemoteObject("portalService");
+				var token: AsyncToken; 
+				
+				
+				token = portalService.findPortal();
+				token.addResponder(new mx.rpc.Responder(handleResultDataProviderList, handleFaultDataProviderList));
+				
+			}
+			
+			private function handleResultDataProviderList(event : ResultEvent) : void 
+			{
+				portais = ArrayCollection(event.result);
+			}
+			
+			private function handleFaultDataProviderList(event : FaultEvent) : void 
+			{
+				Alert.show(event.fault.message);
+			}
+
 		]]>
 	</fx:Script>
 	
@@ -221,36 +253,49 @@
 			<mx:Label id="coord" text=""/>
 		</s:Panel>
 		
-		<s:HGroup id="parteDeBaixo">
-			<s:HGroup>
-				<s:Form>
-					<s:FormItem label="Latitude">
-						<s:TextInput id="tiInputLat"/>
-					</s:FormItem>
-					<s:FormItem label="Longitude">
-						<s:TextInput id="tiInputLng"/>
-					</s:FormItem>
-				</s:Form>
-				<s:VGroup paddingTop="25">
-					<s:Button id="btIr" label="Ir" click="centralizarMapa(event)"/>
-					<s:CheckBox id="cbAdcionar" label="Adicionar Portal"/>
-				</s:VGroup>
-			</s:HGroup>
+		<mx:ViewStack id="vsInserirPortal">
 			
-			<mx:DataGrid id="dg" dataProvider="{portais}" doubleClickEnabled="true" 
-						 itemDoubleClick="onItemDoubleClickHandler(event)" itemClick="itemClickHandler(event)"
-						 width="100%" editable="true">
-				<mx:columns>
-					<mx:DataGridColumn dataField="latitude" headerText="Latitude" editable="false"/>
-					<mx:DataGridColumn dataField="longitude" headerText="Longitude" editable="false"/>	
-					<mx:DataGridColumn dataField="municipio.nome" headerText="Municipio"/>	
-					<mx:DataGridColumn dataField="municipio.uf" headerText="UF"/>	
-				</mx:columns>
-			</mx:DataGrid>
+			<s:NavigatorContent id="exibicao">
+				<s:HGroup id="parteDeBaixo">
+					<s:HGroup>
+						<s:Form>
+							<s:FormItem label="Latitude">
+								<s:TextInput id="tiInputLat"/>
+							</s:FormItem>
+							<s:FormItem label="Longitude">
+								<s:TextInput id="tiInputLng"/>
+							</s:FormItem>
+						</s:Form>
+						<s:VGroup paddingTop="25">
+							<s:Button id="btIr" label="Ir" click="centralizarMapa(event)"/>
+							<s:CheckBox id="cbAdcionar" label="Adicionar Portal"/>
+						</s:VGroup>
+					</s:HGroup>
+					
+					<mx:DataGrid id="dg" dataProvider="{portais}" doubleClickEnabled="true" 
+								 itemDoubleClick="onItemDoubleClickHandler(event)" itemClick="itemClickHandler(event)"
+								 width="100%" editable="true">
+						<mx:columns>
+							<mx:DataGridColumn dataField="latitude" headerText="Latitude" editable="false"/>
+							<mx:DataGridColumn dataField="longitude" headerText="Longitude" editable="false"/>	
+							<mx:DataGridColumn dataField="municipio.nome" headerText="Municipio"/>	
+							<mx:DataGridColumn dataField="municipio.uf" headerText="UF"/>	
+						</mx:columns>
+					</mx:DataGrid>
+					
+					<s:Button id="btSalvar" label="Salvar no Banco" click="enviarAoBackEnd(event)"/>
+					<s:Button id="btEditar" label="mudar" click="editarPortal(event)"/>
+					<s:Button id="btCarregarLista" label="Carregar Lista" click="carregarLista(event)"/>
+					
+				</s:HGroup>
+			</s:NavigatorContent>
 			
-			<s:Button id="btSalvar" label="Salvar no Banco" click="enviarAoBackEnd(event)"/>
+			<s:NavigatorContent id="edicao">
+				<s:Button id="voltar" label="Voltar" click="{vsInserirPortal.selectedChild = INavigatorContent(vsInserirPortal.getChildByName('exibicao'));}"/>
+				
+			</s:NavigatorContent>
 			
-		</s:HGroup>
+		</mx:ViewStack>
 		
 	</s:VGroup>
 	

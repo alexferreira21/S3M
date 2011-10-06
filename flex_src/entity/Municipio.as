@@ -7,10 +7,8 @@ package entity
 		private var _uf:UF;
 		private var _nome:String;
 		
-		public function Municipio(uf:UF, nome: String = null)
+		public function Municipio()
 		{
-			_uf = uf;
-			_nome = nome;
 		}
 				
 		
