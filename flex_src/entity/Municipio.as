@@ -28,6 +28,7 @@ package entity
 			return this.nome;
 		}
 		
+		[Bindable]
 		public function get uf():UF
 		{
 			return _uf;
@@ -38,6 +39,7 @@ package entity
 			_uf = value;
 		}
 
+		[Bindable]
 		public function get nome():String
 		{
 			return _nome;

@@ -1,4 +1,4 @@
-package core
+package mygoogle
 {
 	
 	import com.google.maps.LatLng;
@@ -15,6 +15,7 @@ package core
 	import mx.collections.ArrayCollection;
 	
 	import spark.components.IconPlacement;
+	import main.AntenaEvent;
 	
 	public class MarkerPortal extends Marker
 	{

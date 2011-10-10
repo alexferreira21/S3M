@@ -1,106 +1,90 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-			   xmlns:s="library://ns.adobe.com/flex/spark" 
-			   xmlns:mx="library://ns.adobe.com/flex/mx" height="100%" width="100%" xmlns:maps="com.google.maps.*" xmlns:services="com.google.maps.services.*"
-			   >
-	
-
-	
-
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"  height="100%" width="100%" xmlns:mygoogle="mygoogle.*">
 	
 	<fx:Script>
 		<![CDATA[
-			import com.google.maps.Color;
-			import com.google.maps.InfoWindowOptions;
-			import com.google.maps.LatLng;
-			import com.google.maps.MapEvent;
 			import com.google.maps.MapMouseEvent;
-			import com.google.maps.MapOptions;
-			import com.google.maps.interfaces.IDirections;
-			import com.google.maps.interfaces.IPolyline;
-			import com.google.maps.overlays.Marker;
-			import com.google.maps.overlays.MarkerOptions;
-			import com.google.maps.overlays.Polyline;
-			import com.google.maps.overlays.PolylineOptions;
 			import com.google.maps.services.ClientGeocoder;
-			import com.google.maps.services.Directions;
-			import com.google.maps.services.DirectionsEvent;
 			import com.google.maps.services.GeocodingEvent;
 			import com.google.maps.services.Placemark;
-			import com.google.maps.styles.StrokeStyle;
 			
-			import core.MarkerPortal;
+			import controller.IncluirPortalController;
 			
+			import entity.Equipamento;
 			import entity.Municipio;
 			import entity.Portal;
 			import entity.UF;
 			
-			import flash.sampler.NewObjectSample;
-			
+			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.EventPriority;
 			import mx.core.INavigatorContent;
-			import mx.events.FlexEvent;
-			import mx.events.ListEvent;
-			import mx.managers.CursorManager;
-			import mx.rpc.AsyncToken;
-			import mx.rpc.events.FaultEvent;
-			import mx.rpc.events.ResultEvent;
-			import mx.rpc.remoting.RemoteObject;
 			
+			import mygoogle.MarkerPortal;
+			import mygoogle.events.MapaEvent;
 			
-			protected var centroDoMapa: LatLng = new LatLng(-22.823616,-43.170162); 
-			
-			protected var geocoder:ClientGeocoder;
-			
+			import util.UFUtil;
 			
 			[Bindable]
-			protected var portais:ArrayCollection = new ArrayCollection;
+			private var portalController:IncluirPortalController = new IncluirPortalController(); //FAZER UMA INTERFACE CONTROLLER;
 			
-			protected function onMapPreInitialize(event:MapEvent):void
+			[Bindable]
+			private var portalEmEdicao:Portal;
+			
+			private var geocoder:ClientGeocoder;
+			
+			private var emEdicao:Boolean = false;
+			
+			
+			
+			protected function mapaProntoHandler(event:MapaEvent):void
 			{
-				var mapOpt:MapOptions = new MapOptions();
+				dgPortais.addEventListener("editarItem",editarItem);
+				mapa.map.addEventListener(MapMouseEvent.CLICK,onMapClick, false, EventPriority.DEFAULT, true);
 				
-				mapOpt.center = centroDoMapa;
-				mapOpt.zoom = 17;
-				map.setInitOptions(mapOpt);
-			}
-			
-			protected function removePortalDoMapa(event:MapMouseEvent):void{
-				map.removeOverlay(MarkerPortal(event.target));
+				geocoder = new ClientGeocoder();
+				geocoder.addEventListener(GeocodingEvent.GEOCODING_SUCCESS,sucessoGeocode);				
+				geocoder.addEventListener(GeocodingEvent.GEOCODING_FAILURE,falhaGeocode);
 				
-				var portal:Portal = MarkerPortal(event.target).portal;
-				
-				for each(var item:Object in portais)
-				{
-					if(Portal(item).latitude == portal.latitude && Portal(item).longitude == portal.longitude)
-					{
-						portais.removeItemAt(portais.getItemIndex(item));	
-					}
-				}
 			}
 			
 			protected function onMapClick(event:MapMouseEvent):void
 			{
-				adicionarPortal(event.latLng);
+				
+				if(!emEdicao)
+				{
+					var portal:Portal = new Portal();
+					portal.equipamento = new ArrayCollection();
+					portal.latLng = event.latLng;
+					editarPortal(portal);
+				}
+				else
+				{
+					Alert.show("Não é possível adicionar um portal enquanto estiver no modo edição");
+				}
+				
 			}
 			
-			protected function adicionarPortal(latLng:LatLng):void
+			protected function editarPortal(portal:Portal):void
 			{
-				geocoder.geocode(latLng.toString());
-				var markerPortal:MarkerPortal = new MarkerPortal(latLng);
-				markerPortal.addEventListener(MapMouseEvent.DOUBLE_CLICK,removePortalDoMapa, false, EventPriority.DEFAULT, true);
+				emEdicao = true;
 				
-				portais.addItem(markerPortal.portal);
-				map.addOverlay(markerPortal);
+				portalController.portalEmEdicao = portal; 
+				geocoder.geocode(portalController.portalEmEdicao.latLng.toString());
+				
+				vsPortal.selectedChild = INavigatorContent(vsPortal.getChildByName("edicao"));	
 			}
+			
+			
+			
 			
 			protected function sucessoGeocode(event:GeocodingEvent):void
 			{
 				var municipioGeocodificado:Municipio = new Municipio();
 				var placemark:Placemark = Placemark(event.response.placemarks[0]);
-				var ultimoPortalInserido:Portal = Portal(portais.getItemAt(portais.length-1));
 				
 				if(placemark.addressDetails.hasOwnProperty("Country"))
 				{
@@ -111,170 +95,83 @@
 						var uf:UF = new UF();
 						uf.sigla = administrativeArea.AdministrativeAreaName;
 						municipioGeocodificado.uf = uf;
-						ultimoPortalInserido.municipio = municipioGeocodificado;
+						portalController.portalEmEdicao.municipio = municipioGeocodificado;
 						if(administrativeArea.hasOwnProperty("Locality"))
 						{
 							var locality:Object = administrativeArea.Locality;
 							municipioGeocodificado.nome = locality.LocalityName;
-							ultimoPortalInserido.municipio = municipioGeocodificado;
+							portalController.portalEmEdicao.municipio = municipioGeocodificado;
 						}
 					}
 				}
-				dg.dataProvider = portais;
 			}
+			
 			
 			protected function falhaGeocode(event:GeocodingEvent):void
 			{
 				Alert.show("Erro ao geocodificar localização");
 			}
 			
-			protected function onMouseMove(event:MapMouseEvent):void
+			
+			protected function editarItem(e:Event):void
 			{
-				coord.text=event.latLng.toString();
+				editarPortal(Portal(dgPortais.selectedItem));
 			}
 			
 			
-			protected function onMapReady(event:MapEvent):void
+			protected function sairEdicao():void
 			{
-				map.addEventListener(MapMouseEvent.CLICK,onMapClick, false, EventPriority.DEFAULT, true);
-				map.addEventListener(MapMouseEvent.MOUSE_MOVE,onMouseMove, false, EventPriority.DEFAULT, true);
-				
-				map.enableScrollWheelZoom();
-				map.enableContinuousZoom();
-				
-				geocoder = new ClientGeocoder();
-				geocoder.addEventListener(GeocodingEvent.GEOCODING_SUCCESS,sucessoGeocode);				
-				geocoder.addEventListener(GeocodingEvent.GEOCODING_FAILURE,falhaGeocode);
-				
-				carregarPortais();
-				
-				
-				
+				portalEmEdicao = null;
+				emEdicao = false;
+				vsPortal.selectedChild = INavigatorContent(vsPortal.getChildByName("exibicao"));
 			}
 			
-			protected function onItemDoubleClickHandler(event:ListEvent):void
+			protected function salvarEdicao(event:MouseEvent):void
 			{
-				var portal:Portal = Portal(portais.getItemAt(event.rowIndex));
-							
-				map.setCenter(portal.latLng);
-			}
-			
-			protected function centralizarMapa(event:MouseEvent):void
-			{
-				var lat:Number = Number(tiInputLat.text);
-				var lng:Number = Number(tiInputLng.text);
+				portalController.portalEmEdicao.nome = tiNome.text;
+				portalController.portalEmEdicao.altitude = parseFloat(tiAltitude.text);
 				
-				if(isNaN(lat) || isNaN(lng)){
-					Alert.show("Localização Inválida");
-					return;
-				}
-				else
+				if(portalController.portalEmEdicao.municipio == null) //CRIAR VARIÁVEL 'ALTEROU_MUNICIPIO' NO CHANGE DA COMBO/TEXT_INPUT DO MUNICIPIO
 				{
-					var latLng:LatLng = new LatLng(lat,lng);
+					var municipio:Municipio = new Municipio();
+					municipio.nome = tiMunicipio.text;
+					
+					var uf:UF = new UF();
+					uf.sigla = tiUF.text;
+					
+					municipio.uf = uf;
+					
+					portalController.portalEmEdicao.municipio = municipio;
+					
 				}
 				
-				map.setCenter(latLng);
-				
-				if(cbAdcionar.selected)
-				{
-					adicionarPortal(latLng);
-				}
+				mapa.map.addOverlay(new MarkerPortal(portalController.portalEmEdicao.latLng));
+				portalController.salvarPortal();
+				sairEdicao();
 			}
 			
-			protected function itemClickHandler(event:ListEvent):void
+			protected function adicionarEquipamento(event:MouseEvent):void
 			{
-				var portal:Portal = Portal(portais.getItemAt(event.rowIndex));
+				var equipamento: Equipamento = new Equipamento(portalController.portalEmEdicao.equipamento.length+1,1);
 				
-				tiInputLat.text=String(portal.latitude);
-				tiInputLng.text=String(portal.longitude);
+				portalController.portalEmEdicao.equipamento.addItem(equipamento);		
 			}
 			
-			protected function enviarAoBackEnd(event:MouseEvent):void
+			protected function removerEquipamento(event:MouseEvent):void
 			{
-				var portalService: RemoteObject = new RemoteObject("portalService");
-				var token: AsyncToken; 
-				var portal:Portal = Portal(dg.selectedItem);
-				
-				trace(portal.latLng);
-				
-				token = portalService.salvarPortal(portal);
-				token.addResponder(new mx.rpc.Responder(handleResult, handleFault));
+				Alert.show(dgEquipamentos.selectedIndex.toString());	
+				//Alert.show(UFUtil.getDataProvider().getItemAt(0).toString());
 			}
 			
-			private function handleResult(event : ResultEvent) : void {
-				
-				Alert.show("Deu Certo!");
-				
-			}
-			
-			private function handleFault(event : FaultEvent) : void {
-				
-				Alert.show(event.fault.message);
-				
-			}
-			
-			protected function editarPortal(event:MouseEvent):void
-			{
-				vsInserirPortal.selectedChild = INavigatorContent(vsInserirPortal.getChildByName("edicao")); 
-				
-			}
-			
-			protected function carregarPortais():void
-			{
-				var portalService: RemoteObject = new RemoteObject("portalService");
-				var token: AsyncToken; 
-				
-				CursorManager.setBusyCursor();
-				
-				token = portalService.findPortal();
-				token.addResponder(new mx.rpc.Responder(handleResultDataProviderList, handleFaultDataProviderList));
-				
-			}
-			
-			private function handleResultDataProviderList(event : ResultEvent) : void 
-			{
-				portais = ArrayCollection(event.result);
-				
-				if(portais.length > 0)
-				{
-					for each(var itemPortal:Portal in  portais)
-					{
-						var markerPortal:MarkerPortal = new MarkerPortal(new LatLng(itemPortal.latitude,itemPortal.longitude));
-						map.addOverlay(markerPortal);
-					}
-				}
-							
-				CursorManager.removeBusyCursor();	
-			}
-			
-			private function handleFaultDataProviderList(event : FaultEvent) : void 
-			{
-				CursorManager.removeBusyCursor();
-				Alert.show(event.fault.message);
-			}
-
 		]]>
 	</fx:Script>
 	
-	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
-	</fx:Declarations>
 	
 	<s:VGroup height="100%" width="100%">
 		
-		<s:Panel height="100%" width="100%">
-			<s:layout>
-				<s:VerticalLayout/>
-			</s:layout>
-			
-			<maps:Map id="map" key="ABQIAAAAZ9oqf5htR5ZejKNOkwMwnhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxQ399ITKTsfZd1X0vRy7q_T9pCSLQ" sensor="false"
-					  width="100%" height="100%" mapevent_mappreinitialize="onMapPreInitialize(event)" mapevent_mapready="onMapReady(event)"
-					  />
-			
-			<mx:Label id="coord" text=""/>
-		</s:Panel>
+		<mygoogle:Mapa id="mapa" height="100%" width="100%" mapaPronto="mapaProntoHandler(event)"/>
 		
-		<mx:ViewStack id="vsInserirPortal">
+		<mx:ViewStack id="vsPortal">
 			
 			<s:NavigatorContent id="exibicao">
 				<s:HGroup id="parteDeBaixo">
@@ -288,36 +185,98 @@
 							</s:FormItem>
 						</s:Form>
 						<s:VGroup paddingTop="25">
-							<s:Button id="btIr" label="Ir" click="centralizarMapa(event)"/>
+							<s:Button id="btIr" label="Ir"/>
 							<s:CheckBox id="cbAdcionar" label="Adicionar Portal"/>
 						</s:VGroup>
 					</s:HGroup>
 					
-					<mx:DataGrid id="dg" dataProvider="{portais}" doubleClickEnabled="true" 
-								 itemDoubleClick="onItemDoubleClickHandler(event)" itemClick="itemClickHandler(event)"
-								 width="100%" editable="true">
+					<s:Spacer width="200"/> 
+					
+					<mx:DataGrid id="dgPortais"  doubleClickEnabled="true" dataProvider="{portalController.portais}"
+								 width="100%">
 						<mx:columns>
-							<mx:DataGridColumn dataField="latitude" headerText="Latitude" editable="false"/>
-							<mx:DataGridColumn dataField="longitude" headerText="Longitude" editable="false"/>	
-							<mx:DataGridColumn dataField="municipio.nome" headerText="Municipio"/>	
-							<mx:DataGridColumn dataField="municipio.uf" headerText="UF"/>	
+							<mx:DataGridColumn dataField="nome" headerText="Nome"/>
+							<mx:DataGridColumn dataField="latitude" headerText="Latitude"/>
+							<mx:DataGridColumn dataField="longitude" headerText="Longitude"/>	
+							<mx:DataGridColumn headerText="Editar">
+								<mx:itemRenderer>
+									<fx:Component>
+										<mx:HBox paddingLeft="5">
+											<s:Button  width="20" click="dispatchEvent(new Event('editarItem', true))"/>
+										</mx:HBox>
+									</fx:Component>
+								</mx:itemRenderer>
+							</mx:DataGridColumn>
 						</mx:columns>
 					</mx:DataGrid>
-					
-					<s:Button id="btSalvar" label="Salvar no Banco" click="enviarAoBackEnd(event)"/>
-					<s:Button id="btEditar" label="mudar" click="editarPortal(event)"/>
-					<s:Button id="btCarregarLista" label="Carregar Lista" click="carregarPortais()"/>
-					
 				</s:HGroup>
 			</s:NavigatorContent>
 			
 			<s:NavigatorContent id="edicao">
-				<s:Button id="voltar" label="Voltar" click="{vsInserirPortal.selectedChild = INavigatorContent(vsInserirPortal.getChildByName('exibicao'));}"/>
+				<mx:HBox>
+					<s:Form>
+						<s:FormItem label="Nome">
+							<s:TextInput id="tiNome" text="{portalController.portalEmEdicao.nome}"/>					
+						</s:FormItem>
+						
+						<s:FormItem label="Cidade">
+							<s:TextInput id="tiMunicipio" text="{portalController.portalEmEdicao.municipio.nome}"/>
+						</s:FormItem>
+						
+						<s:FormItem label="UF">
+							<s:TextInput id="tiUF" text="{portalController.portalEmEdicao.municipio.uf.sigla}"/>
+						</s:FormItem>
+					</s:Form>
+					
+					<s:Form>
+						<s:FormItem label="Altitude">
+							<s:TextInput id="tiAltitude" text="{portalController.portalEmEdicao.altitude}"/>
+						</s:FormItem>
+						
+						<s:FormItem label="Latitude">
+							<s:TextInput id="tiLatitude" text="{portalController.portalEmEdicao.latitude}"/>
+						</s:FormItem>
+						
+						<s:FormItem label="Longitude">
+							<s:TextInput id="tiLongitude" text="{portalController.portalEmEdicao.longitude}"/>
+						</s:FormItem>
+					</s:Form>
+					
+					<s:VGroup>
+						<s:Label text="Equipamentos"/> 
+						
+						<mx:DataGrid id="dgEquipamentos" dataProvider="{portalController.portalEmEdicao.equipamento}" editable="true">
+							<mx:columns>
+								<mx:DataGridColumn dataField="nome" headerText="Nome"/>								
+								<mx:DataGridColumn dataField="ordem" headerText="Ordem"/>								
+								<mx:DataGridColumn dataField="status" headerText="Status"/>
+							</mx:columns>
+						</mx:DataGrid>
+					</s:VGroup>
+					
+					<s:VGroup y="{dgEquipamentos.y}">
+						<s:Button id="btAdicionarEquipamento" label="Adicionar Equipamento" click="adicionarEquipamento(event)"/>
+						<s:Button id="btRemoverEquipamento" label="Remover Equipamento" click="removerEquipamento(event)"/>
+					</s:VGroup>
+					
+					<s:Spacer width="100"/>
+					
+					<s:VGroup height="100%">
+						<s:Button id="btSalvar" label="Salvar" height="50%" click="salvarEdicao(event)"/> 
+						<s:Button id="btCancelar" label="Cancelar" height="50%" click="sairEdicao()"/>
+						
+					</s:VGroup>
+					
+				</mx:HBox>
 				
 			</s:NavigatorContent>
 			
+			
 		</mx:ViewStack>
 		
+		
+		
+		
+		
 	</s:VGroup>
-	
 </s:Group>

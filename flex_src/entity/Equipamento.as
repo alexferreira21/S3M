@@ -5,11 +5,11 @@ package entity
 	{
 		private var _idEquipamento:Number;
 		private var _nome:String;
-		private var _ordem:String;
+		private var _ordem:Number;
 		private var _status:Number = 0;
 		private var _portal:Portal;
 		
-		public function Equipamento(ordem:String, status:Number)
+		public function Equipamento(ordem:Number, status:Number)
 		{
 			this._ordem = ordem;
 			this._status = status;
@@ -39,12 +39,12 @@ package entity
 			_nome = value;
 		}
 
-		public function get ordem():String
+		public function get ordem():Number
 		{
 			return _ordem;
 		}
 
-		public function set ordem(value:String):void
+		public function set ordem(value:Number):void
 		{
 			_ordem = value;
 		}

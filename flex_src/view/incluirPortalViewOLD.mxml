@@ -1,0 +1,323 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" height="100%" width="100%" xmlns:maps="com.google.maps.*" xmlns:services="com.google.maps.services.*"
+			   >
+	
+
+	
+
+	
+	<fx:Script>
+		<![CDATA[
+			import com.google.maps.Color;
+			import com.google.maps.InfoWindowOptions;
+			import com.google.maps.LatLng;
+			import com.google.maps.MapEvent;
+			import com.google.maps.MapMouseEvent;
+			import com.google.maps.MapOptions;
+			import com.google.maps.interfaces.IDirections;
+			import com.google.maps.interfaces.IPolyline;
+			import com.google.maps.overlays.Marker;
+			import com.google.maps.overlays.MarkerOptions;
+			import com.google.maps.overlays.Polyline;
+			import com.google.maps.overlays.PolylineOptions;
+			import com.google.maps.services.ClientGeocoder;
+			import com.google.maps.services.Directions;
+			import com.google.maps.services.DirectionsEvent;
+			import com.google.maps.services.GeocodingEvent;
+			import com.google.maps.services.Placemark;
+			import com.google.maps.styles.StrokeStyle;
+			
+			import mygoogle.MarkerPortal;
+			
+			import entity.Municipio;
+			import entity.Portal;
+			import entity.UF;
+			
+			import flash.sampler.NewObjectSample;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.EventPriority;
+			import mx.core.INavigatorContent;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.managers.CursorManager;
+			import mx.rpc.AsyncToken;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.remoting.RemoteObject;
+			
+			
+			protected var centroDoMapa: LatLng = new LatLng(-22.823616,-43.170162); 
+			
+			protected var geocoder:ClientGeocoder;
+			
+			
+			[Bindable]
+			protected var portais:ArrayCollection = new ArrayCollection;
+			
+			protected function onMapPreInitialize(event:MapEvent):void
+			{
+				var mapOpt:MapOptions = new MapOptions();
+				
+				mapOpt.center = centroDoMapa;
+				mapOpt.zoom = 17;
+				map.setInitOptions(mapOpt);
+			}
+			
+			protected function removePortalDoMapa(event:MapMouseEvent):void{
+				map.removeOverlay(MarkerPortal(event.target));
+				
+				var portal:Portal = MarkerPortal(event.target).portal;
+				
+				for each(var item:Object in portais)
+				{
+					if(Portal(item).latitude == portal.latitude && Portal(item).longitude == portal.longitude)
+					{
+						portais.removeItemAt(portais.getItemIndex(item));	
+					}
+				}
+			}
+			
+			protected function onMapClick(event:MapMouseEvent):void
+			{
+				adicionarPortal(event.latLng);
+			}
+			
+			protected function adicionarPortal(latLng:LatLng):void
+			{
+				geocoder.geocode(latLng.toString());
+				var markerPortal:MarkerPortal = new MarkerPortal(latLng);
+				markerPortal.addEventListener(MapMouseEvent.DOUBLE_CLICK,removePortalDoMapa, false, EventPriority.DEFAULT, true);
+				
+				portais.addItem(markerPortal.portal);
+				map.addOverlay(markerPortal);
+			}
+			
+			protected function sucessoGeocode(event:GeocodingEvent):void
+			{
+				var municipioGeocodificado:Municipio = new Municipio();
+				var placemark:Placemark = Placemark(event.response.placemarks[0]);
+				var ultimoPortalInserido:Portal = Portal(portais.getItemAt(portais.length-1));
+				
+				if(placemark.addressDetails.hasOwnProperty("Country"))
+				{
+					var country:Object = placemark.addressDetails.Country;
+					if(country.hasOwnProperty("AdministrativeArea"))
+					{
+						var administrativeArea:Object = country.AdministrativeArea;
+						var uf:UF = new UF();
+						uf.sigla = administrativeArea.AdministrativeAreaName;
+						municipioGeocodificado.uf = uf;
+						ultimoPortalInserido.municipio = municipioGeocodificado;
+						if(administrativeArea.hasOwnProperty("Locality"))
+						{
+							var locality:Object = administrativeArea.Locality;
+							municipioGeocodificado.nome = locality.LocalityName;
+							ultimoPortalInserido.municipio = municipioGeocodificado;
+						}
+					}
+				}
+				dg.dataProvider = portais;
+			}
+			
+			protected function falhaGeocode(event:GeocodingEvent):void
+			{
+				Alert.show("Erro ao geocodificar localização");
+			}
+			
+			protected function onMouseMove(event:MapMouseEvent):void
+			{
+				coord.text=event.latLng.toString();
+			}
+			
+			
+			protected function onMapReady(event:MapEvent):void
+			{
+				map.addEventListener(MapMouseEvent.CLICK,onMapClick, false, EventPriority.DEFAULT, true);
+				map.addEventListener(MapMouseEvent.MOUSE_MOVE,onMouseMove, false, EventPriority.DEFAULT, true);
+				
+				map.enableScrollWheelZoom();
+				map.enableContinuousZoom();
+				
+				geocoder = new ClientGeocoder();
+				geocoder.addEventListener(GeocodingEvent.GEOCODING_SUCCESS,sucessoGeocode);				
+				geocoder.addEventListener(GeocodingEvent.GEOCODING_FAILURE,falhaGeocode);
+				
+				carregarPortais();
+				
+				
+				
+			}
+			
+			protected function onItemDoubleClickHandler(event:ListEvent):void
+			{
+				var portal:Portal = Portal(portais.getItemAt(event.rowIndex));
+							
+				map.setCenter(portal.latLng);
+			}
+			
+			protected function centralizarMapa(event:MouseEvent):void
+			{
+				var lat:Number = Number(tiInputLat.text);
+				var lng:Number = Number(tiInputLng.text);
+				
+				if(isNaN(lat) || isNaN(lng)){
+					Alert.show("Localização Inválida");
+					return;
+				}
+				else
+				{
+					var latLng:LatLng = new LatLng(lat,lng);
+				}
+				
+				map.setCenter(latLng);
+				
+				if(cbAdcionar.selected)
+				{
+					adicionarPortal(latLng);
+				}
+			}
+			
+			protected function itemClickHandler(event:ListEvent):void
+			{
+				var portal:Portal = Portal(portais.getItemAt(event.rowIndex));
+				
+				tiInputLat.text=String(portal.latitude);
+				tiInputLng.text=String(portal.longitude);
+			}
+			
+			protected function enviarAoBackEnd(event:MouseEvent):void
+			{
+				var portalService: RemoteObject = new RemoteObject("portalService");
+				var token: AsyncToken; 
+				var portal:Portal = Portal(dg.selectedItem);
+				
+				trace(portal.latLng);
+				
+				token = portalService.salvarPortal(portal);
+				token.addResponder(new mx.rpc.Responder(handleResult, handleFault));
+			}
+			
+			private function handleResult(event : ResultEvent) : void {
+				
+				Alert.show("Deu Certo!");
+				
+			}
+			
+			private function handleFault(event : FaultEvent) : void {
+				
+				Alert.show(event.fault.message);
+				
+			}
+			
+			protected function editarPortal(event:MouseEvent):void
+			{
+				vsInserirPortal.selectedChild = INavigatorContent(vsInserirPortal.getChildByName("edicao")); 
+				
+			}
+			
+			protected function carregarPortais():void
+			{
+				var portalService: RemoteObject = new RemoteObject("portalService");
+				var token: AsyncToken; 
+				
+				CursorManager.setBusyCursor();
+				
+				token = portalService.findPortal();
+				token.addResponder(new mx.rpc.Responder(handleResultDataProviderList, handleFaultDataProviderList));
+				
+			}
+			
+			private function handleResultDataProviderList(event : ResultEvent) : void 
+			{
+				portais = ArrayCollection(event.result);
+				
+				if(portais.length > 0)
+				{
+					for each(var itemPortal:Portal in  portais)
+					{
+						var markerPortal:MarkerPortal = new MarkerPortal(new LatLng(itemPortal.latitude,itemPortal.longitude));
+						map.addOverlay(markerPortal);
+					}
+				}
+							
+				CursorManager.removeBusyCursor();	
+			}
+			
+			private function handleFaultDataProviderList(event : FaultEvent) : void 
+			{
+				CursorManager.removeBusyCursor();
+				Alert.show(event.fault.message);
+			}
+
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:VGroup height="100%" width="100%">
+		
+		<s:Panel height="100%" width="100%">
+			<s:layout>
+				<s:VerticalLayout/>
+			</s:layout>
+			
+			<maps:Map id="map" key="ABQIAAAAZ9oqf5htR5ZejKNOkwMwnhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxQ399ITKTsfZd1X0vRy7q_T9pCSLQ" sensor="false"
+					  width="100%" height="100%" mapevent_mappreinitialize="onMapPreInitialize(event)" mapevent_mapready="onMapReady(event)"
+					  />
+			
+			<mx:Label id="coord" text=""/>
+		</s:Panel>
+		
+		<mx:ViewStack id="vsInserirPortal">
+			
+			<s:NavigatorContent id="exibicao">
+				<s:HGroup id="parteDeBaixo">
+					<s:HGroup>
+						<s:Form>
+							<s:FormItem label="Latitude">
+								<s:TextInput id="tiInputLat"/>
+							</s:FormItem>
+							<s:FormItem label="Longitude">
+								<s:TextInput id="tiInputLng"/>
+							</s:FormItem>
+						</s:Form>
+						<s:VGroup paddingTop="25">
+							<s:Button id="btIr" label="Ir" click="centralizarMapa(event)"/>
+							<s:CheckBox id="cbAdcionar" label="Adicionar Portal"/>
+						</s:VGroup>
+					</s:HGroup>
+					
+					<mx:DataGrid id="dg" dataProvider="{portais}" doubleClickEnabled="true" 
+								 itemDoubleClick="onItemDoubleClickHandler(event)" itemClick="itemClickHandler(event)"
+								 width="100%" editable="true">
+						<mx:columns>
+							<mx:DataGridColumn dataField="latitude" headerText="Latitude" editable="false"/>
+							<mx:DataGridColumn dataField="longitude" headerText="Longitude" editable="false"/>	
+							<mx:DataGridColumn dataField="municipio.nome" headerText="Municipio"/>	
+							<mx:DataGridColumn dataField="municipio.uf" headerText="UF"/>	
+						</mx:columns>
+					</mx:DataGrid>
+					
+					<s:Button id="btSalvar" label="Salvar no Banco" click="enviarAoBackEnd(event)"/>
+					<s:Button id="btEditar" label="mudar" click="editarPortal(event)"/>
+					<s:Button id="btCarregarLista" label="Carregar Lista" click="carregarPortais()"/>
+					
+				</s:HGroup>
+			</s:NavigatorContent>
+			
+			<s:NavigatorContent id="edicao">
+				<s:Button id="voltar" label="Voltar" click="{vsInserirPortal.selectedChild = INavigatorContent(vsInserirPortal.getChildByName('exibicao'));}"/>
+				
+			</s:NavigatorContent>
+			
+		</mx:ViewStack>
+		
+	</s:VGroup>
+	
+</s:Group>

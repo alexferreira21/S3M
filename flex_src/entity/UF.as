@@ -20,12 +20,13 @@ package entity
 			_idUF = value;
 		}
 
-
+	
 		public function toString():String	
 		{
 			return this._sigla;
 		}
 		
+		[Bindable]
 		public function get nome():String
 		{
 			return _nome;
@@ -36,6 +37,7 @@ package entity
 			_nome = value;
 		}
 
+		[Bindable]
 		public function get sigla():String
 		{
 			return _sigla;

@@ -19,7 +19,7 @@ package entity
 		
 		
 		
-
+		[Bindable]
 		public function get latLng():LatLng
 		{
 			if(!isNaN(_latitude) && !isNaN(longitude))
@@ -30,6 +30,11 @@ package entity
 			{
 				return null;
 			}
+		}
+		
+		public function set latLng(latLng:LatLng):void{
+			latitude = latLng.lat();
+			longitude = latLng.lng();
 		}
 		
 
@@ -43,16 +48,19 @@ package entity
 		{
 			_idPortal = value;
 		}
+		
+		[Bindable]
 		public function get nome():String
 		{
 			return _nome;
 		}
-
+		
 		public function set nome(value:String):void
 		{
 			_nome = value;
 		}
-
+		
+		[Bindable]
 		public function get latitude():Number
 		{
 			return _latitude;
@@ -63,6 +71,7 @@ package entity
 			_latitude = value;
 		}
 
+		[Bindable]
 		public function get longitude():Number
 		{
 			return _longitude;
@@ -73,6 +82,7 @@ package entity
 			_longitude = value;
 		}
 
+		[Bindable]
 		public function get altitude():Number
 		{
 			return _altitude;
@@ -83,6 +93,7 @@ package entity
 			_altitude = value;
 		}
 
+		[Bindable]
 		public function get municipio():Municipio
 		{
 			return _municipio;
@@ -93,11 +104,13 @@ package entity
 			_municipio = value;
 		}
 
+		[Bindable]
 		public function get equipamento():ArrayCollection
 		{
 			return _equipamento;
 		}
-
+		
+		
 		public function set equipamento(value:ArrayCollection):void
 		{
 			_equipamento = value;

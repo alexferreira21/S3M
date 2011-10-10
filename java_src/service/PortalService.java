@@ -23,6 +23,7 @@ public class PortalService {
 		session.save(portal.getMunicipio().getUf());
 		session.save(portal.getMunicipio());
 		session.save(portal);
+		session.refresh(portal);
 		
 		session.getTransaction().commit();
 	}
