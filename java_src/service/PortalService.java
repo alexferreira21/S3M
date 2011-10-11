@@ -15,17 +15,26 @@ import entity.UF;
 
 public class PortalService {
 
-	public void salvarPortal(Portal portal){
+	public Portal salvarPortal(Portal portal){
 		Session session = HibernateUtil.getInstance().getSession();
 		
 		session.beginTransaction();
 		
-		session.save(portal.getMunicipio().getUf());
-		session.save(portal.getMunicipio());
-		session.save(portal);
-		session.refresh(portal);
 		
+		if(portal.getIdPortal()==null){
+			session.save(portal.getMunicipio().getUf());
+			session.save(portal.getMunicipio());
+			session.save(portal);
+			session.refresh(portal);
+		}
+		else{
+			session.save(portal.getMunicipio().getUf());
+			session.save(portal.getMunicipio());
+			session.merge(portal);
+		}
 		session.getTransaction().commit();
+		
+		return portal;
 	}
 	
 	public List<Portal> findPortal(){

@@ -160,7 +160,6 @@
 			protected function removerEquipamento(event:MouseEvent):void
 			{
 				Alert.show(dgEquipamentos.selectedIndex.toString());	
-				//Alert.show(UFUtil.getDataProvider().getItemAt(0).toString());
 			}
 			
 		]]>

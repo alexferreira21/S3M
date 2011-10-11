@@ -44,6 +44,11 @@ public class Portal {
 	}
 
 	
+	public void setIdPortal(Long idPortal) {
+		this.idPortal = idPortal;
+	}
+
+
 	public String getNome() {
 		return nome;
 	}

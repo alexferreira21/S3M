@@ -43,8 +43,6 @@ package controller
 		
 		public function salvarPortal():void
 		{
-			portais.addItem(portalEmEdicao);//
-			
 			var portalService: RemoteObject = new RemoteObject("portalService");
 			var token: AsyncToken; 
 			
@@ -52,9 +50,24 @@ package controller
 			token.addResponder(new mx.rpc.Responder(handleResult, handleFault));
 		}
 		
-		private function handleResult(event : ResultEvent) : void {
-			
-			Alert.show("Deu Certo!");
+		private function handleResult(event : ResultEvent) : void 
+		{
+			var portalRetornado: Portal = Portal(event.result);
+			if(isNaN(portalEmEdicao.idPortal))
+			{
+				portais.addItem(portalRetornado);
+			}
+			else
+			{
+				for each (var itemPortal:Portal in portais)
+				{
+					if(itemPortal.idPortal == portalRetornado.idPortal)
+					{
+						var index :int = portais.getItemIndex(itemPortal);
+						portais.addItemAt(portalRetornado,index);
+					}
+				}
+			}
 			
 		}
 		
@@ -69,14 +82,6 @@ package controller
 			portalEmEdicao = new Portal();
 			return portalEmEdicao;
 		}
-		
-		
-		protected function enviarAoBackEnd():void
-		{
-			
-		}
-		
-		
 		
 		
 		public function get equipamentosDataProvider():ArrayCollection //PARA O COMBOBOX DO STATUS DE EQUIPAMENTO
