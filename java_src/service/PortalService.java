@@ -31,8 +31,7 @@ public class PortalService {
 			session.refresh(portal);
 		}
 		else{
-			session.save(portal.getMunicipio().getUf());
-			session.save(portal.getMunicipio());
+			portal.setMunicipio(municipoDao.persistirMunicipio(portal.getMunicipio()));
 			session.merge(portal);
 		}
 		session.getTransaction().commit();

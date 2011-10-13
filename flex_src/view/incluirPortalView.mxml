@@ -123,14 +123,14 @@
 				portalController.portalEmEdicao.nome = tiNome.text;
 				portalController.portalEmEdicao.altitude = parseFloat(tiAltitude.text);
 				
-				if(portalController.portalEmEdicao.municipio == null) //CRIAR VARIÁVEL 'ALTEROU_MUNICIPIO' NO CHANGE DA COMBO/TEXT_INPUT DO MUNICIPIO
-				{
+				//if(portalController.portalEmEdicao.municipio == null) //CRIAR VARIÁVEL 'ALTEROU_MUNICIPIO' NO CHANGE DA COMBO/TEXT_INPUT DO MUNICIPIO
+				//{
 					var municipio:Municipio = new Municipio();
 					municipio.nome = tiMunicipio.text;
 					municipio.uf = cbUF.selectedItem;
 					portalController.portalEmEdicao.municipio = municipio;
 					
-				}
+				//}
 				portalController.salvarPortal();
 				sairEdicao();
 			}
