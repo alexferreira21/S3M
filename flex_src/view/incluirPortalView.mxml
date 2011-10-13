@@ -22,6 +22,8 @@
 			import mx.controls.Alert;
 			import mx.core.EventPriority;
 			import mx.core.INavigatorContent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
 			
 			import mygoogle.MarkerPortal;
 			import mygoogle.events.MapaEvent;
@@ -29,29 +31,19 @@
 			import util.UFUtil;
 			
 			[Bindable]
-			private var portalController:IncluirPortalController = new IncluirPortalController(); //FAZER UMA INTERFACE CONTROLLER;
-			
-			[Bindable]
-			private var portalEmEdicao:Portal;
-			
-			private var geocoder:ClientGeocoder;
-			
-			private var emEdicao:Boolean = false;
+			private var portalController: IncluirPortalController = new IncluirPortalController(); //FAZER UMA INTERFACE CONTROLLER;
+			private var emEdicao: Boolean = false;
+			private var markerEmEdicao: MarkerPortal;
 			
 			
 			
 			protected function mapaProntoHandler(event:MapaEvent):void
 			{
 				dgPortais.addEventListener("editarItem",editarItem);
-				mapa.map.addEventListener(MapMouseEvent.CLICK,onMapClick, false, EventPriority.DEFAULT, true);
-				
-				geocoder = new ClientGeocoder();
-				geocoder.addEventListener(GeocodingEvent.GEOCODING_SUCCESS,sucessoGeocode);				
-				geocoder.addEventListener(GeocodingEvent.GEOCODING_FAILURE,falhaGeocode);
-				
+				mapa.map.addEventListener(MapMouseEvent.CLICK,criarPortal, false, EventPriority.DEFAULT, true);
 			}
 			
-			protected function onMapClick(event:MapMouseEvent):void
+			protected function criarPortal(event:MapMouseEvent):void
 			{
 				
 				if(!emEdicao)
@@ -59,6 +51,9 @@
 					var portal:Portal = new Portal();
 					portal.equipamento = new ArrayCollection();
 					portal.latLng = event.latLng;
+					markerEmEdicao = new MarkerPortal(event.latLng);
+					mapa.map.addOverlay(markerEmEdicao);
+					portalController.geocodificar(event.latLng.toString(),sucessoGeocodificacao,falhaGeocodificacao);
 					editarPortal(portal);
 				}
 				else
@@ -68,48 +63,32 @@
 				
 			}
 			
+			protected function sucessoGeocodificacao(event: ResultEvent):void
+			{
+				var ufRetornada: UF = UF(event.result);
+				portalController.portalEmEdicao.municipio.uf = ufRetornada;
+			
+				for each(var ufItem:UF in cbUF.dataProvider)
+				{
+					if(ufItem.idUF ==  ufRetornada.idUF)
+					{
+						cbUF.selectedItem = ufItem;
+						break;
+					}
+				}
+			}
+			
+			protected function falhaGeocodificacao(event :FaultEvent):void
+			{
+				Alert.show(event.fault.message);
+			}
+			
 			protected function editarPortal(portal:Portal):void
 			{
 				emEdicao = true;
 				
 				portalController.portalEmEdicao = portal; 
-				geocoder.geocode(portalController.portalEmEdicao.latLng.toString());
-				
 				vsPortal.selectedChild = INavigatorContent(vsPortal.getChildByName("edicao"));	
-			}
-			
-			
-			
-			
-			protected function sucessoGeocode(event:GeocodingEvent):void
-			{
-				var municipioGeocodificado:Municipio = new Municipio();
-				var placemark:Placemark = Placemark(event.response.placemarks[0]);
-				
-				if(placemark.addressDetails.hasOwnProperty("Country"))
-				{
-					var country:Object = placemark.addressDetails.Country;
-					if(country.hasOwnProperty("AdministrativeArea"))
-					{
-						var administrativeArea:Object = country.AdministrativeArea;
-						var uf:UF = new UF();
-						uf.sigla = administrativeArea.AdministrativeAreaName;
-						municipioGeocodificado.uf = uf;
-						portalController.portalEmEdicao.municipio = municipioGeocodificado;
-						if(administrativeArea.hasOwnProperty("Locality"))
-						{
-							var locality:Object = administrativeArea.Locality;
-							municipioGeocodificado.nome = locality.LocalityName;
-							portalController.portalEmEdicao.municipio = municipioGeocodificado;
-						}
-					}
-				}
-			}
-			
-			
-			protected function falhaGeocode(event:GeocodingEvent):void
-			{
-				Alert.show("Erro ao geocodificar localização");
 			}
 			
 			
@@ -121,10 +100,23 @@
 			
 			protected function sairEdicao():void
 			{
-				portalEmEdicao = null;
+				
+				portalController.portalEmEdicao = null;
 				emEdicao = false;
+				markerEmEdicao = null;
 				vsPortal.selectedChild = INavigatorContent(vsPortal.getChildByName("exibicao"));
 			}
+			
+			protected function cancelarEdicao():void
+			{
+				if(markerEmEdicao != null)
+				{
+					mapa.map.removeOverlay(markerEmEdicao);
+				}
+				sairEdicao();
+			}
+			
+			
 			
 			protected function salvarEdicao(event:MouseEvent):void
 			{
@@ -135,17 +127,10 @@
 				{
 					var municipio:Municipio = new Municipio();
 					municipio.nome = tiMunicipio.text;
-					
-					var uf:UF = new UF();
-					uf.sigla = tiUF.text;
-					
-					municipio.uf = uf;
-					
+					municipio.uf = cbUF.selectedItem;
 					portalController.portalEmEdicao.municipio = municipio;
 					
 				}
-				
-				mapa.map.addOverlay(new MarkerPortal(portalController.portalEmEdicao.latLng));
 				portalController.salvarPortal();
 				sairEdicao();
 			}
@@ -223,7 +208,7 @@
 						</s:FormItem>
 						
 						<s:FormItem label="UF">
-							<s:TextInput id="tiUF" text="{portalController.portalEmEdicao.municipio.uf.sigla}"/>
+							<s:ComboBox id="cbUF" dataProvider="{portalController.ufDataProvider}" selectedIndex="-1"/>
 						</s:FormItem>
 					</s:Form>
 					
@@ -262,7 +247,7 @@
 					
 					<s:VGroup height="100%">
 						<s:Button id="btSalvar" label="Salvar" height="50%" click="salvarEdicao(event)"/> 
-						<s:Button id="btCancelar" label="Cancelar" height="50%" click="sairEdicao()"/>
+						<s:Button id="btCancelar" label="Cancelar" height="50%" click="cancelarEdicao()"/>
 						
 					</s:VGroup>
 					

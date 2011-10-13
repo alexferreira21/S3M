@@ -34,6 +34,11 @@ public class UF {
 	}
 
 
+	public void setIdUF(Long idUF) {
+		this.idUF = idUF;
+	}
+
+
 	public String getNome() {
 		return nome;
 	}

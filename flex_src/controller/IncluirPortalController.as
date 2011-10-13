@@ -14,6 +14,7 @@ package controller
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.rpc.AsyncToken;
+	import mx.rpc.Responder;
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.remoting.RemoteObject;
@@ -22,13 +23,34 @@ package controller
 	
 	public class IncluirPortalController
 	{
+		private var portalService: RemoteObject = new RemoteObject("portalService");;
 		
 		[Bindable]
-		public var portais:ArrayCollection = new ArrayCollection();
+		public var portais: ArrayCollection = new ArrayCollection();
 		
-		private var _portalEmEdicao:Portal;
+		private var _portalEmEdicao: Portal;
+		private var _ufDataProvider: ArrayCollection;
+		
+		public var geocoder: ClientGeocoder;
+		private var sucessoGeocoderRetornoView: Function;
+		private var falhaGeocoderRetornoView: Function;
 		
 		
+		public function IncluirPortalController()
+		{
+			var ufDataProviderToken: AsyncToken = portalService.getUFDataProvider();
+			ufDataProviderToken.addResponder(new Responder(getUFDataProviderResult, getUFDataProviderFault));
+		}
+		
+		private function getUFDataProviderResult(event: ResultEvent):void
+		{
+			_ufDataProvider = ArrayCollection(event.result);
+		}
+		
+		private function getUFDataProviderFault(event: FaultEvent):void
+		{
+			Alert.show(event.fault.message);
+		}
 		
 		[Bindable]
 		public function get portalEmEdicao():Portal
@@ -41,37 +63,42 @@ package controller
 			_portalEmEdicao = value;
 		}
 		
-		public function salvarPortal():void
+		public function get ufDataProvider():ArrayCollection
 		{
-			var portalService: RemoteObject = new RemoteObject("portalService");
-			var token: AsyncToken; 
-			
-			token = portalService.salvarPortal(portalEmEdicao);
-			token.addResponder(new mx.rpc.Responder(handleResult, handleFault));
+			return _ufDataProvider;
 		}
 		
-		private function handleResult(event : ResultEvent) : void 
+		public function salvarPortal():void
+		{
+			var salvarPortalToken: AsyncToken; 
+			
+			salvarPortalToken = portalService.salvarPortal(portalEmEdicao);
+			salvarPortalToken.addResponder(new Responder(salvarPortalResult, salvarPortalFault));
+		}
+		
+		private function salvarPortalResult(event : ResultEvent) : void 
 		{
 			var portalRetornado: Portal = Portal(event.result);
-			if(isNaN(portalEmEdicao.idPortal))
+			var encontrou: Boolean = false;
+			
+			for each (var itemPortal:Portal in portais)
 			{
-				portais.addItem(portalRetornado);
-			}
-			else
-			{
-				for each (var itemPortal:Portal in portais)
+				if(itemPortal.idPortal == portalRetornado.idPortal)
 				{
-					if(itemPortal.idPortal == portalRetornado.idPortal)
-					{
-						var index :int = portais.getItemIndex(itemPortal);
-						portais.addItemAt(portalRetornado,index);
-					}
+					var index :int = portais.getItemIndex(itemPortal);
+					portais[index] = portalRetornado;
+					encontrou = true;
+					break;
 				}
 			}
 			
+			if (!encontrou)
+			{
+				portais.addItem(portalRetornado);
+			}
 		}
 		
-		private function handleFault(event : FaultEvent) : void {
+		private function salvarPortalFault(event : FaultEvent) : void {
 			
 			Alert.show(event.fault.message);
 			
@@ -82,6 +109,60 @@ package controller
 			portalEmEdicao = new Portal();
 			return portalEmEdicao;
 		}
+		
+		public function geocodificar(str:String, sucessoFunction:Function, falhaFunction:Function):void
+		{
+			if(geocoder == null)
+			{
+				geocoder =  new ClientGeocoder();
+			}
+			geocoder.addEventListener(GeocodingEvent.GEOCODING_SUCCESS,sucessoGeocode);				
+			geocoder.addEventListener(GeocodingEvent.GEOCODING_FAILURE,falhaGeocode);
+			
+			sucessoGeocoderRetornoView = sucessoFunction;
+			falhaGeocoderRetornoView = falhaFunction;
+			
+			geocoder.geocode(str);
+		}
+		
+		protected function sucessoGeocode(event:GeocodingEvent):void
+		{
+			var municipioGeocodificado:Municipio = new Municipio();
+			var placemark:Placemark = Placemark(event.response.placemarks[0]);
+			
+			if(placemark.addressDetails.hasOwnProperty("Country"))
+			{
+				var country:Object = placemark.addressDetails.Country;
+				if(country.hasOwnProperty("AdministrativeArea"))
+				{
+					var administrativeArea:Object = country.AdministrativeArea;
+					var uf:UF = new UF();
+					uf.sigla = administrativeArea.AdministrativeAreaName;
+					municipioGeocodificado.uf = uf;
+					portalEmEdicao.municipio = municipioGeocodificado;
+					if(administrativeArea.hasOwnProperty("Locality"))
+					{
+						var locality:Object = administrativeArea.Locality;
+						municipioGeocodificado.nome = locality.LocalityName;
+						portalEmEdicao.municipio = municipioGeocodificado;
+					}
+				}
+			}
+			
+			var buscarUFToken: AsyncToken; 
+			
+			buscarUFToken = portalService.buscarUF(portalEmEdicao.municipio.uf);
+			buscarUFToken.addResponder(new mx.rpc.Responder(sucessoGeocoderRetornoView, falhaGeocoderRetornoView)); 
+		}
+		
+		
+		
+		
+		protected function falhaGeocode(event:GeocodingEvent):void
+		{
+			Alert.show("Erro ao geocodificar localização");
+		}
+		
 		
 		
 		public function get equipamentosDataProvider():ArrayCollection //PARA O COMBOBOX DO STATUS DE EQUIPAMENTO
