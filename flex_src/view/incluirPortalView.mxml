@@ -3,8 +3,13 @@
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx"  height="100%" width="100%" xmlns:mygoogle="mygoogle.*">
 	
+	<fx:Metadata>
+		[Event(name="voltarEvent", type="flash.events.Event")]
+	</fx:Metadata>
+	
 	<fx:Script>
 		<![CDATA[
+			import com.google.maps.LatLng;
 			import com.google.maps.MapMouseEvent;
 			import com.google.maps.services.ClientGeocoder;
 			import com.google.maps.services.GeocodingEvent;
@@ -17,11 +22,14 @@
 			import entity.Portal;
 			import entity.UF;
 			
+			import main.MarkerPortalEvent;
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.EventPriority;
 			import mx.core.INavigatorContent;
+			import mx.events.ListEvent;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
 			
@@ -34,13 +42,67 @@
 			private var portalController: IncluirPortalController = new IncluirPortalController(); //FAZER UMA INTERFACE CONTROLLER;
 			private var emEdicao: Boolean = false;
 			private var markerEmEdicao: MarkerPortal;
-			
+			private var markers: ArrayCollection = new ArrayCollection();
 			
 			
 			protected function mapaProntoHandler(event:MapaEvent):void
 			{
 				dgPortais.addEventListener("editarItem",editarItem);
+				dgPortais.addEventListener("removerItem",removerItem);
 				mapa.map.addEventListener(MapMouseEvent.CLICK,criarPortal, false, EventPriority.DEFAULT, true);
+				
+				portalController.carregarPortais(carregarPortaisSucesso,carregarPortaisFalha);
+				
+			}
+			
+			protected function adicionarMarkerPortal(portal: Portal):void
+			{
+				var markerPortal:MarkerPortal = new MarkerPortal(portal.latLng);
+				markers.addItem(markerPortal);
+				mapa.map.addOverlay(markerPortal);
+				markerPortal.addEventListener(MarkerPortalEvent.ANTENA_SELECIONADA,selecionarMarkerPortal);
+			}
+			
+			private function selecionarMarkerPortal(event: MarkerPortalEvent):void
+			{
+				var latLngSelecionada: LatLng = event.latLng;
+				
+				if(markerEmEdicao != null)
+				{
+					markerEmEdicao.isSelected = !markerEmEdicao.isSelected;
+					markerEmEdicao = null;
+				}
+				
+				for each(var portalItem: Portal in dgPortais.dataProvider)
+				{
+					if(portalItem.latLng.equals(latLngSelecionada))
+						{
+							dgPortais.selectedItem = portalItem;
+						}
+				}
+				
+				
+			}
+			
+			private function carregarPortaisSucesso(event : ResultEvent) : void 
+			{
+				portalController.portais = ArrayCollection(event.result);
+				
+				if(portalController.portais.length > 0)
+				{
+					for each(var itemPortal:Portal in  portalController.portais)
+					{
+						adicionarMarkerPortal(itemPortal);
+					}
+				}
+				
+				cursorManager.removeBusyCursor();	
+			}
+			
+			private function carregarPortaisFalha(event : FaultEvent) : void 
+			{
+				cursorManager.removeBusyCursor();
+				Alert.show(event.fault.message);
 			}
 			
 			protected function criarPortal(event:MapMouseEvent):void
@@ -51,8 +113,7 @@
 					var portal:Portal = new Portal();
 					portal.equipamento = new ArrayCollection();
 					portal.latLng = event.latLng;
-					markerEmEdicao = new MarkerPortal(event.latLng);
-					mapa.map.addOverlay(markerEmEdicao);
+					adicionarMarkerPortal(portal);
 					portalController.geocodificar(event.latLng.toString(),sucessoGeocodificacao,falhaGeocodificacao);
 					editarPortal(portal);
 				}
@@ -97,21 +158,61 @@
 				editarPortal(Portal(dgPortais.selectedItem));
 			}
 			
+			protected function removerItem(e:Event):void
+			{
+				var portal:Portal = Portal(dgPortais.selectedItem);
+				
+				portalController.removerPortal(portal,removerPortalSucesso,removerPortalFalha);
+			}
+			
+			private function removerPortalSucesso(event: ResultEvent):void
+			{
+				var portalExcluido: Portal = Portal(event.result);
+				var dp: ArrayCollection = ArrayCollection(dgPortais.dataProvider);
+				
+				for each (var portalItem: Portal in dp)
+				{
+					if(portalItem.idPortal == portalExcluido.idPortal)
+					{
+						dp.removeItemAt(dp.getItemIndex(portalItem));
+					}
+						
+				}
+				
+				for each (var markerPortalItem: MarkerPortal in markers)
+				{
+					if(markerPortalItem.portal.latLng.equals(portalExcluido.latLng))
+					{
+						mapa.map.removeOverlay(markerPortalItem);
+					}
+				}
+			}
+			
+			private function removerPortalFalha(event: FaultEvent):void
+			{
+				
+				Alert.show(event.fault.message);
+			}
+			
 			
 			protected function sairEdicao():void
 			{
 				
 				portalController.portalEmEdicao = null;
 				emEdicao = false;
-				markerEmEdicao = null;
 				vsPortal.selectedChild = INavigatorContent(vsPortal.getChildByName("exibicao"));
 			}
 			
 			protected function cancelarEdicao():void
 			{
-				if(markerEmEdicao != null)
-				{
-					mapa.map.removeOverlay(markerEmEdicao);
+				if(isNaN(portalController.portalEmEdicao.idPortal)){
+					for each (var markerPortalItem: MarkerPortal in markers)
+					{
+						if(markerPortalItem.portal.latLng.equals(portalController.portalEmEdicao.latLng))
+						{
+							mapa.map.removeOverlay(markerPortalItem);
+						}
+					}
 				}
 				sairEdicao();
 			}
@@ -137,7 +238,10 @@
 			
 			protected function adicionarEquipamento(event:MouseEvent):void
 			{
-				var equipamento: Equipamento = new Equipamento(portalController.portalEmEdicao.equipamento.length+1,1);
+				var equipamento: Equipamento = new Equipamento();
+				
+				equipamento.ordem = portalController.portalEmEdicao.equipamento.length+1;
+				equipamento.status = 1;
 				
 				portalController.portalEmEdicao.equipamento.addItem(equipamento);		
 			}
@@ -145,6 +249,26 @@
 			protected function removerEquipamento(event:MouseEvent):void
 			{
 				Alert.show(dgEquipamentos.selectedIndex.toString());	
+			}
+			
+			protected function selecionarItem(event:ListEvent):void
+			{
+				var portalSelecionado: Portal = Portal(ArrayCollection(dgPortais.dataProvider).getItemAt(event.rowIndex));
+				
+				if(markerEmEdicao != null)
+				{
+					markerEmEdicao.isSelected = !markerEmEdicao.isSelected;
+				}
+				
+				
+				for each(var markerPortalItem :MarkerPortal in markers)
+				{
+					if(markerPortalItem.portal.latLng.equals(portalSelecionado.latLng))
+					{
+						markerEmEdicao = markerPortalItem;
+						markerEmEdicao.isSelected = !markerEmEdicao.isSelected;
+					}
+				}
 			}
 			
 		]]>
@@ -177,7 +301,7 @@
 					<s:Spacer width="200"/> 
 					
 					<mx:DataGrid id="dgPortais"  doubleClickEnabled="true" dataProvider="{portalController.portais}"
-								 width="100%">
+								 width="100%" itemClick="selecionarItem(event)">
 						<mx:columns>
 							<mx:DataGridColumn dataField="nome" headerText="Nome"/>
 							<mx:DataGridColumn dataField="latitude" headerText="Latitude"/>
@@ -186,13 +310,17 @@
 								<mx:itemRenderer>
 									<fx:Component>
 										<mx:HBox paddingLeft="5">
-											<s:Button  width="20" click="dispatchEvent(new Event('editarItem', true))"/>
+											<s:Button  label="E" width="20" click="dispatchEvent(new Event('editarItem', true))"/>
+											<s:Button  label="R" width="20" click="dispatchEvent(new Event('removerItem', true))"/>
 										</mx:HBox>
 									</fx:Component>
 								</mx:itemRenderer>
 							</mx:DataGridColumn>
 						</mx:columns>
 					</mx:DataGrid>
+					
+					<s:Button id="btVoltar" label="Voltar" click="{dispatchEvent(new Event('voltarEvent'))}"/>
+					
 				</s:HGroup>
 			</s:NavigatorContent>
 			

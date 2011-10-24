@@ -15,7 +15,7 @@ package mygoogle
 	import mx.collections.ArrayCollection;
 	
 	import spark.components.IconPlacement;
-	import main.AntenaEvent;
+	import main.MarkerPortalEvent;
 	
 	public class MarkerPortal extends Marker
 	{
@@ -42,32 +42,23 @@ package mygoogle
 			_portal.longitude = latLng.lng();
 			super(latLng, _options);
 			
-			addEventListener(MapMouseEvent.CLICK,selectAntena);
+			addEventListener(MapMouseEvent.CLICK,selecionarPortal);
 		}
 		
-		private function selectAntena(event: MapMouseEvent):void
+		public function selecionarPortal(event: MapMouseEvent):void //REVER ESSE MÉTODO
 		{
-			var eventObj:AntenaEvent;
+			var eventObj:MarkerPortalEvent;
 			
-			if(_isSelected)
-			{ 
-				_options.icon = new iconeNormal(); 
-				this.setOptions(_options);
-				_isSelected = false
-
-				eventObj = new AntenaEvent(AntenaEvent.ANTENA_DESSELECIONADA,this.getLatLng());
+			if(isSelected)
+			{
+				eventObj = new MarkerPortalEvent(MarkerPortalEvent.ANTENA_DESSELECIONADA,this.getLatLng()); // EXTRAIR MÉTODO 'ENVIAR_EVENTO_DESSELECIONADA'
 				dispatchEvent(eventObj);
 			}
 			else
 			{
-				_options.icon = new iconeSelecionado(); 
-				this.setOptions(_options);
-				_isSelected = true;
-				
-				eventObj = new AntenaEvent(AntenaEvent.ANTENA_SELECIONADA,this.getLatLng());
+			    eventObj = new MarkerPortalEvent(MarkerPortalEvent.ANTENA_SELECIONADA,this.getLatLng()); //TAMBÉM EXTRAIR MÉTODO
 				dispatchEvent(eventObj);
 			}
-			
 		}
 		
 		public function get lat():Number
@@ -84,6 +75,29 @@ package mygoogle
 		{
 			return _portal;
 		}
-		
+
+		public function get isSelected():Boolean
+		{
+			return _isSelected;
+		}
+
+		public function set isSelected(value:Boolean):void
+		{
+			_isSelected = value;
+			
+			var eventObj:MarkerPortalEvent;
+			
+			if(value)
+			{
+				_options.icon = new iconeSelecionado(); 
+				this.setOptions(_options);
+			}
+			else
+			{
+				_options.icon = new iconeNormal(); 
+				this.setOptions(_options);
+			}
+			
+		}
 	}
 }

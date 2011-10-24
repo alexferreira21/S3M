@@ -9,15 +9,6 @@ package entity
 		private var _status:Number = 0;
 		private var _portal:Portal;
 		
-		public function Equipamento(ordem:Number, status:Number)
-		{
-			this._ordem = ordem;
-			this._status = status;
-		}
-		
-
-
-		
 
 		public function get idEquipamento():Number
 		{

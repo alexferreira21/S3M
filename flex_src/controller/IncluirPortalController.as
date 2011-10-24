@@ -13,6 +13,7 @@ package controller
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
+	import mx.managers.CursorManager;
 	import mx.rpc.AsyncToken;
 	import mx.rpc.Responder;
 	import mx.rpc.events.FaultEvent;
@@ -98,6 +99,7 @@ package controller
 			}
 		}
 		
+		
 		private function salvarPortalFault(event : FaultEvent) : void {
 			
 			Alert.show(event.fault.message);
@@ -164,6 +166,18 @@ package controller
 		}
 		
 		
+		public function carregarPortais(callbackSucesso:Function, callbackFalha:Function):void
+		{
+			var portalService: RemoteObject = new RemoteObject("portalService");
+			var token: AsyncToken; 
+			
+			CursorManager.setBusyCursor();
+			
+			token = portalService.carregarPortais();
+			token.addResponder(new mx.rpc.Responder(callbackSucesso, callbackFalha));
+			
+		}
+		
 		
 		public function get equipamentosDataProvider():ArrayCollection //PARA O COMBOBOX DO STATUS DE EQUIPAMENTO
 		{
@@ -173,6 +187,16 @@ package controller
 			
 			return array;
 		}
+		
+		public function removerPortal(portal:Portal, callbackSucces: Function, callbackFault: Function):void
+		{
+			var removerPortalToken: AsyncToken; 
+			
+			removerPortalToken = portalService.removerPortal(portal);
+			removerPortalToken.addResponder(new Responder(callbackSucces, callbackFault));
+		}
+		
+		
 		
 		
 	}

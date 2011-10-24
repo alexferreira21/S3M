@@ -28,7 +28,6 @@ public class PortalService {
 		if(portal.getIdPortal()==null){
 			portal.setMunicipio(municipoDao.persistirMunicipio(portal.getMunicipio()));
 			session.save(portal);
-			session.refresh(portal);
 		}
 		else{
 			portal.setMunicipio(municipoDao.persistirMunicipio(portal.getMunicipio()));
@@ -49,8 +48,21 @@ public class PortalService {
 		return municipoDao.buscarTodasAsUFs();
 	}
 	
+	public Portal removerPortal(Portal portal){
+		Session session = HibernateUtil.getInstance().getSession();
+		session.beginTransaction();
+		
+		Portal portalAExcluir = (Portal)session.createQuery("from Portal where idPortal = "+portal.getIdPortal()).uniqueResult();
+		session.delete(portalAExcluir);
+		
+		session.getTransaction().commit();
+		
+		return portalAExcluir;
+		
+	}
 	
-	public List<Portal> findPortal(){
+	
+	public List<Portal> carregarPortais(){
 		Session session = HibernateUtil.getInstance().getSession();
 		List<Portal> portais = session.createQuery("from Portal").list();
 		
