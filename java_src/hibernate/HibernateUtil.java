@@ -6,8 +6,10 @@ import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 
 import entity.Equipamento;
+import entity.Estrada;
 import entity.Municipio;
 import entity.Portal;
+import entity.Segmento;
 import entity.UF;
 
 public class HibernateUtil {
@@ -20,7 +22,9 @@ public class HibernateUtil {
 		config.addAnnotatedClass(Equipamento.class)
 		.addAnnotatedClass(Portal.class)
 		.addAnnotatedClass(Municipio.class)
-		.addAnnotatedClass(UF.class);
+		.addAnnotatedClass(UF.class)
+		.addAnnotatedClass(Segmento.class)
+		.addAnnotatedClass(Estrada.class);
 		config.configure("hibernate.cfg.xml");
 		
 		//new SchemaExport(config).create(true, true);

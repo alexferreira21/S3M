@@ -2,18 +2,40 @@ package entity;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="TB_ESTRADA")
 public class Estrada {
 	
-	private Long id;
+	@Id
+	@GeneratedValue
+	private Long idEstrada;
  
 	private String nome;
 	 
 	private Integer numeroSegmentos;
-	 
+	
+	@ManyToMany
+	@JoinTable(name="tb_rel_estrada_uf",
+			joinColumns={@JoinColumn(name="idEstrada")}, 
+			inverseJoinColumns={@JoinColumn(name="idUF")})
 	private List<UF> uf;
 	 
+	@OneToMany(targetEntity=Segmento.class, mappedBy="estrada", 
+	cascade = CascadeType.ALL, fetch=FetchType.LAZY)
 	private List<Segmento> segmento;
 	 
+	
 	
 	public void getPrimeiroSegmento() {
 	 
@@ -28,11 +50,11 @@ public class Estrada {
 	}
 
 	public Long getId() {
-		return id;
+		return idEstrada;
 	}
 
 	public void setId(Long id) {
-		this.id = id;
+		this.idEstrada = id;
 	}
 
 	public String getNome() {

@@ -1,27 +1,45 @@
 package entity;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+
+
+@Entity
+@Table(name="TB_SEGMENTO")
 public class Segmento {
 	
-	private Long id;
+	@Id
+	@GeneratedValue
+	private Long idSegmento;
  
 	private String nome;
 	 
 	private Integer km;
-	 
+	
+	@OneToOne
 	private Portal portalDestino;
-	 
+	
+	@OneToOne
 	private Portal portalOrigem;
 	 
+	@ManyToOne
+	@JoinColumn(name="idEstrada")
 	private Estrada estrada;
 
 	
 	
 	public Long getId() {
-		return id;
+		return idSegmento;
 	}
 
 	public void setId(Long id) {
-		this.id = id;
+		this.idSegmento = id;
 	}
 
 	public Portal getPortalDestino() {

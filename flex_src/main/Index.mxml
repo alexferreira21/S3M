@@ -26,7 +26,7 @@
 		</s:NavigatorContent>
 		
 		<s:NavigatorContent id="incluirPortais">
-			<view:incluirPortalView voltarEvent="{vs.selectedIndex = 0}" />
+			<view:IncluirPortalView voltarEvent="{vs.selectedIndex = 0}" />
 		</s:NavigatorContent>
 		
 		

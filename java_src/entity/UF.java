@@ -7,10 +7,13 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 @Entity
+@Table(name="TB_UF")
 public class UF {
 	
 	@Id
@@ -25,7 +28,7 @@ public class UF {
 			cascade = CascadeType.ALL, fetch=FetchType.LAZY)
 	private List<Municipio> municipios;
 	
-	@Transient
+	@ManyToMany
 	private List<Estrada> estrada;
 	
 
