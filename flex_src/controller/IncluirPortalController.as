@@ -11,6 +11,8 @@ package controller
 	import entity.StatusEquipamentoEnum;
 	import entity.UF;
 	
+	import model.BaseModel;
+	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.managers.CursorManager;
@@ -24,10 +26,11 @@ package controller
 	
 	public class IncluirPortalController
 	{
-		private var portalService: RemoteObject = new RemoteObject("portalService");;
+		
+		private var portalService: RemoteObject = new RemoteObject("portalService");
 		
 		[Bindable]
-		public var portais: ArrayCollection = new ArrayCollection();
+		public var portais: ArrayCollection = BaseModel.getInstance().portais;
 		
 		private var _portalEmEdicao: Portal;
 		private var _ufDataProvider: ArrayCollection;
@@ -37,8 +40,12 @@ package controller
 		private var falhaGeocoderRetornoView: Function;
 		
 		
+		
+
+		
 		public function IncluirPortalController()
 		{
+			
 			var ufDataProviderToken: AsyncToken = portalService.getUFDataProvider();
 			ufDataProviderToken.addResponder(new Responder(getUFDataProviderResult, getUFDataProviderFault));
 		}
@@ -195,7 +202,6 @@ package controller
 			removerPortalToken = portalService.removerPortal(portal);
 			removerPortalToken.addResponder(new Responder(callbackSucces, callbackFault));
 		}
-		
 		
 		
 		

@@ -22,6 +22,8 @@
 			<s:Button id="btGerenciarPortais" x="428" y="290" label="Gerenciar Portais"
 					  click="{vs.selectedChild= INavigatorContent(vs.getChildByName('incluirPortais'))}"/>
 					  
+			<s:Button id="btGerenciarEstradas" x="428" y="336" label="Gerenciar Estradas"
+					  click="{vs.selectedChild= INavigatorContent(vs.getChildByName('gerenciarEstradas'))}"/>
 			
 		</s:NavigatorContent>
 		
@@ -29,6 +31,9 @@
 			<view:IncluirPortalView voltarEvent="{vs.selectedIndex = 0}" />
 		</s:NavigatorContent>
 		
+		<s:NavigatorContent id="gerenciarEstradas">
+			<view:GerenciarEstradaView voltarEvent="{vs.selectedIndex = 0}" />
+		</s:NavigatorContent>
 		
 		
 	</mx:ViewStack>		  

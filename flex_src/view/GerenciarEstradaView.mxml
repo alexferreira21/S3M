@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" height="100%" width="100%" xmlns:mygoogle="mygoogle.*" xmlns:view="view.*">
+	
+	<fx:Metadata>
+		[Event(name="voltarEvent", type="flash.events.Event")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.google.maps.overlays.PolylineOptions;
+			import com.google.maps.services.DirectionsEvent;
+			import com.google.maps.styles.StrokeStyle;
+			
+			import controller.IncluirPortalController;
+			
+			import entity.Portal;
+			
+			import main.MarkerPortalEvent;
+			
+			import mx.controls.Alert;
+			import mx.core.INavigatorContent;
+			
+			import mygoogle.MarkerPortal;
+			import mygoogle.events.MapaEvent;
+			import mygoogle.events.RotaEvent;
+			
+			
+			[Bindable]
+			private var portalController: IncluirPortalController = new IncluirPortalController(); //FAZER UMA INTERFACE CONTROLLER;
+			
+			private var linhaPreta:PolylineOptions = new PolylineOptions({ strokeStyle: new StrokeStyle({color: 0x000000, thickness: 4, alpha: 1})});
+			
+			protected function mapaProntoHandler(event:MapaEvent):void
+			{
+				for each (var markerPortalItem: MarkerPortal in mapa.markers)
+				{
+					markerPortalItem.addEventListener(MarkerPortalEvent.PORTAL_CLICK,selecionarMarkerPortal);
+				}						
+			}
+			
+			public function selecionarMarkerPortal(event: MarkerPortalEvent):void
+			{
+				edicaoSegmento.selecionarMarkerPortal(event);
+			}
+			
+			
+			protected function edicaoSegmento_sucessoRotaHandler(event: RotaEvent):void
+			{
+				mapa.map.addOverlay(event.direction.createPolyline(linhaPreta));	
+				vsEstradas.selectedChild = INavigatorContent(vsEstradas.getChildByName('exibicaoEstradas'));
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:VGroup height="100%" width="100%">
+		<mygoogle:Mapa id="mapa"  height="80%" width="100%" mapaPronto="mapaProntoHandler(event)"/>
+		
+		<mx:ViewStack id="vsEstradas" y="413" width="1515" height="177">
+			<s:NavigatorContent id="exibicaoEstradas">
+				<s:HGroup>
+					<s:Button id="novaEstrada" label="Nova Estrada" click="{vsEstradas.selectedChild = INavigatorContent(vsEstradas.getChildByName('edicaoEstradas'))}"/>
+					<s:Button id="btVoltar" label="Voltar" click="{dispatchEvent(new Event('voltarEvent'))}"/>
+					<s:DataGrid id="dgEstradas">
+						
+					</s:DataGrid>
+				</s:HGroup>
+			</s:NavigatorContent>
+			
+			<s:NavigatorContent id="edicaoEstradas">
+				<view:EdicaoSegmento id="edicaoSegmento" sucessoRota="edicaoSegmento_sucessoRotaHandler(event)"/>
+				
+			</s:NavigatorContent>
+			
+			
+		</mx:ViewStack>
+		
+	</s:VGroup>
+	
+	
+</s:Group>

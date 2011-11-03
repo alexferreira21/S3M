@@ -18,11 +18,29 @@
 			import com.google.maps.MapMouseEvent;
 			import com.google.maps.MapOptions;
 			
+			import controller.IncluirPortalController;
+			
+			import entity.Portal;
+			
+			import main.MarkerPortalEvent;
+			
+			import model.BaseModel;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
 			import mx.core.EventPriority;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
 			
 			import mygoogle.events.MapaEvent;
 			
+			[Bindable]
+			private var portalController: IncluirPortalController = new IncluirPortalController(); //FAZER UMA INTERFACE CONTROLLER;
+			
+			public var markers: ArrayCollection = BaseModel.getInstance().markers;
+			
 			protected var centroDoMapa: LatLng = new LatLng(-22.823616,-43.170162); 
+			
 			
 			
 			protected function onMouseMove(event:MapMouseEvent):void
@@ -38,8 +56,8 @@
 				map.enableScrollWheelZoom();
 				map.enableContinuousZoom();
 				
-				var mapaPronto: MapaEvent = new MapaEvent(MapaEvent.MAPA_PRONTO,true);
-				dispatchEvent(mapaPronto);
+				portalController.carregarPortais(carregarPortaisSucesso,carregarPortaisFalha);
+
 			}
 		
 			
@@ -54,6 +72,52 @@
 				var mapaPreInicializacao: MapaEvent = new MapaEvent(MapaEvent.MAPA_PRE_INICIALIZACAO,true);
 				dispatchEvent(mapaPreInicializacao);
 			}
+			
+			
+			private function carregarPortaisSucesso(event : ResultEvent) : void 
+			{
+				portalController.portais.addAll(ArrayCollection(event.result));
+				
+				if(portalController.portais.length > 0)
+				{
+					for each(var itemPortal:Portal in  portalController.portais)
+					{
+						adicionarMarkerPortal(itemPortal);
+					}
+				}
+				
+				cursorManager.removeBusyCursor();
+				
+				var mapaPronto: MapaEvent = new MapaEvent(MapaEvent.MAPA_PRONTO,true);
+				dispatchEvent(mapaPronto);
+			}
+			
+			private function carregarPortaisFalha(event : FaultEvent) : void 
+			{
+				cursorManager.removeBusyCursor();
+				Alert.show(event.fault.message);
+			}
+			
+			public function adicionarMarkerPortal(portal: Portal):MarkerPortal
+			{
+				var markerPortal:MarkerPortal = new MarkerPortal(portal);
+				markers.addItem(markerPortal);
+				map.addOverlay(markerPortal);
+				
+				return markerPortal;
+			}
+			
+			public function removerMarkerPortal(portal: Portal):void
+			{
+				for each (var markerPortalItem: MarkerPortal in markers)
+				{
+					if(markerPortalItem.portal.latLng.equals(portal.latLng))
+					{
+						map.removeOverlay(markerPortalItem);
+					}
+				}
+			}
+			
 			
 		]]>
 	</fx:Script>

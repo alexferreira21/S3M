@@ -12,10 +12,11 @@ package mygoogle
 	import flash.geom.Point;
 	import flash.sampler.NewObjectSample;
 	
+	import main.MarkerPortalEvent;
+	
 	import mx.collections.ArrayCollection;
 	
 	import spark.components.IconPlacement;
-	import main.MarkerPortalEvent;
 	
 	public class MarkerPortal extends Marker
 	{
@@ -31,16 +32,14 @@ package mygoogle
 		private var _options:MarkerOptions = new MarkerOptions();
 		private var _isSelected:Boolean = false;
 		
-		public function MarkerPortal(latLng:LatLng)
+		public function MarkerPortal(portal:Portal)
 		{		
 			_options.icon = new iconeNormal();
 			_options.iconAlignment = MarkerOptions.ALIGN_VERTICAL_CENTER;
 			_options.iconOffset = new Point(-20, -5);
 			
-			_portal = new Portal();
-			_portal.latitude = latLng.lat();
-			_portal.longitude = latLng.lng();
-			super(latLng, _options);
+			_portal = portal;
+			super(portal.latLng, _options);
 			
 			addEventListener(MapMouseEvent.CLICK,selecionarPortal);
 		}
@@ -48,34 +47,12 @@ package mygoogle
 		public function selecionarPortal(event: MapMouseEvent):void //REVER ESSE MÉTODO
 		{
 			var eventObj:MarkerPortalEvent;
-			
-			if(isSelected)
-			{
-				eventObj = new MarkerPortalEvent(MarkerPortalEvent.ANTENA_DESSELECIONADA,this.getLatLng()); // EXTRAIR MÉTODO 'ENVIAR_EVENTO_DESSELECIONADA'
-				dispatchEvent(eventObj);
-			}
-			else
-			{
-			    eventObj = new MarkerPortalEvent(MarkerPortalEvent.ANTENA_SELECIONADA,this.getLatLng()); //TAMBÉM EXTRAIR MÉTODO
-				dispatchEvent(eventObj);
-			}
+			   
+			eventObj = new MarkerPortalEvent(MarkerPortalEvent.PORTAL_CLICK,this);
+			dispatchEvent(eventObj);
 		}
 		
-		public function get lat():Number
-		{
-			return this.getLatLng().lat();
-		}
 		
-		public function get lng():Number
-		{
-			return this.getLatLng().lng();
-		}
-
-		public function get portal():Portal
-		{
-			return _portal;
-		}
-
 		public function get isSelected():Boolean
 		{
 			return _isSelected;
@@ -99,5 +76,21 @@ package mygoogle
 			}
 			
 		}
+		
+		public function get lat():Number
+		{
+			return this.getLatLng().lat();
+		}
+		
+		public function get lng():Number
+		{
+			return this.getLatLng().lng();
+		}
+
+		public function get portal():Portal
+		{
+			return _portal;
+		}
+
 	}
 }

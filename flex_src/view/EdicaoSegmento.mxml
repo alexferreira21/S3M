@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="800" height="218">
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Metadata>
+		[Event(name="sucessoRota", type="mygoogle.events.RotaEvent")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.google.maps.overlays.PolylineOptions;
+			import com.google.maps.services.Directions;
+			import com.google.maps.services.DirectionsEvent;
+			import com.google.maps.styles.StrokeStyle;
+			
+			import entity.Portal;
+			
+			import main.MarkerPortalEvent;
+			
+			import mx.controls.Alert;
+			import mx.core.INavigatorContent;
+			
+			import mygoogle.events.RotaEvent;
+			
+			public static const SEM_EDICAO: int = -1;  
+			public static const EDICAO_PORTAL_ORIGEM: int = 0;  
+			public static const EDICAO_PORTAL_DESTINO: int = 1; 
+			
+			public static const STRING_DEFAULT: String = "-- Selecione um Portal no Mapa --"; 
+			
+			public var emSelecaoPortal: int = SEM_EDICAO;
+			private var portalOrigem: Portal;
+			private var portalDestino: Portal;
+			
+			private var _portalOrigemString: String;
+			private var _portalDestinoString: String;
+			
+			private var rota:Directions;
+			
+			public function selecionarMarkerPortal(event: MarkerPortalEvent):void
+			{	
+				var portalSelecionado: Portal = event.markerPortal.portal;
+				switch (emSelecaoPortal) 
+				{
+					case EDICAO_PORTAL_ORIGEM:
+						portalOrigem = portalSelecionado;
+						portalOrigemString = portalOrigem.nome + " " + portalOrigem.municipio.nome + ", " + portalOrigem.municipio.uf.sigla;
+						break;
+					case EDICAO_PORTAL_DESTINO:
+						portalDestino = portalSelecionado;
+						portalDestinoString = portalDestino.nome + " " + portalDestino.municipio.nome + ", " + portalDestino.municipio.uf.sigla;
+						lbPortalDestino.text = portalSelecionado.nome + " " + portalSelecionado.municipio.nome + ", " + portalSelecionado.municipio.uf.sigla;
+						break;
+				}
+			}
+			
+			
+			protected function btSelecionarPortalOrigem_clickHandler(event:MouseEvent):void
+			{
+				if(emSelecaoPortal == SEM_EDICAO)
+				{
+					emSelecaoPortal = EDICAO_PORTAL_ORIGEM;
+					vsPortalOrigem.selectedChild = INavigatorContent(vsPortalOrigem.getChildByName("labelPortalOrigem"));
+				}
+				else
+				{
+					Alert.show("Você deve selecionar um Portal de cada vez");
+				}
+			}
+			
+			protected function btSelecionarPortalDestino_clickHandler(event:MouseEvent):void
+			{
+				if(emSelecaoPortal == SEM_EDICAO)
+				{
+					emSelecaoPortal = EDICAO_PORTAL_DESTINO;
+					vsPortalDestino.selectedChild = INavigatorContent(vsPortalDestino.getChildByName("labelPortalDestino"));
+				}
+				else
+				{
+					Alert.show("Você deve selecionar um Portal de cada vez");
+				}
+			}
+			
+			
+			protected function btVoltarPortalOrigem_clickHandler():void
+			{
+				vsPortalOrigem.selectedChild = INavigatorContent(vsPortalOrigem.getChildByName('botaoSelecionarPortalOrigem')); 
+				portalOrigem = null;
+				emSelecaoPortal= SEM_EDICAO;			
+			}
+			
+			protected function btVoltarPortalDestino_clickHandler():void
+			{
+				vsPortalDestino.selectedChild = INavigatorContent(vsPortalDestino.getChildByName('botaoSelecionarPortalDestino')); 
+				portalDestino = null;
+				emSelecaoPortal= SEM_EDICAO				
+			}
+			
+			[Bindable]
+			private function get portalOrigemString(): String
+			{
+				if(portalOrigem == null)
+				{
+					return STRING_DEFAULT;
+				}
+				else
+				{
+					return _portalOrigemString
+				}
+			}
+			
+			private function set portalOrigemString(value: String): void
+			{
+				_portalOrigemString = value;
+			}
+			
+			[Bindable]
+			private function get portalDestinoString(): String
+			{
+				if(portalDestino == null)
+				{
+					return STRING_DEFAULT;
+				}
+				else
+				{
+					return _portalDestinoString
+				}
+			}
+			
+			private function set portalDestinoString(value: String):void
+			{
+				_portalDestinoString = value;	
+			}
+			
+			protected function btCriarSegmento_clickHandler(event:MouseEvent):void
+			{
+				var waypoints: Array = new Array(portalOrigem.latLng,portalDestino.latLng);
+
+				rota = new Directions();
+				
+				rota.addEventListener(DirectionsEvent.DIRECTIONS_SUCCESS,sucessoRota);
+				rota.addEventListener(DirectionsEvent.DIRECTIONS_FAILURE,falhaRota);	
+				
+				rota.loadFromWaypoints(waypoints);
+			}
+			
+			protected function sucessoRota(event:DirectionsEvent):void{
+				emSelecaoPortal = SEM_EDICAO;
+				portalOrigem = null;
+				portalDestino = null;
+				lbPortalOrigem.text = STRING_DEFAULT;
+				lbPortalDestino.text = STRING_DEFAULT;
+				btVoltarPortalDestino_clickHandler();
+				btVoltarPortalOrigem_clickHandler();
+				
+				
+				
+				var eventObj:RotaEvent;
+				
+				eventObj = new RotaEvent(RotaEvent.SUCESSO_ROTA,event.directions);
+				dispatchEvent(eventObj);
+			}
+			
+			protected function falhaRota(event:DirectionsEvent):void{
+				trace("falha"); 	
+			}
+			
+			
+		]]>
+	</fx:Script>
+	
+	
+	<s:FormItem label="Nome do Segmento">
+		<s:TextInput id="tiNomeSegmento"/>
+	</s:FormItem>
+	
+	<s:Label id="lbPO" x="10" y="63" text="Portal Origem:"/>
+	<mx:ViewStack id="vsPortalOrigem" x="99" y="56">
+		<s:NavigatorContent id="botaoSelecionarPortalOrigem">
+			<s:Button id="btSelecionarPortalOrigem" x="1" y="1" label="Selecionar" click="btSelecionarPortalOrigem_clickHandler(event)"/>
+		</s:NavigatorContent>
+		
+		<s:NavigatorContent id="labelPortalOrigem">
+			<s:HGroup>
+				<s:Label id="lbPortalOrigem" text="{portalOrigemString}"/> 
+				<s:Label text="KM: " />
+				<s:TextInput id="tiKmOrigem" width="34"/>
+				<s:Button id="btOkPortalOrigem" label="OK" click="{emSelecaoPortal = SEM_EDICAO}"/>
+				<s:Button id="btVoltarPortalOrigem" label="voltar" click="btVoltarPortalOrigem_clickHandler()"/>
+			</s:HGroup>
+		</s:NavigatorContent>
+	</mx:ViewStack>
+	
+	<s:Label id="lbPD" x="10" y="95" text="Portal Destino:"/>
+	<mx:ViewStack id="vsPortalDestino" x="100" y="86">
+		<s:NavigatorContent id="botaoSelecionarPortalDestino">
+			<s:Button id="btSelecionarPortalDestino" x="0" y="0" label="Selecionar" click="btSelecionarPortalDestino_clickHandler(event)"/>
+		</s:NavigatorContent>
+		
+		<s:NavigatorContent id="labelPortalDestino">
+			<s:HGroup>
+				<s:Label id="lbPortalDestino" text="{portalDestinoString}"/> 
+				<s:Label text="KM: " />
+				<s:TextInput id="tiKmDestino" width="34"/>
+				<s:Button id="btOkPortalDestino" label="Ok" click="{emSelecaoPortal = SEM_EDICAO}"/>
+				<s:Button id="btVoltarPortalDestino" label="Voltar" click="btVoltarPortalDestino_clickHandler()"/>
+			</s:HGroup>
+		</s:NavigatorContent>
+	</mx:ViewStack>
+	
+	<s:Button id="btCriarSegmento" x="9" y="127" label="Salvar Segmento"
+			  click="btCriarSegmento_clickHandler(event)"/>
+	
+</s:Group>

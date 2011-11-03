@@ -1,21 +1,23 @@
 package main
 {
-	import com.google.maps.LatLng;
 	
 	import flash.events.Event;
+	
+	import mygoogle.MarkerPortal;
 	
 	public class MarkerPortalEvent extends Event
 	{
 		
-		public static const ANTENA_SELECIONADA:String = "antenaSelecionada"
-		public static const ANTENA_DESSELECIONADA:String = "antenaDesselecionada"
+		public static const PORTAL_CLICK:String = "portalClick"
+		public static const PORTAL_SELECIONADO:String = "portalSelecionado"
+		public static const PORTAL_DESSELECIONADO:String = "portalDesselecionado"
+			
+		public var markerPortal:MarkerPortal;
 			
 			
-		public var latLng:LatLng;
-		
-		public function MarkerPortalEvent(type:String, latLng:LatLng, bubbles:Boolean=true, cancelable:Boolean=false)
+		public function MarkerPortalEvent(type:String, markerPortal:MarkerPortal, bubbles:Boolean=true, cancelable:Boolean=false)
 		{
-			this.latLng = latLng;
+			this.markerPortal = markerPortal;
 			super(type, bubbles, cancelable);
 		}
 	}
