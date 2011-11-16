@@ -29,14 +29,22 @@ public class Estrada {
 	@JoinTable(name="tb_rel_estrada_uf",
 			joinColumns={@JoinColumn(name="idEstrada")}, 
 			inverseJoinColumns={@JoinColumn(name="idUF")})
-	private List<UF> uf;
-	 
+	private List<UF> ufs;
+	
 	@OneToMany(targetEntity=Segmento.class, mappedBy="estrada", 
 	cascade = CascadeType.ALL, fetch=FetchType.LAZY)
-	private List<Segmento> segmento;
-	 
+	private List<Segmento> segmentos;
 	
 	
+	public Long getIdEstrada() {
+		return idEstrada;
+	}
+
+	public void setIdEstrada(Long idEstrada) {
+		this.idEstrada = idEstrada;
+	}
+
+
 	public void getPrimeiroSegmento() {
 	 
 	}
@@ -73,20 +81,20 @@ public class Estrada {
 		this.numeroSegmentos = numeroSegmentos;
 	}
 
-	public List<UF> getUf() {
-		return uf;
+	public List<UF> getUfs() {
+		return ufs;
 	}
 
-	public void setUf(List<UF> uf) {
-		this.uf = uf;
+	public void setUfs(List<UF> ufs) {
+		this.ufs = ufs;
 	}
 
-	public List<Segmento> getSegmento() {
-		return segmento;
+	public List<Segmento> getSegmentos() {
+		return segmentos;
 	}
 
-	public void setSegmento(List<Segmento> segmento) {
-		this.segmento = segmento;
+	public void setSegmentos(List<Segmento> segmento) {
+		this.segmentos = segmento;
 	}
 	 
 }

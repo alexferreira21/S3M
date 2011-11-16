@@ -24,7 +24,7 @@ package controller
 	
 	import mygoogle.MarkerPortal;
 	
-	public class IncluirPortalController
+	public class PortalController
 	{
 		
 		private var portalService: RemoteObject = new RemoteObject("portalService");
@@ -43,7 +43,7 @@ package controller
 		
 
 		
-		public function IncluirPortalController()
+		public function PortalController()
 		{
 			
 			var ufDataProviderToken: AsyncToken = portalService.getUFDataProvider();

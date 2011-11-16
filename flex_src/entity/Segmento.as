@@ -1,11 +1,13 @@
 package entity
 {
+	[RemoteClass(alias="entity.Segmento")]
 	public class Segmento
 	{
 		
-		private var _idSegmento: int;
+		private var _idSegmento: Number;
 		private var _nome: String;
-		private var _km: int;
+		private var _kmInicial: int;
+		private var _kmFinal: int;
 		private var _portalOrigem: Portal;
 		private var _portalDestino: Portal;
 		private var _estrada: Estrada;
@@ -16,12 +18,12 @@ package entity
 		{
 		}
 
-		public function get idSegmento():int
+		public function get idSegmento():Number
 		{
 			return _idSegmento;
 		}
 
-		public function set idSegmento(value:int):void
+		public function set idSegmento(value:Number):void
 		{
 			_idSegmento = value;
 		}
@@ -34,16 +36,6 @@ package entity
 		public function set nome(value:String):void
 		{
 			_nome = value;
-		}
-
-		public function get km():int
-		{
-			return _km;
-		}
-
-		public function set km(value:int):void
-		{
-			_km = value;
 		}
 
 		public function get portalOrigem():Portal
@@ -74,6 +66,26 @@ package entity
 		public function set estrada(value:Estrada):void
 		{
 			_estrada = value;
+		}
+
+		public function get kmInicial():int
+		{
+			return _kmInicial;
+		}
+
+		public function set kmInicial(value:int):void
+		{
+			_kmInicial = value;
+		}
+
+		public function get kmFinal():int
+		{
+			return _kmFinal;
+		}
+
+		public function set kmFinal(value:int):void
+		{
+			_kmFinal = value;
 		}
 
 

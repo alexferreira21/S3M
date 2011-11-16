@@ -9,22 +9,17 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import com.google.maps.LatLng;
 			import com.google.maps.MapMouseEvent;
-			import com.google.maps.services.ClientGeocoder;
-			import com.google.maps.services.GeocodingEvent;
-			import com.google.maps.services.Placemark;
 			
-			import controller.IncluirPortalController;
+			import controller.PortalController;
 			
 			import entity.Equipamento;
 			import entity.Municipio;
 			import entity.Portal;
 			import entity.UF;
 			
-			import main.MarkerPortalEvent;
+			import mygoogle.events.MarkerPortalEvent;
 			
-			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.EventPriority;
@@ -36,10 +31,8 @@
 			import mygoogle.MarkerPortal;
 			import mygoogle.events.MapaEvent;
 			
-			import util.UFUtil;
-			
 			[Bindable]
-			private var portalController: IncluirPortalController = new IncluirPortalController(); //FAZER UMA INTERFACE CONTROLLER;
+			private var portalController: PortalController = new PortalController(); //FAZER UMA INTERFACE CONTROLLER;
 			private var emEdicao: Boolean = false;
 			private var _markerSelecionado: MarkerPortal;
 			
@@ -242,6 +235,12 @@
 			}
 			
 			
+			protected function itemDoubleClickHandler(event:ListEvent):void
+			{
+				var portalSelecionado: Portal = Portal(ArrayCollection(dgPortais.dataProvider).getItemAt(event.rowIndex));
+				mapa.map.setCenter(portalSelecionado.latLng);
+			}
+			
 		]]>
 	</fx:Script>
 	
@@ -272,7 +271,7 @@
 					<s:Spacer width="200"/> 
 					
 					<mx:DataGrid id="dgPortais"  doubleClickEnabled="true" dataProvider="{portalController.portais}"
-								 width="100%" itemClick="selecionarPortalNoDatagrid(event)">
+								 width="100%" itemClick="selecionarPortalNoDatagrid(event)" itemDoubleClick="itemDoubleClickHandler(event)">
 						<mx:columns>
 							<mx:DataGridColumn dataField="nome" headerText="Nome"/>
 							<mx:DataGridColumn dataField="latitude" headerText="Latitude"/>

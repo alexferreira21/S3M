@@ -10,7 +10,6 @@
         </excludedEntries>
       </libraryPathEntry>
       <libraryPathEntry kind="1" linkType="1" path="libs"/>
-      <libraryPathEntry kind="1" linkType="1" path="C:/Users/Alexandre/Projeto Final/Dados/swiz-framework-v1.3.1"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>

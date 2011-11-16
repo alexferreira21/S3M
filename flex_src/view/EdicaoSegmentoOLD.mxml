@@ -20,7 +20,7 @@
 			
 			import entity.Portal;
 			
-			import main.MarkerPortalEvent;
+			import mygoogle.events.MarkerPortalEvent;
 			
 			import mx.controls.Alert;
 			import mx.core.INavigatorContent;
@@ -174,46 +174,51 @@
 		]]>
 	</fx:Script>
 	
-	
-	<s:FormItem label="Nome do Segmento">
-		<s:TextInput id="tiNomeSegmento"/>
-	</s:FormItem>
-	
-	<s:Label id="lbPO" x="10" y="63" text="Portal Origem:"/>
-	<mx:ViewStack id="vsPortalOrigem" x="99" y="56">
-		<s:NavigatorContent id="botaoSelecionarPortalOrigem">
-			<s:Button id="btSelecionarPortalOrigem" x="1" y="1" label="Selecionar" click="btSelecionarPortalOrigem_clickHandler(event)"/>
-		</s:NavigatorContent>
+	<s:VGroup>
 		
-		<s:NavigatorContent id="labelPortalOrigem">
-			<s:HGroup>
-				<s:Label id="lbPortalOrigem" text="{portalOrigemString}"/> 
-				<s:Label text="KM: " />
-				<s:TextInput id="tiKmOrigem" width="34"/>
-				<s:Button id="btOkPortalOrigem" label="OK" click="{emSelecaoPortal = SEM_EDICAO}"/>
-				<s:Button id="btVoltarPortalOrigem" label="voltar" click="btVoltarPortalOrigem_clickHandler()"/>
-			</s:HGroup>
-		</s:NavigatorContent>
-	</mx:ViewStack>
-	
-	<s:Label id="lbPD" x="10" y="95" text="Portal Destino:"/>
-	<mx:ViewStack id="vsPortalDestino" x="100" y="86">
-		<s:NavigatorContent id="botaoSelecionarPortalDestino">
-			<s:Button id="btSelecionarPortalDestino" x="0" y="0" label="Selecionar" click="btSelecionarPortalDestino_clickHandler(event)"/>
-		</s:NavigatorContent>
+		<s:FormItem label="Nome do Segmento">
+			<s:TextInput id="tiNomeSegmento"/>
+		</s:FormItem>
 		
-		<s:NavigatorContent id="labelPortalDestino">
-			<s:HGroup>
-				<s:Label id="lbPortalDestino" text="{portalDestinoString}"/> 
-				<s:Label text="KM: " />
-				<s:TextInput id="tiKmDestino" width="34"/>
-				<s:Button id="btOkPortalDestino" label="Ok" click="{emSelecaoPortal = SEM_EDICAO}"/>
-				<s:Button id="btVoltarPortalDestino" label="Voltar" click="btVoltarPortalDestino_clickHandler()"/>
-			</s:HGroup>
-		</s:NavigatorContent>
-	</mx:ViewStack>
-	
-	<s:Button id="btCriarSegmento" x="9" y="127" label="Salvar Segmento"
-			  click="btCriarSegmento_clickHandler(event)"/>
+		<s:Label id="lbPO" text="Portal Origem:"/>
+		<mx:ViewStack id="vsPortalOrigem">
+			<s:NavigatorContent id="botaoSelecionarPortalOrigem">
+				<s:Button id="btSelecionarPortalOrigem" label="Selecionar" click="btSelecionarPortalOrigem_clickHandler(event)"/>
+			</s:NavigatorContent>
+			
+			<s:NavigatorContent id="labelPortalOrigem">
+				<s:HGroup>
+					<s:Label id="lbPortalOrigem" text="{portalOrigemString}"/> 
+					<s:Label text="KM: " />
+					<s:TextInput id="tiKmOrigem" width="34"/>
+					<s:Button id="btOkPortalOrigem" label="OK" click="{emSelecaoPortal = SEM_EDICAO}"/>
+					<s:Button id="btVoltarPortalOrigem" label="voltar" click="btVoltarPortalOrigem_clickHandler()"/>
+				</s:HGroup>
+			</s:NavigatorContent>
+		</mx:ViewStack>
+		
+		<s:Label id="lbPD" text="Portal Destino:"/>
+		<mx:ViewStack id="vsPortalDestino">
+			<s:NavigatorContent id="botaoSelecionarPortalDestino">
+				<s:Button id="btSelecionarPortalDestino" label="Selecionar" click="btSelecionarPortalDestino_clickHandler(event)"/>
+			</s:NavigatorContent>
+			
+			<s:NavigatorContent id="labelPortalDestino">
+				<s:HGroup>
+					<s:Label id="lbPortalDestino" text="{portalDestinoString}"/> 
+					<s:Label text="KM: " />
+					<s:TextInput id="tiKmDestino" width="34"/>
+					<s:Button id="btOkPortalDestino" label="Ok" click="{emSelecaoPortal = SEM_EDICAO}"/>
+					<s:Button id="btVoltarPortalDestino" label="Voltar" click="btVoltarPortalDestino_clickHandler()"/>
+				</s:HGroup>
+			</s:NavigatorContent>
+		</mx:ViewStack>
+		
+		<s:HGroup>
+			<s:Button id="btCriarSegmento" label="Salvar Segmento" click="btCriarSegmento_clickHandler(event)"/>
+			<s:Button id="btCancelar" label="Cancelar" />
+		</s:HGroup>
+				  
+	</s:VGroup>
 	
 </s:Group>

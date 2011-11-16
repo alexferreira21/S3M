@@ -1,7 +1,10 @@
 package entity
 {
+	import com.google.maps.interfaces.IPolyline;
+	
 	import mx.collections.ArrayCollection;
 
+	[RemoteClass(alias="entity.Estrada")]
 	public class Estrada
 	{
 		
@@ -9,8 +12,11 @@ package entity
 		private var _idEstrada:Number;
 		private var _nome:String;
 		private var _numeroSegmentos: int;
-		private var _uf : ArrayCollection;
-		private var _segmento: ArrayCollection;
+		private var _ufs : ArrayCollection;
+		private var _segmentos: ArrayCollection;
+		
+		
+		private var _polyline:IPolyline;
 		
 		
 		
@@ -53,25 +59,36 @@ package entity
 		}
 
 		[Bindable]
-		public function get uf():ArrayCollection
+		public function get ufs():ArrayCollection
 		{
-			return _uf;
+			return _ufs;
 		}
 
-		public function set uf(value:ArrayCollection):void
+		public function set ufs(value:ArrayCollection):void
 		{
-			_uf = value;
+			_ufs = value;
 		}
 
 		[Bindable]
-		public function get segmento():ArrayCollection
+		public function get segmentos():ArrayCollection
 		{
-			return _segmento;
+			return _segmentos;
 		}
 
-		public function set segmento(value:ArrayCollection):void
+		public function set segmentos(value:ArrayCollection):void
 		{
-			_segmento = value;
+			_segmentos = value;
+		}
+
+		
+		public function get polyline():IPolyline
+		{
+			return _polyline;
+		}
+
+		public function set polyline(value:IPolyline):void
+		{
+			_polyline = value;
 		}
 
 

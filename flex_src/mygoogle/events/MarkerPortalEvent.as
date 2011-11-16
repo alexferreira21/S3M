@@ -1,4 +1,4 @@
-package main
+package mygoogle.events
 {
 	
 	import flash.events.Event;
@@ -8,9 +8,9 @@ package main
 	public class MarkerPortalEvent extends Event
 	{
 		
-		public static const PORTAL_CLICK:String = "portalClick"
-		public static const PORTAL_SELECIONADO:String = "portalSelecionado"
-		public static const PORTAL_DESSELECIONADO:String = "portalDesselecionado"
+		public static const PORTAL_CLICK:String = "portalClick";
+		public static const PORTAL_SELECIONADO:String = "portalSelecionado";
+		public static const PORTAL_DESSELECIONADO:String = "portalDesselecionado";
 			
 		public var markerPortal:MarkerPortal;
 			

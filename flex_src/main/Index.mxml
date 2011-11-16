@@ -4,9 +4,10 @@
 			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:view="view.*">
 	<fx:Script>
 		<![CDATA[
+			import mx.controls.Alert;
 			import mx.core.INavigatorContent;
+			import mx.events.FlexEvent;
 			
-						
 		]]>
 	</fx:Script>
 
@@ -28,7 +29,7 @@
 		</s:NavigatorContent>
 		
 		<s:NavigatorContent id="incluirPortais">
-			<view:IncluirPortalView voltarEvent="{vs.selectedIndex = 0}" />
+			<view:GerencialPortalView voltarEvent="{vs.selectedIndex = 0}" />
 		</s:NavigatorContent>
 		
 		<s:NavigatorContent id="gerenciarEstradas">

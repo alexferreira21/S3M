@@ -9,47 +9,202 @@
 	
 	<fx:Script>
 		<![CDATA[
+			import com.google.maps.interfaces.IPolyline;
 			import com.google.maps.overlays.PolylineOptions;
+			import com.google.maps.services.Directions;
 			import com.google.maps.services.DirectionsEvent;
 			import com.google.maps.styles.StrokeStyle;
 			
-			import controller.IncluirPortalController;
+			import controller.EstradaController;
+			import controller.PortalController;
 			
+			import entity.Estrada;
 			import entity.Portal;
+			import entity.Segmento;
+			import entity.UF;
 			
-			import main.MarkerPortalEvent;
+			import evento.SegmentoEvent;
 			
+			import model.BaseModel;
+			
+			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.INavigatorContent;
+			import mx.events.CloseEvent;
+			import mx.events.ColorPickerEvent;
+			import mx.events.FlexEvent;
 			
 			import mygoogle.MarkerPortal;
 			import mygoogle.events.MapaEvent;
+			import mygoogle.events.MarkerPortalEvent;
 			import mygoogle.events.RotaEvent;
 			
+			private var rota:Directions;
+			private var corDefault:PolylineOptions = new PolylineOptions({ strokeStyle: new StrokeStyle({color: 0x000000, thickness: 4, alpha: 1})});
 			
 			[Bindable]
-			private var portalController: IncluirPortalController = new IncluirPortalController(); //FAZER UMA INTERFACE CONTROLLER;
+			private var estradaEmEdicao: Estrada;
 			
-			private var linhaPreta:PolylineOptions = new PolylineOptions({ strokeStyle: new StrokeStyle({color: 0x000000, thickness: 4, alpha: 1})});
+			[Bindable]
+			private var estradaController: EstradaController = new EstradaController();
 			
-			protected function mapaProntoHandler(event:MapaEvent):void
+		 	protected function mapaProntoHandler(event:MapaEvent):void
 			{
 				for each (var markerPortalItem: MarkerPortal in mapa.markers)
 				{
 					markerPortalItem.addEventListener(MarkerPortalEvent.PORTAL_CLICK,selecionarMarkerPortal);
-				}						
+				}	
 			}
 			
-			public function selecionarMarkerPortal(event: MarkerPortalEvent):void
+			 public function selecionarMarkerPortal(event: MarkerPortalEvent):void
 			{
 				edicaoSegmento.selecionarMarkerPortal(event);
+			} 
+			
+			
+			protected function adionarSegmento(event: SegmentoEvent):void
+			{
+				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName('edicaoEstrada'));
+				
+				estradaEmEdicao.segmentos.addItem(event.segmento);
+				
+				atualizarEstados();
+				
+				rota = new Directions();
+				rota.addEventListener(DirectionsEvent.DIRECTIONS_SUCCESS,criarPolyline);
+				rota.addEventListener(DirectionsEvent.DIRECTIONS_FAILURE,falhaRota);	
+				
+				var waypoints: ArrayCollection = new ArrayCollection();
+				for each (var segmentoItem: Segmento in estradaEmEdicao.segmentos)
+				{
+					waypoints.addItem(segmentoItem.portalOrigem.latLng);
+					waypoints.addItem(segmentoItem.portalDestino.latLng);
+				}
+				
+				rota.loadFromWaypoints(waypoints.toArray());
+			} 
+			
+			private function atualizarEstados():void
+			{
+				var encontrou: Boolean = false;
+				
+				for each (var segmentoItem: Segmento in estradaEmEdicao.segmentos)
+				{
+					var ufs: ArrayCollection = new ArrayCollection();
+					ufs.addItemAt(segmentoItem.portalOrigem.municipio.uf,0);
+					ufs.addItemAt(segmentoItem.portalDestino.municipio.uf,1);
+					
+					if(estradaEmEdicao.ufs.length == 0)
+					{
+						estradaEmEdicao.ufs.addItem(segmentoItem.portalOrigem.municipio.uf);
+					}
+					
+					var i:int;
+					for(i=0; i<2 ; i++)
+					{
+						for each(var ufItem:UF in estradaEmEdicao.ufs)
+						{
+							var ufComparada: UF = UF(ufs.getItemAt(i));
+							if(ufItem.idUF != ufComparada.idUF)
+							{
+								estradaEmEdicao.ufs.addItem(ufComparada);
+								break;
+							}
+						}
+					}
+					
+				}
+				lbEstados.text = estradaEmEdicao.ufs.toString();
+			}
+			
+			private function criarPolyline(event: DirectionsEvent):void
+			{
+				estradaEmEdicao.polyline = event.directions.createPolyline(corDefault);
+				mapa.map.addOverlay(estradaEmEdicao.polyline);
+			}
+			
+			protected function falhaRota(event:DirectionsEvent):void{
+				Alert.show("Não foi possível desemhar estrada. Houve um erro na comunicação com os servidores Google.")
+				trace("falha"); 	
+			}
+			
+			protected function voltarParaExibicao_Handler():void
+			{
+				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("edicaoEstrada"));
 			}
 			
 			
-			protected function edicaoSegmento_sucessoRotaHandler(event: RotaEvent):void
+			protected function novoSegmento():void
 			{
-				mapa.map.addOverlay(event.direction.createPolyline(linhaPreta));	
-				vsEstradas.selectedChild = INavigatorContent(vsEstradas.getChildByName('exibicaoEstradas'));
+				if(tiNomeEstrada.text == null || tiNomeEstrada.text == "")
+				{
+					Alert.show("Você deve preencher o nome da estrada.");
+					return;
+				}
+				estradaEmEdicao.nome = tiNomeEstrada.text;
+				edicaoSegmento.novoSegmento();
+				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("adicionarSegmentos")); 
+			}
+			
+			protected function salvarEstrada(event:MouseEvent):void
+			{
+				ArrayCollection(dgEstradas.dataProvider).addItem(estradaEmEdicao);
+				estradaController.salvarEstrada(estradaEmEdicao);
+				finalizarEdicao();
+			}
+			
+			protected function mudarCorEstrada(event:ColorPickerEvent):void
+			{
+				mapa.map.removeOverlay(estradaEmEdicao.polyline);
+				
+				var strokeStyle: StrokeStyle = new StrokeStyle();
+				strokeStyle.color = colorPicker.selectedColor;
+				strokeStyle.thickness = 4;
+				strokeStyle.alpha = 1;
+				
+				var polylineOptions = new PolylineOptions();
+				polylineOptions.strokeStyle = strokeStyle;
+				corDefault.strokeStyle=strokeStyle;
+				
+				estradaEmEdicao.polyline.setOptions(polylineOptions);
+				
+				mapa.map.addOverlay(estradaEmEdicao.polyline);
+				
+			}
+			
+			protected function cancelarEdicaoEstrada(event:CloseEvent):void
+			{
+				if (event.detail==Alert.NO)
+				{
+					return;
+				}
+				finalizarEdicao();
+				mapa.map.removeOverlay(estradaEmEdicao.polyline);
+			}
+			
+			private function finalizarEdicao():void
+			{
+				estradaEmEdicao = null;
+				tiNomeEstrada.text = "";
+				corDefault = new PolylineOptions({ strokeStyle: new StrokeStyle({color: 0x000000, thickness: 4, alpha: 1})});
+				
+				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("exibicaoEstradas"));
+			}
+			
+			protected function novaEstrada(event:MouseEvent):void
+			{
+				estradaEmEdicao = new Estrada();
+				estradaEmEdicao.segmentos = new ArrayCollection();
+				estradaEmEdicao.ufs = new ArrayCollection();
+				
+				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("criacaoEstrada"));
+			}
+			
+			protected function cancelar_clickHandler(event:MouseEvent):void
+			{
+				Alert.yesLabel = "Sim";
+				Alert.noLabel = "Não";
+				Alert.show('Tem certeza de que deseja cancelar a edição','Cancelar Edilçao',3,this,cancelarEdicaoEstrada);
 			}
 			
 		]]>
@@ -61,20 +216,73 @@
 	<s:VGroup height="100%" width="100%">
 		<mygoogle:Mapa id="mapa"  height="80%" width="100%" mapaPronto="mapaProntoHandler(event)"/>
 		
-		<mx:ViewStack id="vsEstradas" y="413" width="1515" height="177">
+		<mx:ViewStack id="vsEstrada" width="100%" height="20%" creationPolicy="all">
+			
 			<s:NavigatorContent id="exibicaoEstradas">
 				<s:HGroup>
-					<s:Button id="novaEstrada" label="Nova Estrada" click="{vsEstradas.selectedChild = INavigatorContent(vsEstradas.getChildByName('edicaoEstradas'))}"/>
-					<s:Button id="btVoltar" label="Voltar" click="{dispatchEvent(new Event('voltarEvent'))}"/>
-					<s:DataGrid id="dgEstradas">
-						
-					</s:DataGrid>
+					<s:Button id="btNovaEstrada" width="111" height="70" label="Nova Estrada"  click="novaEstrada(event)"/>
+					<s:Button id="btVoltar" width="111" height="69" label="Voltar"  click="{dispatchEvent(new Event('voltarEvent',true))}"/>
+					<mx:DataGrid id="dgEstradas" dataProvider="{estradaController.estradas}">
+						<mx:columns>
+							<mx:DataGridColumn dataField="nome" headerText="Nome"/> 
+							<mx:DataGridColumn dataField="segmentos.length" headerText="Numero de Segmentos"/> 
+							<mx:DataGridColumn dataField="ufs" headerText="Estados"/> 
+						</mx:columns>
+					</mx:DataGrid>
 				</s:HGroup>
 			</s:NavigatorContent>
 			
-			<s:NavigatorContent id="edicaoEstradas">
-				<view:EdicaoSegmento id="edicaoSegmento" sucessoRota="edicaoSegmento_sucessoRotaHandler(event)"/>
-				
+			<s:NavigatorContent id="criacaoEstrada">
+				<s:VGroup>
+					<s:FormItem label="Nome da Estrada">
+						<s:TextInput id="tiNomeEstrada"/>
+					</s:FormItem>
+					<s:HGroup>
+						<s:Button id="btAdicionarSegmentos" label="Adicionar Segmentos" click="novoSegmento()"/>
+						<s:Button id="btVoltarParaExibicao" label="Voltar" click="voltarParaExibicao_Handler()"/>			
+					</s:HGroup>
+				</s:VGroup>
+			</s:NavigatorContent>
+			
+			<s:NavigatorContent id="edicaoEstrada">
+				<s:HGroup>
+					<s:VGroup>
+						<s:HGroup>
+							<s:FormItem label="Nome da Estrada">
+								<s:Label id="lbNomeEstrada" text="{estradaEmEdicao.nome}"/>
+							</s:FormItem>
+							
+							<s:FormItem label="Estados">
+								<s:Label id="lbEstados"/>
+							</s:FormItem>
+						</s:HGroup>
+						<s:FormItem label="Cor">
+							<mx:ColorPicker id="colorPicker" change="mudarCorEstrada(event)"/>
+						</s:FormItem>
+						<s:HGroup>
+							<s:Button  label="Salvar"  click="salvarEstrada(event)"/>
+							<s:Button  label="Cancelar"  click="cancelar_clickHandler(event)"/>
+						</s:HGroup>
+					</s:VGroup>	
+						
+					
+					<mx:DataGrid id="dgSegmentos" dataProvider="{estradaEmEdicao.segmentos}">
+						<mx:columns>
+							<mx:DataGridColumn dataField="nome" headerText="Nome"/>
+							<mx:DataGridColumn dataField="kmInicial" headerText="KM Inicial"/>
+							<mx:DataGridColumn dataField="portalOrigem.nome" headerText="Portal Origem"/>
+							<mx:DataGridColumn dataField="kmFinal" headerText="KM Final"/>
+							<mx:DataGridColumn dataField="portalDestino.nome" headerText="Portal Destino"/>
+						</mx:columns>
+					</mx:DataGrid>
+					
+					<s:Button label="Adicionar Segmento" click="novoSegmento()" width="138" height="70"/>
+					
+				</s:HGroup>
+			</s:NavigatorContent>
+			
+			<s:NavigatorContent id="adicionarSegmentos" >
+				<view:EditarSegmentos id="edicaoSegmento" voltar="voltarParaExibicao_Handler()" adcionarSegmento="adionarSegmento(event)"/>
 			</s:NavigatorContent>
 			
 			

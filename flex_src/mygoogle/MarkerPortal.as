@@ -12,7 +12,7 @@ package mygoogle
 	import flash.geom.Point;
 	import flash.sampler.NewObjectSample;
 	
-	import main.MarkerPortalEvent;
+	import mygoogle.events.MarkerPortalEvent;
 	
 	import mx.collections.ArrayCollection;
 	

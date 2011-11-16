@@ -19,4 +19,10 @@
 		</properties>
 	</destination>
 
+	<destination id="estradaService">
+		<properties>
+			<source>service.EstradaService</source>
+			<scope>application</scope>
+		</properties>
+	</destination>
 </service>
