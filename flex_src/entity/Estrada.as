@@ -1,8 +1,12 @@
 package entity
 {
 	import com.google.maps.interfaces.IPolyline;
+	import com.google.maps.overlays.EncodedPolylineData;
+	import com.google.maps.overlays.Polyline;
+	import com.google.maps.overlays.PolylineOptions;
 	
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
 
 	[RemoteClass(alias="entity.Estrada")]
 	public class Estrada
@@ -16,7 +20,11 @@ package entity
 		private var _segmentos: ArrayCollection;
 		
 		
-		private var _polyline:IPolyline;
+		private var _polylineData:EncodedPolylineData;
+		private var _encodedPolylineString: String;
+		private var _corEstrada: String;
+		
+		private var _polyline: Polyline;
 		
 		
 		
@@ -25,6 +33,15 @@ package entity
 		}
 		
 		
+		public function setPolylineDataComOptions(polyData: EncodedPolylineData, options: PolylineOptions):void
+		{
+			polylineData = polyData;
+			Alert.show("Levels = " + polyData.levels + " NumLevels = " + polyData.numLevels + " Points = " + polyData.points + " ZoomFactor = " + polyData.zoomFactor);
+			polyline = Polyline.fromEncoded(polylineData,options);
+			corEstrada = options.strokeStyle.color.toString();
+		}
+		
+
 		[Bindable]
 		public function get idEstrada():Number
 		{
@@ -81,14 +98,35 @@ package entity
 		}
 
 		
-		public function get polyline():IPolyline
+		public function get polylineData():EncodedPolylineData
+		{
+			return _polylineData;
+		}
+
+		public function set polylineData(value:EncodedPolylineData):void
+		{
+			_polylineData = value;
+		}
+		
+		
+		public function get polyline():Polyline
 		{
 			return _polyline;
 		}
-
-		public function set polyline(value:IPolyline):void
+		
+		public function set polyline(value:Polyline):void
 		{
 			_polyline = value;
+		}
+
+		public function get corEstrada():String
+		{
+			return _corEstrada;
+		}
+
+		public function set corEstrada(value:String):void
+		{
+			_corEstrada = value;
 		}
 
 

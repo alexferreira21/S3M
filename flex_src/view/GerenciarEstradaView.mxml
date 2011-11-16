@@ -9,38 +9,32 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import com.google.maps.interfaces.IPolyline;
+			import com.google.maps.overlays.Polyline;
 			import com.google.maps.overlays.PolylineOptions;
 			import com.google.maps.services.Directions;
 			import com.google.maps.services.DirectionsEvent;
 			import com.google.maps.styles.StrokeStyle;
 			
 			import controller.EstradaController;
-			import controller.PortalController;
 			
 			import entity.Estrada;
-			import entity.Portal;
 			import entity.Segmento;
 			import entity.UF;
 			
 			import evento.SegmentoEvent;
-			
-			import model.BaseModel;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.INavigatorContent;
 			import mx.events.CloseEvent;
 			import mx.events.ColorPickerEvent;
-			import mx.events.FlexEvent;
 			
 			import mygoogle.MarkerPortal;
 			import mygoogle.events.MapaEvent;
 			import mygoogle.events.MarkerPortalEvent;
-			import mygoogle.events.RotaEvent;
 			
 			private var rota:Directions;
-			private var corDefault:PolylineOptions = new PolylineOptions({ strokeStyle: new StrokeStyle({color: 0x000000, thickness: 4, alpha: 1})});
+			private var optionsDefault:PolylineOptions = new PolylineOptions({ strokeStyle: new StrokeStyle({color: 0x000000, thickness: 4, alpha: 1})});
 			
 			[Bindable]
 			private var estradaEmEdicao: Estrada;
@@ -119,7 +113,13 @@
 			
 			private function criarPolyline(event: DirectionsEvent):void
 			{
-				estradaEmEdicao.polyline = event.directions.createPolyline(corDefault);
+				if(estradaEmEdicao.polyline != null)
+				{
+					mapa.map.removeOverlay(estradaEmEdicao.polyline);
+				}
+				
+				estradaEmEdicao.setPolylineDataComOptions(event.directions.encodedPolylineData,optionsDefault);
+				
 				mapa.map.addOverlay(estradaEmEdicao.polyline);
 			}
 			
@@ -162,11 +162,12 @@
 				strokeStyle.thickness = 4;
 				strokeStyle.alpha = 1;
 				
+				
 				var polylineOptions = new PolylineOptions();
 				polylineOptions.strokeStyle = strokeStyle;
-				corDefault.strokeStyle=strokeStyle;
+				optionsDefault.strokeStyle=strokeStyle;
 				
-				estradaEmEdicao.polyline.setOptions(polylineOptions);
+				estradaEmEdicao.setPolylineDataComOptions(estradaEmEdicao.polylineData,polylineOptions);			
 				
 				mapa.map.addOverlay(estradaEmEdicao.polyline);
 				
@@ -178,15 +179,16 @@
 				{
 					return;
 				}
-				finalizarEdicao();
 				mapa.map.removeOverlay(estradaEmEdicao.polyline);
+				finalizarEdicao();
 			}
 			
 			private function finalizarEdicao():void
 			{
 				estradaEmEdicao = null;
 				tiNomeEstrada.text = "";
-				corDefault = new PolylineOptions({ strokeStyle: new StrokeStyle({color: 0x000000, thickness: 4, alpha: 1})});
+				optionsDefault = new PolylineOptions({ strokeStyle: new StrokeStyle({color: 0x000000, thickness: 4, alpha: 1})});
+				colorPicker.selectedColor = 0;
 				
 				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("exibicaoEstradas"));
 			}

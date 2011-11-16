@@ -27,7 +27,7 @@ public class HibernateUtil {
 		.addAnnotatedClass(Estrada.class);
 		config.configure("hibernate.cfg.xml");
 		
-		new SchemaExport(config).create(true, true);
+		//new SchemaExport(config).create(true, true);
 		
 		SessionFactory factory = config.buildSessionFactory();
 		session = factory.openSession();

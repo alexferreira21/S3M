@@ -36,6 +36,11 @@ public class Estrada {
 	private List<Segmento> segmentos;
 	
 	
+	private String corEstrada;
+	
+	private String encodedPolylineString;
+	
+	
 	public Long getIdEstrada() {
 		return idEstrada;
 	}
@@ -95,6 +100,22 @@ public class Estrada {
 
 	public void setSegmentos(List<Segmento> segmento) {
 		this.segmentos = segmento;
+	}
+
+	public String getCorEstrada() {
+		return corEstrada;
+	}
+
+	public void setCorEstrada(String corEstrada) {
+		this.corEstrada = corEstrada;
+	}
+
+	public String getEncodedPolylineString() {
+		return encodedPolylineString;
+	}
+
+	public void setEncodedPolylineString(String encodedPolylineString) {
+		this.encodedPolylineString = encodedPolylineString;
 	}
 	 
 }
