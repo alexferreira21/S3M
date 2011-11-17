@@ -6,6 +6,7 @@ package controller
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
+	import mx.managers.CursorManager;
 	import mx.rpc.AsyncToken;
 	import mx.rpc.Responder;
 	import mx.rpc.events.FaultEvent;
@@ -42,6 +43,16 @@ package controller
 			
 		}
 		
+		public function carregarEstradas(callbackSucesso:Function, callbackFalha:Function):void
+		{
+			var token: AsyncToken; 
+			
+			CursorManager.setBusyCursor();
+			
+			token = estradaService.carregarEstradas();
+			token.addResponder(new mx.rpc.Responder(callbackSucesso, callbackFalha));
+			
+		}
 		
 		
 		

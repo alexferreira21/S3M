@@ -18,11 +18,11 @@
 			import com.google.maps.MapMouseEvent;
 			import com.google.maps.MapOptions;
 			
+			import controller.EstradaController;
 			import controller.PortalController;
 			
+			import entity.Estrada;
 			import entity.Portal;
-			
-			import mygoogle.events.MarkerPortalEvent;
 			
 			import model.BaseModel;
 			
@@ -33,9 +33,13 @@
 			import mx.rpc.events.ResultEvent;
 			
 			import mygoogle.events.MapaEvent;
+			import mygoogle.events.MarkerPortalEvent;
 			
 			[Bindable]
 			private var portalController: PortalController = new PortalController(); //FAZER UMA INTERFACE CONTROLLER;
+			
+			[Bindable]
+			private var estradaController: EstradaController = new EstradaController();
 			
 			public var markers: ArrayCollection = BaseModel.getInstance().markers;
 			
@@ -57,9 +61,29 @@
 				map.enableContinuousZoom();
 				
 				portalController.carregarPortais(carregarPortaisSucesso,carregarPortaisFalha);
+				estradaController.carregarEstradas(carregarEstradasSucesso,carregarEstradasFalha);
 
 			}
-		
+			
+			private function carregarEstradasSucesso(event : ResultEvent) : void 
+			{
+				cursorManager.removeBusyCursor();
+				
+				estradaController.estradas.removeAll();
+				estradaController.estradas.addAll(ArrayCollection(event.result));
+				
+				for each (var estradaItem: Estrada in estradaController.estradas)
+				{
+					estradaItem.stringToData();	
+					map.addOverlay(estradaItem.polyline);
+				}
+			}
+			
+			private function carregarEstradasFalha(event : FaultEvent) : void 
+			{
+				cursorManager.removeBusyCursor();
+				Alert.show(event.fault.message);
+			}
 			
 			protected function mapPreInitialize(event:MapEvent):void
 			{
@@ -76,6 +100,7 @@
 			
 			private function carregarPortaisSucesso(event : ResultEvent) : void 
 			{
+				portalController.portais.removeAll();
 				portalController.portais.addAll(ArrayCollection(event.result));
 				
 				if(portalController.portais.length > 0)

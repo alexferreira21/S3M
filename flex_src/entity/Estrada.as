@@ -7,11 +7,15 @@ package entity
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
+	import mx.utils.ObjectUtil;
+	import mx.validators.EmailValidator;
 
 	[RemoteClass(alias="entity.Estrada")]
 	public class Estrada
 	{
 		
+		private static const IDENT_NAME_PROPERTY:String = "=pn:";
+		private static const IDENT_VALUE_PROPERTY:String = "=pv:";
 		
 		private var _idEstrada:Number;
 		private var _nome:String;
@@ -19,13 +23,9 @@ package entity
 		private var _ufs : ArrayCollection;
 		private var _segmentos: ArrayCollection;
 		
-		
-		private var _polylineData:EncodedPolylineData;
+		private var _polylineData: EncodedPolylineData;		
 		private var _encodedPolylineString: String;
-		private var _corEstrada: String;
-		
-		private var _polyline: Polyline;
-		
+		private var _polyline: IPolyline;
 		
 		
 		public function Estrada()
@@ -33,12 +33,46 @@ package entity
 		}
 		
 		
-		public function setPolylineDataComOptions(polyData: EncodedPolylineData, options: PolylineOptions):void
+		public function dataToString():String
 		{
-			polylineData = polyData;
-			Alert.show("Levels = " + polyData.levels + " NumLevels = " + polyData.numLevels + " Points = " + polyData.points + " ZoomFactor = " + polyData.zoomFactor);
-			polyline = Polyline.fromEncoded(polylineData,options);
-			corEstrada = options.strokeStyle.color.toString();
+			var objectString:String = "";
+			var infoClass:Object = ObjectUtil.getClassInfo(polylineData);
+			var arrProperties:Array = infoClass.properties as Array;
+			for each(var qName:QName in arrProperties)
+			{
+				var nameProperty:String = qName.localName;
+				var valueProperty:String = polylineData[nameProperty].toString();
+				
+				objectString += IDENT_NAME_PROPERTY+nameProperty+IDENT_VALUE_PROPERTY+valueProperty;
+			}
+			
+			return objectString;
+		}
+		
+		public function stringToData():void
+		{
+			var novaPolylineData = new EncodedPolylineData(null,null,null,null);
+			var arrStringProperty:Array = encodedPolylineString.split(IDENT_NAME_PROPERTY);
+			for each(var propertyString:String in arrStringProperty)
+			{
+				if(propertyString != "")
+				{
+					var arrProperty:Array = propertyString.split(IDENT_VALUE_PROPERTY);
+					var nameProperty:String = arrProperty[0];
+					var valueProperty:String = arrProperty[1];
+					
+					if (nameProperty == 'zoomFactor' || nameProperty == 'numLevels')
+					{
+						novaPolylineData[nameProperty] = parseInt(valueProperty);
+					}
+					else
+					{
+						novaPolylineData[nameProperty] = valueProperty;
+					}
+				}
+			}
+			polylineData = novaPolylineData;
+			polyline = Polyline.fromEncoded(polylineData);
 		}
 		
 
@@ -96,8 +130,18 @@ package entity
 		{
 			_segmentos = value;
 		}
-
 		
+
+		public function get encodedPolylineString():String
+		{
+			return _encodedPolylineString;
+		}
+
+		public function set encodedPolylineString(value:String):void
+		{
+			_encodedPolylineString = value;
+		}
+
 		public function get polylineData():EncodedPolylineData
 		{
 			return _polylineData;
@@ -106,27 +150,18 @@ package entity
 		public function set polylineData(value:EncodedPolylineData):void
 		{
 			_polylineData = value;
+			encodedPolylineString = dataToString();
+			polyline = Polyline.fromEncoded(polylineData);
 		}
-		
-		
-		public function get polyline():Polyline
+
+		public function get polyline():IPolyline
 		{
 			return _polyline;
 		}
-		
-		public function set polyline(value:Polyline):void
+
+		public function set polyline(value:IPolyline):void
 		{
 			_polyline = value;
-		}
-
-		public function get corEstrada():String
-		{
-			return _corEstrada;
-		}
-
-		public function set corEstrada(value:String):void
-		{
-			_corEstrada = value;
 		}
 
 

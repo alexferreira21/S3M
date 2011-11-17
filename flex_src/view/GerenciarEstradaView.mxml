@@ -118,7 +118,7 @@
 					mapa.map.removeOverlay(estradaEmEdicao.polyline);
 				}
 				
-				estradaEmEdicao.setPolylineDataComOptions(event.directions.encodedPolylineData,optionsDefault);
+				estradaEmEdicao.polylineData = event.directions.encodedPolylineData;
 				
 				mapa.map.addOverlay(estradaEmEdicao.polyline);
 			}
@@ -167,7 +167,7 @@
 				polylineOptions.strokeStyle = strokeStyle;
 				optionsDefault.strokeStyle=strokeStyle;
 				
-				estradaEmEdicao.setPolylineDataComOptions(estradaEmEdicao.polylineData,polylineOptions);			
+				estradaEmEdicao.polyline.setOptions(polylineOptions);	//AQUI		
 				
 				mapa.map.addOverlay(estradaEmEdicao.polyline);
 				
