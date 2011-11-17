@@ -9,7 +9,6 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import com.google.maps.overlays.Polyline;
 			import com.google.maps.overlays.PolylineOptions;
 			import com.google.maps.services.Directions;
 			import com.google.maps.services.DirectionsEvent;
@@ -28,6 +27,7 @@
 			import mx.core.INavigatorContent;
 			import mx.events.CloseEvent;
 			import mx.events.ColorPickerEvent;
+			import mx.events.ListEvent;
 			
 			import mygoogle.MarkerPortal;
 			import mygoogle.events.MapaEvent;
@@ -108,7 +108,7 @@
 					}
 					
 				}
-				lbEstados.text = estradaEmEdicao.ufs.toString();
+				//lbEstados.text = estradaEmEdicao.ufs.toString();
 			}
 			
 			private function criarPolyline(event: DirectionsEvent):void
@@ -119,6 +119,7 @@
 				}
 				
 				estradaEmEdicao.polylineData = event.directions.encodedPolylineData;
+				estradaEmEdicao.setPolylineOptions(optionsDefault);
 				
 				mapa.map.addOverlay(estradaEmEdicao.polyline);
 			}
@@ -130,7 +131,8 @@
 			
 			protected function voltarParaExibicao_Handler():void
 			{
-				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("edicaoEstrada"));
+				tiNomeEstrada.text=null;
+				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("exibicaoEstradas"));
 			}
 			
 			
@@ -142,7 +144,7 @@
 					return;
 				}
 				estradaEmEdicao.nome = tiNomeEstrada.text;
-				edicaoSegmento.novoSegmento();
+				edicaoSegmento.novoSegmento(estradaEmEdicao);
 				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("adicionarSegmentos")); 
 			}
 			
@@ -167,7 +169,7 @@
 				polylineOptions.strokeStyle = strokeStyle;
 				optionsDefault.strokeStyle=strokeStyle;
 				
-				estradaEmEdicao.polyline.setOptions(polylineOptions);	//AQUI		
+				estradaEmEdicao.setPolylineOptions(polylineOptions);	
 				
 				mapa.map.addOverlay(estradaEmEdicao.polyline);
 				
@@ -179,7 +181,10 @@
 				{
 					return;
 				}
-				mapa.map.removeOverlay(estradaEmEdicao.polyline);
+				if(estradaEmEdicao.polyline != null)
+				{
+					mapa.map.removeOverlay(estradaEmEdicao.polyline);
+				}
 				finalizarEdicao();
 			}
 			
@@ -202,11 +207,19 @@
 				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("criacaoEstrada"));
 			}
 			
-			protected function cancelar_clickHandler(event:MouseEvent):void
+			protected function cancelar_clickHandler():void
 			{
 				Alert.yesLabel = "Sim";
 				Alert.noLabel = "Não";
 				Alert.show('Tem certeza de que deseja cancelar a edição','Cancelar Edilçao',3,this,cancelarEdicaoEstrada);
+			}
+			
+			protected function editarEstrada(event:ListEvent):void
+			{
+				estradaEmEdicao = Estrada(ArrayCollection(dgEstradas.dataProvider).getItemAt(event.rowIndex));
+				
+				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName('edicaoEstrada'));
+				
 			}
 			
 		]]>
@@ -224,7 +237,8 @@
 				<s:HGroup>
 					<s:Button id="btNovaEstrada" width="111" height="70" label="Nova Estrada"  click="novaEstrada(event)"/>
 					<s:Button id="btVoltar" width="111" height="69" label="Voltar"  click="{dispatchEvent(new Event('voltarEvent',true))}"/>
-					<mx:DataGrid id="dgEstradas" dataProvider="{estradaController.estradas}">
+					<mx:DataGrid id="dgEstradas" dataProvider="{estradaController.estradas}" 
+								 doubleClickEnabled="true" itemDoubleClick="editarEstrada(event)">
 						<mx:columns>
 							<mx:DataGridColumn dataField="nome" headerText="Nome"/> 
 							<mx:DataGridColumn dataField="segmentos.length" headerText="Numero de Segmentos"/> 
@@ -255,7 +269,7 @@
 							</s:FormItem>
 							
 							<s:FormItem label="Estados">
-								<s:Label id="lbEstados"/>
+								<s:Label id="lbEstados" text="{estradaEmEdicao.ufs.toString()}"/>
 							</s:FormItem>
 						</s:HGroup>
 						<s:FormItem label="Cor">
@@ -263,7 +277,7 @@
 						</s:FormItem>
 						<s:HGroup>
 							<s:Button  label="Salvar"  click="salvarEstrada(event)"/>
-							<s:Button  label="Cancelar"  click="cancelar_clickHandler(event)"/>
+							<s:Button  label="Cancelar"  click="cancelar_clickHandler()"/>
 						</s:HGroup>
 					</s:VGroup>	
 						

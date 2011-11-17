@@ -2,8 +2,10 @@ package entity
 {
 	import com.google.maps.interfaces.IPolyline;
 	import com.google.maps.overlays.EncodedPolylineData;
+	import com.google.maps.overlays.PolygonOptions;
 	import com.google.maps.overlays.Polyline;
 	import com.google.maps.overlays.PolylineOptions;
+	import com.google.maps.styles.StrokeStyle;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
@@ -23,8 +25,10 @@ package entity
 		private var _ufs : ArrayCollection;
 		private var _segmentos: ArrayCollection;
 		
-		private var _polylineData: EncodedPolylineData;		
 		private var _encodedPolylineString: String;
+
+		private var _corEstrada: Number;
+		private var _polylineData: EncodedPolylineData;		
 		private var _polyline: IPolyline;
 		
 		
@@ -73,6 +77,22 @@ package entity
 			}
 			polylineData = novaPolylineData;
 			polyline = Polyline.fromEncoded(polylineData);
+			
+			var strokeStyle: StrokeStyle = new StrokeStyle();
+			strokeStyle.color = corEstrada;
+			strokeStyle.thickness = 4;
+			strokeStyle.alpha = 1;
+			
+			var polylineOptions = new PolylineOptions();
+			polylineOptions.strokeStyle = strokeStyle;
+			polyline.setOptions(polylineOptions);			
+			
+		}
+		
+		public function setPolylineOptions(options: PolylineOptions):void
+		{
+			polyline.setOptions(options);
+			corEstrada = Number(options.strokeStyle.color);
 		}
 		
 
@@ -162,6 +182,16 @@ package entity
 		public function set polyline(value:IPolyline):void
 		{
 			_polyline = value;
+		}
+
+		public function get corEstrada():Number
+		{
+			return _corEstrada;
+		}
+
+		public function set corEstrada(value:Number):void
+		{
+			_corEstrada = value;
 		}
 
 

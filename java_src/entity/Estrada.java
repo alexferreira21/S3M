@@ -31,12 +31,12 @@ public class Estrada {
 			inverseJoinColumns={@JoinColumn(name="idUF")})
 	private List<UF> ufs;
 	
-	@OneToMany(targetEntity=Segmento.class, mappedBy="estrada", 
-	cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+	@OneToMany(targetEntity=Segmento.class, mappedBy="estrada",
+			cascade = CascadeType.ALL, fetch=FetchType.LAZY)
 	private List<Segmento> segmentos;
 	
 	
-	private String corEstrada;
+	private Integer corEstrada;
 	
 	private String encodedPolylineString;
 	
@@ -102,11 +102,11 @@ public class Estrada {
 		this.segmentos = segmento;
 	}
 
-	public String getCorEstrada() {
+	public Integer getCorEstrada() {
 		return corEstrada;
 	}
 
-	public void setCorEstrada(String corEstrada) {
+	public void setCorEstrada(Integer corEstrada) {
 		this.corEstrada = corEstrada;
 	}
 

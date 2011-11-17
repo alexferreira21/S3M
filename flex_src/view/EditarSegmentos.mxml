@@ -24,6 +24,7 @@
 			import com.google.maps.services.Directions;
 			import com.google.maps.services.DirectionsEvent;
 			
+			import entity.Estrada;
 			import entity.Portal;
 			import entity.Segmento;
 			
@@ -31,6 +32,7 @@
 			
 			import mx.controls.Alert;
 			import mx.core.INavigatorContent;
+			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			
 			import mygoogle.events.MarkerPortalEvent;
@@ -129,17 +131,30 @@
 				
 			}
 			
-			protected function cancelar_Handler():void
+			protected function cancelar_Handler(event:CloseEvent):void
 			{
+				if (event.detail==Alert.NO)
+				{
+					return;
+				}
+				
 				finalizarEdicao();
-				novoSegmento();
+				novoSegmento(null);
 				dispatchEvent(new Event("voltar",true));
 			}
 			
+			protected function cancelar_clickHandler():void
+			{
+				Alert.yesLabel = "Sim";
+				Alert.noLabel = "Não";
+				Alert.show('Tem certeza de que deseja cancelar a edição','Cancelar Edilçao',3,this,cancelar_Handler);
+			}
 			
-			public function novoSegmento():void
+			
+			public function novoSegmento(estrada: Estrada):void
 			{
 				_segmentoEmEdicao = new Segmento();	
+				_segmentoEmEdicao.estrada = estrada; //Tentar colocar no construtor, ver se não dá problema no BlazeDS
 				vsSegmentos.selectedChild = INavigatorContent(vsSegmentos.getChildByName("nomeSegmento"));
 			}
 			
@@ -155,7 +170,7 @@
 				</s:FormItem>
 				<s:HGroup>
 					<s:Button  label="Próximo..." click="irParaSelecaoPortalOrigem()"/>
-					<s:Button label="Cancelar" click="cancelar_Handler()"/>
+					<s:Button label="Cancelar" click="cancelar_clickHandler()"/>
 				</s:HGroup>
 				
 			</s:VGroup>
@@ -164,7 +179,7 @@
 		<s:NavigatorContent id="selecaoPortalView">
 			<s:VGroup paddingTop="30">
 				<s:Label text="Selecione no mapa o portal de origem."  text.StatePortalDestino="Selecione no mapa o portal de Destino."  x="264" y="74"/>
-				<s:Button label="Cancelar" click="cancelar_Handler()"/>
+				<s:Button label="Cancelar" click="cancelar_clickHandler()"/>
 			</s:VGroup>
 		</s:NavigatorContent>
 		
@@ -185,7 +200,7 @@
 					
 					<s:Spacer width="20"/>
 					
-					<s:Button id="btCancelar"  label="Cancelar"  click="cancelar_Handler()"/>
+					<s:Button id="btCancelar"  label="Cancelar"  click="cancelar_clickHandler()"/>
 				</s:HGroup>
 			</s:VGroup>
 		</s:NavigatorContent>
