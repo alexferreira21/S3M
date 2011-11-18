@@ -95,6 +95,20 @@ package entity
 			corEstrada = Number(options.strokeStyle.color);
 		}
 		
+		public static function criarOptionsViaCor(corEstrada: Number): PolylineOptions
+		{
+			var strokeStyle: StrokeStyle = new StrokeStyle();
+			strokeStyle.color = corEstrada;
+			strokeStyle.thickness = 4;
+			strokeStyle.alpha = 1;
+			
+			
+			var polylineOptions = new PolylineOptions();
+			polylineOptions.strokeStyle = strokeStyle;
+			
+			return polylineOptions;
+		}
+		
 
 		[Bindable]
 		public function get idEstrada():Number

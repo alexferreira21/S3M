@@ -150,6 +150,8 @@
 			
 			protected function salvarEstrada(event:MouseEvent):void
 			{
+				estradaEmEdicao.setPolylineOptions(estradaEmEdicao.polyline.getOptions());
+				
 				estradaController.salvarEstrada(estradaEmEdicao);
 				finalizarEdicao();
 			}
@@ -168,7 +170,7 @@
 				polylineOptions.strokeStyle = strokeStyle;
 				optionsDefault.strokeStyle=strokeStyle;
 				
-				estradaEmEdicao.setPolylineOptions(polylineOptions);	
+				estradaEmEdicao.polyline.setOptions(polylineOptions);
 				
 				mapa.map.addOverlay(estradaEmEdicao.polyline);
 				
@@ -180,10 +182,18 @@
 				{
 					return;
 				}
-				if(estradaEmEdicao.polyline != null && isNaN(estradaEmEdicao.idEstrada))
+				if(estradaEmEdicao.polyline != null)
 				{
 					mapa.map.removeOverlay(estradaEmEdicao.polyline);
 				}
+				
+				if(!isNaN(estradaEmEdicao.idEstrada))
+				{
+					estradaEmEdicao.setPolylineOptions(Estrada.criarOptionsViaCor(estradaEmEdicao.corEstrada));
+					mapa.map.addOverlay(estradaEmEdicao.polyline);
+				}
+				
+				
 				finalizarEdicao();
 			}
 			
@@ -218,6 +228,7 @@
 				estradaEmEdicao = Estrada(ArrayCollection(dgEstradas.dataProvider).getItemAt(event.rowIndex));
 				
 				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName('edicaoEstrada'));
+				colorPicker.selectedColor = estradaEmEdicao.corEstrada;
 				
 			}
 			
