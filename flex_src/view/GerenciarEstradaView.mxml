@@ -150,7 +150,6 @@
 			
 			protected function salvarEstrada(event:MouseEvent):void
 			{
-				ArrayCollection(dgEstradas.dataProvider).addItem(estradaEmEdicao);
 				estradaController.salvarEstrada(estradaEmEdicao);
 				finalizarEdicao();
 			}
@@ -181,7 +180,7 @@
 				{
 					return;
 				}
-				if(estradaEmEdicao.polyline != null)
+				if(estradaEmEdicao.polyline != null && isNaN(estradaEmEdicao.idEstrada))
 				{
 					mapa.map.removeOverlay(estradaEmEdicao.polyline);
 				}

@@ -34,7 +34,25 @@ package controller
 		
 		private function salvarEstradaResult(event : ResultEvent) : void 
 		{
-			Alert.show("Beleuza!");			
+			var estradaRetornada:Estrada = (Estrada(event.result));
+			var encontrou: Boolean = false;
+			
+			for each (var estradaItem:Estrada in estradas)
+			{
+				if(estradaItem.idEstrada == estradaRetornada.idEstrada)
+				{
+					var index :int = estradas.getItemIndex(estradaItem);
+					estradas[index] = estradaRetornada;
+					encontrou = true;
+					break;
+				}
+			}
+			
+			if (!encontrou)
+			{
+				estradas.addItem(estradaRetornada);
+			}
+			
 		}
 		
 		private function salvarEstradaFault(event : FaultEvent) : void {
