@@ -24,6 +24,7 @@ package entity
 		private var _numeroSegmentos: int;
 		private var _ufs : ArrayCollection;
 		private var _segmentos: ArrayCollection;
+		private var _fluxosAuxiliares: ArrayCollection;
 		
 		private var _encodedPolylineString: String;
 
@@ -37,7 +38,7 @@ package entity
 		}
 		
 		
-		public function dataToString():String
+		public function criarStringParaEncodedPolyline():String
 		{
 			var objectString:String = "";
 			var infoClass:Object = ObjectUtil.getClassInfo(polylineData);
@@ -53,9 +54,9 @@ package entity
 			return objectString;
 		}
 		
-		public function stringToData():void
+		public function criarEncodedPolylinePelaString():void
 		{
-			var novaPolylineData = new EncodedPolylineData(null,null,null,null);
+			var novaPolylineData: EncodedPolylineData = new EncodedPolylineData(null,Number.NaN,null,Number.NaN);
 			var arrStringProperty:Array = encodedPolylineString.split(IDENT_NAME_PROPERTY);
 			for each(var propertyString:String in arrStringProperty)
 			{
@@ -75,7 +76,13 @@ package entity
 					}
 				}
 			}
-			polylineData = novaPolylineData;
+			
+			_polylineData = novaPolylineData;
+			criarPolylineViaEncoded();
+		}
+		
+		private function criarPolylineViaEncoded():void
+		{
 			polyline = Polyline.fromEncoded(polylineData);
 			
 			var strokeStyle: StrokeStyle = new StrokeStyle();
@@ -83,12 +90,11 @@ package entity
 			strokeStyle.thickness = 4;
 			strokeStyle.alpha = 1;
 			
-			var polylineOptions = new PolylineOptions();
+			var polylineOptions:PolylineOptions = new PolylineOptions();
 			polylineOptions.strokeStyle = strokeStyle;
-			polyline.setOptions(polylineOptions);			
-			
+			polyline.setOptions(polylineOptions);
 		}
-		
+				
 		public function setPolylineOptions(options: PolylineOptions):void
 		{
 			polyline.setOptions(options);
@@ -103,7 +109,7 @@ package entity
 			strokeStyle.alpha = 1;
 			
 			
-			var polylineOptions = new PolylineOptions();
+			var polylineOptions:PolylineOptions = new PolylineOptions();
 			polylineOptions.strokeStyle = strokeStyle;
 			
 			return polylineOptions;
@@ -174,6 +180,7 @@ package entity
 		public function set encodedPolylineString(value:String):void
 		{
 			_encodedPolylineString = value;
+			criarEncodedPolylinePelaString();
 		}
 
 		public function get polylineData():EncodedPolylineData
@@ -184,8 +191,8 @@ package entity
 		public function set polylineData(value:EncodedPolylineData):void
 		{
 			_polylineData = value;
-			encodedPolylineString = dataToString();
-			polyline = Polyline.fromEncoded(polylineData);
+			encodedPolylineString = criarStringParaEncodedPolyline();
+		  	criarPolylineViaEncoded();
 		}
 
 		public function get polyline():IPolyline
@@ -206,6 +213,17 @@ package entity
 		public function set corEstrada(value:Number):void
 		{
 			_corEstrada = value;
+		}
+		
+		[Bindable]
+		public function get fluxosAuxiliares():ArrayCollection
+		{
+			return _fluxosAuxiliares;
+		}
+
+		public function set fluxosAuxiliares(value:ArrayCollection):void
+		{
+			_fluxosAuxiliares = value;
 		}
 
 

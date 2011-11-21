@@ -14,7 +14,7 @@
 	
 	<fx:Metadata>
 		[Event(name="voltar", type="flash.events.Event")]
-		[Event(name="adcionarSegmento", type="evento.SegmentoEvent")]
+		[Event(name="adcionarSegmento", type="events.SegmentoEvent")]
 	</fx:Metadata>	
 	
 	
@@ -28,7 +28,7 @@
 			import entity.Portal;
 			import entity.Segmento;
 			
-			import evento.SegmentoEvent;
+			import events.SegmentoEvent;
 			
 			import mx.controls.Alert;
 			import mx.core.INavigatorContent;
@@ -36,6 +36,8 @@
 			import mx.events.FlexEvent;
 			
 			import mygoogle.events.MarkerPortalEvent;
+			
+			import util.AlertUtil;
 			
 			public static const SEM_EDICAO: int = -1;  
 			public static const EDICAO_PORTAL_ORIGEM: int = 0;  
@@ -63,26 +65,38 @@
 						break;
 					case EDICAO_PORTAL_DESTINO:
 						_portalDestino = portalSelecionado;
-						if(_portalDestino.latLng.equals(_portalOrigem.latLng))
-						{
-							Alert.show('Portal já selecionado');
-							break;
-						}
-						
 						_portalString = _portalDestino.nome + " " + _portalDestino.municipio.nome + ", " + _portalDestino.municipio.uf.sigla;
+						
+						if(_segmentoEmEdicao.estrada.segmentos.length > 0){
+							var ultimoSegmento: Segmento = Segmento(_segmentoEmEdicao.estrada.segmentos.getItemAt(_segmentoEmEdicao.estrada.segmentos.length - 1));
+							
+							_segmentoEmEdicao.portalOrigem = ultimoSegmento.portalDestino;
+							_segmentoEmEdicao.kmInicial = ultimoSegmento.kmFinal;
+						}
 						vsSegmentos.selectedChild = INavigatorContent(vsSegmentos.getChildByName("confirmacaoPortalView"));
 						break;
 				}
 			}
 			
-			protected function irParaSelecaoPortalOrigem():void
+			protected function irParaSelecaoPortal():void
 			{
 				if(tiNomeSegmento.text == null || tiNomeSegmento.text == "")
 				{
 					Alert.show("Você deve digitar um nome para o segmento.");
 					return;
 				}
-				emSelecaoPortal = EDICAO_PORTAL_ORIGEM;
+				
+				if(_segmentoEmEdicao.estrada.segmentos.length == 0)
+				{
+					emSelecaoPortal = EDICAO_PORTAL_ORIGEM;
+					this.currentState = "StatePortalOrigem";
+				}
+				else
+				{
+					emSelecaoPortal = EDICAO_PORTAL_DESTINO;
+					this.currentState = "StatePortalDestino";
+				}
+				
 				_segmentoEmEdicao.nome = tiNomeSegmento.text;
 				vsSegmentos.selectedChild = INavigatorContent(vsSegmentos.getChildByName("selecaoPortalView"));
 			}			
@@ -94,8 +108,10 @@
 					Alert.show("Você deve preencher o campo KM.");
 					return;
 				}
+				
 				_segmentoEmEdicao.portalOrigem = _portalOrigem;
 				_segmentoEmEdicao.kmInicial = parseInt(tiKM.text);
+				
 				emSelecaoPortal = EDICAO_PORTAL_DESTINO;
 				this.currentState = "StatePortalDestino";
 				tiKM.text = "";
@@ -107,6 +123,7 @@
 				if(tiKM.text == null || tiKM.text == "")
 				{
 					Alert.show("Você deve preencher o campo KM.")
+					return;
 				}
 				_segmentoEmEdicao.portalDestino = _portalDestino;
 				_segmentoEmEdicao.kmFinal = parseInt(tiKM.text);
@@ -131,7 +148,7 @@
 				
 			}
 			
-			protected function cancelar_Handler(event:CloseEvent):void
+			protected function cancelarEdicao(event:CloseEvent):void
 			{
 				if (event.detail==Alert.NO)
 				{
@@ -142,14 +159,6 @@
 				novoSegmento(null);
 				dispatchEvent(new Event("voltar",true));
 			}
-			
-			protected function cancelar_clickHandler():void
-			{
-				Alert.yesLabel = "Sim";
-				Alert.noLabel = "Não";
-				Alert.show('Tem certeza de que deseja cancelar a edição','Cancelar Edilçao',3,this,cancelar_Handler);
-			}
-			
 			
 			public function novoSegmento(estrada: Estrada):void
 			{
@@ -169,17 +178,18 @@
 					<s:TextInput id="tiNomeSegmento"/>
 				</s:FormItem>
 				<s:HGroup>
-					<s:Button  label="Próximo..." click="irParaSelecaoPortalOrigem()"/>
-					<s:Button label="Cancelar" click="cancelar_clickHandler()"/>
+					<s:Button  label="Próximo..." click="irParaSelecaoPortal()"/>
+					<s:Button label="Cancelar" click="{AlertUtil.criarJanelaConfirmacao('Tem certeza de que deseja cancelar a edição?','Cancelar Edição',this,cancelarEdicao)}"/>
 				</s:HGroup>
-				
 			</s:VGroup>
 		</s:NavigatorContent>
 		
 		<s:NavigatorContent id="selecaoPortalView">
 			<s:VGroup paddingTop="30">
-				<s:Label text="Selecione no mapa o portal de origem."  text.StatePortalDestino="Selecione no mapa o portal de Destino."  x="264" y="74"/>
-				<s:Button label="Cancelar" click="cancelar_clickHandler()"/>
+				<s:Label x="264" y="74" text="Selecione no mapa o portal de origem."
+						 text.StatePortalDestino="Selecione no mapa o próximo portal da estrada"
+						 text.StatePortalOrigem="Selecione no mapa o primeiro portal da estrada."/>
+				<s:Button label="Cancelar" click="{AlertUtil.criarJanelaConfirmacao('Tem certeza de que deseja cancelar a edição?','Cancelar Edição',this,cancelarEdicao)}"/>
 			</s:VGroup>
 		</s:NavigatorContent>
 		
@@ -200,7 +210,7 @@
 					
 					<s:Spacer width="20"/>
 					
-					<s:Button id="btCancelar"  label="Cancelar"  click="cancelar_clickHandler()"/>
+					<s:Button id="btCancelar"  label="Cancelar"  click="{AlertUtil.criarJanelaConfirmacao('Tem certeza de que deseja cancelar a edição?','Cancelar Edição',this,cancelarEdicao)}"/>
 				</s:HGroup>
 			</s:VGroup>
 		</s:NavigatorContent>

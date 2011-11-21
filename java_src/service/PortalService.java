@@ -3,15 +3,9 @@ package service;
 import java.util.List;
 
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.AnnotationConfiguration;
-import org.hibernate.tool.hbm2ddl.SchemaExport;
-
 import dao.MunicipioDao;
 
 import hibernate.HibernateUtil;
-import entity.Equipamento;
-import entity.Municipio;
 import entity.Portal;
 import entity.UF;
 

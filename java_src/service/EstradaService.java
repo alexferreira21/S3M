@@ -1,13 +1,13 @@
 package service;
 
-import java.util.List;
-
 import hibernate.HibernateUtil;
+
+import java.util.List;
 
 import org.hibernate.Session;
 
 import entity.Estrada;
-import entity.Portal;
+import entity.Segmento;
 
 public class EstradaService {
 	
@@ -35,5 +35,16 @@ public class EstradaService {
 		
 		return estradas;
 	}
-
+	
+	public Estrada removerEstrada(Estrada estrada){
+		Session session = HibernateUtil.getInstance().getSession();
+		session.beginTransaction();
+		
+		Estrada estradaAExcluir = (Estrada)session.createQuery("from Estrada where idEstrada = "+ estrada.getIdEstrada()).uniqueResult();
+		session.delete(estradaAExcluir);
+		
+		session.getTransaction().commit();
+		
+		return estradaAExcluir;
+	}
 }

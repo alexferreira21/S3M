@@ -8,6 +8,27 @@
 			import mx.core.INavigatorContent;
 			import mx.events.FlexEvent;
 			
+			protected function gerenciarPortais(event:MouseEvent):void
+			{
+				vs.selectedChild= INavigatorContent(vs.getChildByName('ncPortais'));
+				
+				 if(gerenciarPortalView != null)
+				{
+					gerenciarPortalView.mapa.atualizarMapa();
+				} 
+			}
+			
+			
+			
+			protected function gerenciarEstradas(event:MouseEvent):void
+			{
+				vs.selectedChild= INavigatorContent(vs.getChildByName('ncEstradas'));		
+			 	if(gerenciarEstradaView != null)
+				{
+					gerenciarEstradaView.mapa.atualizarMapa();
+				} 
+			}
+			
 		]]>
 	</fx:Script>
 
@@ -21,19 +42,19 @@
 		
 		<s:NavigatorContent id="menuPrincipal">
 			<s:Button id="btGerenciarPortais" x="428" y="290" label="Gerenciar Portais"
-					  click="{vs.selectedChild= INavigatorContent(vs.getChildByName('incluirPortais'))}"/>
+					  click="gerenciarPortais(event)"/>
 					  
 			<s:Button id="btGerenciarEstradas" x="428" y="336" label="Gerenciar Estradas"
-					  click="{vs.selectedChild= INavigatorContent(vs.getChildByName('gerenciarEstradas'))}"/>
+					  click="gerenciarEstradas(event)"/>
 			
 		</s:NavigatorContent>
 		
-		<s:NavigatorContent id="incluirPortais">
-			<view:GerencialPortalView voltarEvent="{vs.selectedIndex = 0}" />
+		<s:NavigatorContent id="ncPortais">
+			<view:GerencialPortalView id="gerenciarPortalView" voltarEvent="{vs.selectedIndex = 0}" />
 		</s:NavigatorContent>
 		
-		<s:NavigatorContent id="gerenciarEstradas">
-			<view:GerenciarEstradaView voltarEvent="{vs.selectedIndex = 0}" />
+		<s:NavigatorContent id="ncEstradas">
+			<view:GerenciarEstradaView id="gerenciarEstradaView" voltarEvent="{vs.selectedIndex = 0}" />
 		</s:NavigatorContent>
 		
 		

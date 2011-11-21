@@ -14,10 +14,8 @@ package model
 		
 		[Bindable]
 		private var _estradas: ArrayCollection = new ArrayCollection();
+
 		
-		[Bindable]
-		private var _segmentos: ArrayCollection = new ArrayCollection(); //Não é aqui, se eu não tiver usado, tirar.
-	
 		public static function getInstance() : BaseModel {  
 			if (instance == null)  
 				instance = new BaseModel( new SingletonEnforcer );  
@@ -60,18 +58,6 @@ package model
 		{
 			_estradas = value;
 		}
-
-		
-		public function get segmentos():ArrayCollection
-		{
-			return _segmentos;
-		}
-
-		public function set segmentos(value:ArrayCollection):void
-		{
-			_segmentos = value;
-		}
-
 
 	}
 	

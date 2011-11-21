@@ -8,10 +8,7 @@ import java.util.List;
 import org.hibernate.Session;
 
 import entity.Municipio;
-import entity.Portal;
 import entity.UF;
-import flex.messaging.io.ArrayCollection;
-
 public class MunicipioDao {
 	
 	

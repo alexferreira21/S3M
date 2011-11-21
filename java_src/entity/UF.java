@@ -7,10 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 @Entity
 @Table(name="TB_UF")
@@ -29,6 +30,9 @@ public class UF {
 	private List<Municipio> municipios;
 	
 	@ManyToMany
+	@JoinTable(name="tb_rel_estrada_uf",
+		joinColumns={@JoinColumn(name="idUF")}, 
+		inverseJoinColumns={@JoinColumn(name="idEstrada")})
 	private List<Estrada> estrada;
 	
 

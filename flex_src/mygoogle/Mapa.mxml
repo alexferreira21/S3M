@@ -60,9 +60,14 @@
 				map.enableScrollWheelZoom();
 				map.enableContinuousZoom();
 				
+				atualizarMapa();
+			}
+			
+			public function atualizarMapa():void
+			{
+				map.clearOverlays();
 				portalController.carregarPortais(carregarPortaisSucesso,carregarPortaisFalha);
 				estradaController.carregarEstradas(carregarEstradasSucesso,carregarEstradasFalha);
-
 			}
 			
 			private function carregarEstradasSucesso(event : ResultEvent) : void 
@@ -74,7 +79,6 @@
 				
 				for each (var estradaItem: Estrada in estradaController.estradas)
 				{
-					estradaItem.stringToData();	
 					map.addOverlay(estradaItem.polyline);
 				}
 			}

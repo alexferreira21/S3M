@@ -1,4 +1,4 @@
-package evento
+package events
 {
 	import entity.Segmento;
 	
@@ -6,7 +6,7 @@ package evento
 	
 	public class SegmentoEvent extends Event
 	{
-		public static const ADICIONAR_SEGMENTO = "adcionarSegmento";
+		public static const ADICIONAR_SEGMENTO: String = "adcionarSegmento";
 		
 		public var segmento: Segmento;
 		

@@ -9,6 +9,7 @@
 	
 	<fx:Script>
 		<![CDATA[
+			import com.google.maps.LatLng;
 			import com.google.maps.overlays.PolylineOptions;
 			import com.google.maps.services.Directions;
 			import com.google.maps.services.DirectionsEvent;
@@ -20,7 +21,8 @@
 			import entity.Segmento;
 			import entity.UF;
 			
-			import evento.SegmentoEvent;
+			import events.CoordenadaEvent;
+			import events.SegmentoEvent;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -28,10 +30,14 @@
 			import mx.events.CloseEvent;
 			import mx.events.ColorPickerEvent;
 			import mx.events.ListEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
 			
 			import mygoogle.MarkerPortal;
 			import mygoogle.events.MapaEvent;
 			import mygoogle.events.MarkerPortalEvent;
+			
+			import util.AlertUtil;
 			
 			private var rota:Directions;
 			private var optionsDefault:PolylineOptions = new PolylineOptions({ strokeStyle: new StrokeStyle({color: 0x000000, thickness: 4, alpha: 1})});
@@ -42,19 +48,51 @@
 			[Bindable]
 			private var estradaController: EstradaController = new EstradaController();
 			
-		 	protected function mapaProntoHandler(event:MapaEvent):void
+			protected function mapaProntoHandler(event:MapaEvent):void
 			{
 				for each (var markerPortalItem: MarkerPortal in mapa.markers)
 				{
 					markerPortalItem.addEventListener(MarkerPortalEvent.PORTAL_CLICK,selecionarMarkerPortal);
 				}	
+				
+				dgEstradas.addEventListener("editarEstrada",editarEstrada);
+				dgEstradas.addEventListener("removerEstrada",confirmacaoRemoverEstrada);
+				
 			}
 			
-			 public function selecionarMarkerPortal(event: MarkerPortalEvent):void
+			private function confirmacaoRemoverEstrada(event: Event):void
+			{
+				
+				AlertUtil.criarJanelaConfirmacao("Tem certeza de que deseja remover esta estrada","Remover Estrada",this,removerEstrada);
+			}
+			
+			private function removerEstrada(event:CloseEvent):void
+			{
+				if (event.detail==Alert.NO)
+				{
+					return;
+				}	
+				
+				var estradaSelecionada:Estrada = Estrada(dgEstradas.selectedItem);
+				estradaController.removerEstrada(estradaSelecionada,removerEstradaSucesso,removerEstradaFalha);
+			}
+			
+			private function removerEstradaSucesso(event: ResultEvent):void
+			{
+				mapa.atualizarMapa();
+			}
+			
+			private function removerEstradaFalha(event: FaultEvent):void
+			{
+				
+				Alert.show(event.fault.message);
+			}
+			
+			
+			public function selecionarMarkerPortal(event: MarkerPortalEvent):void
 			{
 				edicaoSegmento.selecionarMarkerPortal(event);
 			} 
-			
 			
 			protected function adionarSegmento(event: SegmentoEvent):void
 			{
@@ -76,7 +114,22 @@
 				}
 				
 				rota.loadFromWaypoints(waypoints.toArray());
+				
 			} 
+			
+			private function criarPolyline(event: DirectionsEvent):void
+			{
+				if(estradaEmEdicao.polyline != null)
+				{
+					mapa.map.removeOverlay(estradaEmEdicao.polyline);
+				}
+				
+				estradaEmEdicao.corEstrada = Number(optionsDefault.strokeStyle.color);
+				estradaEmEdicao.polylineData = event.directions.encodedPolylineData;
+				//estradaEmEdicao.setPolylineOptions(optionsDefault);
+				
+				mapa.map.addOverlay(estradaEmEdicao.polyline);
+			}
 			
 			private function atualizarEstados():void
 			{
@@ -111,19 +164,6 @@
 				//lbEstados.text = estradaEmEdicao.ufs.toString();
 			}
 			
-			private function criarPolyline(event: DirectionsEvent):void
-			{
-				if(estradaEmEdicao.polyline != null)
-				{
-					mapa.map.removeOverlay(estradaEmEdicao.polyline);
-				}
-				
-				estradaEmEdicao.polylineData = event.directions.encodedPolylineData;
-				estradaEmEdicao.setPolylineOptions(optionsDefault);
-				
-				mapa.map.addOverlay(estradaEmEdicao.polyline);
-			}
-			
 			protected function falhaRota(event:DirectionsEvent):void{
 				Alert.show("Não foi possível desemhar estrada. Houve um erro na comunicação com os servidores Google.")
 				trace("falha"); 	
@@ -131,19 +171,22 @@
 			
 			protected function voltarParaExibicao_Handler():void
 			{
-				tiNomeEstrada.text=null;
-				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("exibicaoEstradas"));
+				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("edicaoEstrada"));
 			}
 			
 			
 			protected function novoSegmento():void
 			{
-				if(tiNomeEstrada.text == null || tiNomeEstrada.text == "")
+				if((tiNomeEstrada.text == null || tiNomeEstrada.text == "") && isNaN(estradaEmEdicao.idEstrada))
 				{
 					Alert.show("Você deve preencher o nome da estrada.");
 					return;
 				}
-				estradaEmEdicao.nome = tiNomeEstrada.text;
+				
+				if(estradaEmEdicao.nome == "" || estradaEmEdicao.nome == null){
+					estradaEmEdicao.nome = tiNomeEstrada.text;
+				}
+
 				edicaoSegmento.novoSegmento(estradaEmEdicao);
 				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("adicionarSegmentos")); 
 			}
@@ -151,7 +194,6 @@
 			protected function salvarEstrada(event:MouseEvent):void
 			{
 				estradaEmEdicao.setPolylineOptions(estradaEmEdicao.polyline.getOptions());
-				
 				estradaController.salvarEstrada(estradaEmEdicao);
 				finalizarEdicao();
 			}
@@ -166,7 +208,7 @@
 				strokeStyle.alpha = 1;
 				
 				
-				var polylineOptions = new PolylineOptions();
+				var polylineOptions: PolylineOptions = new PolylineOptions();
 				polylineOptions.strokeStyle = strokeStyle;
 				optionsDefault.strokeStyle=strokeStyle;
 				
@@ -182,14 +224,17 @@
 				{
 					return;
 				}
+				
 				if(estradaEmEdicao.polyline != null)
 				{
 					mapa.map.removeOverlay(estradaEmEdicao.polyline);
 				}
 				
+				
 				if(!isNaN(estradaEmEdicao.idEstrada))
 				{
-					estradaEmEdicao.setPolylineOptions(Estrada.criarOptionsViaCor(estradaEmEdicao.corEstrada));
+					//buscar denovo estrada no banco, para apagar segmentos adicionados antes de cancelar.
+					estradaEmEdicao.setPolylineOptions(Estrada.criarOptionsViaCor(estradaEmEdicao.corEstrada)); //mudar para o método novo e testar
 					mapa.map.addOverlay(estradaEmEdicao.polyline);
 				}
 				
@@ -216,19 +261,33 @@
 				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("criacaoEstrada"));
 			}
 			
-			protected function cancelar_clickHandler():void
-			{
-				Alert.yesLabel = "Sim";
-				Alert.noLabel = "Não";
-				Alert.show('Tem certeza de que deseja cancelar a edição','Cancelar Edilçao',3,this,cancelarEdicaoEstrada);
-			}
 			
-			protected function editarEstrada(event:ListEvent):void
+			protected function editarEstrada(event:Event):void
 			{
-				estradaEmEdicao = Estrada(ArrayCollection(dgEstradas.dataProvider).getItemAt(event.rowIndex));
+				estradaEmEdicao = Estrada(dgEstradas.selectedItem);
 				
 				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName('edicaoEstrada'));
 				colorPicker.selectedColor = estradaEmEdicao.corEstrada;
+				optionsDefault = estradaEmEdicao.polyline.getOptions();
+			}
+			
+			
+			protected function centralizarMapa(event:CoordenadaEvent):void
+			{
+				mapa.map.setCenter(event.latLng);				
+			}
+			
+			protected function centralizarNoInicioDaEstrada(event:ListEvent):void
+			{
+				var estradaSelecionada: Estrada = Estrada(ArrayCollection(dgEstradas.dataProvider).getItemAt(event.rowIndex));
+				var primeiroPortalLatLng: LatLng = Segmento(estradaSelecionada.segmentos.getItemAt(0)).portalOrigem.latLng;				
+					
+				mapa.map.setCenter(primeiroPortalLatLng);
+			}
+			
+			protected function adicionarFluxoAuxiliar(event:MouseEvent):void
+			{
+				//COMEÇAR DAQUI!
 				
 			}
 			
@@ -238,28 +297,46 @@
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	
-	<s:VGroup height="100%" width="100%">
+	<mx:VDividedBox height="100%" width="100%">
 		<mygoogle:Mapa id="mapa"  height="80%" width="100%" mapaPronto="mapaProntoHandler(event)"/>
 		
-		<mx:ViewStack id="vsEstrada" width="100%" height="20%" creationPolicy="all">
+		<mx:ViewStack id="vsEstrada" height="20%" width="100%" creationPolicy="all" resizeEffect="Resize">
 			
 			<s:NavigatorContent id="exibicaoEstradas">
-				<s:HGroup>
-					<s:Button id="btNovaEstrada" width="111" height="70" label="Nova Estrada"  click="novaEstrada(event)"/>
-					<s:Button id="btVoltar" width="111" height="69" label="Voltar"  click="{dispatchEvent(new Event('voltarEvent',true))}"/>
-					<mx:DataGrid id="dgEstradas" dataProvider="{estradaController.estradas}" 
-								 doubleClickEnabled="true" itemDoubleClick="editarEstrada(event)">
+				<s:HGroup height="100%" width="100%">
+					
+					<view:LocalizarCoordenada novaCoordenada="centralizarMapa(event)"/>
+					<s:Spacer width="200"/> 
+					
+					<mx:DataGrid id="dgEstradas" dataProvider="{estradaController.estradas}" height="100%"
+								 doubleClickEnabled="true" itemDoubleClick="centralizarNoInicioDaEstrada(event)">
 						<mx:columns>
 							<mx:DataGridColumn dataField="nome" headerText="Nome"/> 
 							<mx:DataGridColumn dataField="segmentos.length" headerText="Numero de Segmentos"/> 
 							<mx:DataGridColumn dataField="ufs" headerText="Estados"/> 
+							<mx:DataGridColumn headerText="Ações" width="80">
+								<mx:itemRenderer>
+									<fx:Component>
+										<mx:HBox paddingLeft="5">
+											<s:Image   source="@Embed('assets/editIcon.png')" click="dispatchEvent(new Event('editarEstrada', true))"/>
+											<s:Image   source="@Embed('assets/excluirIcon.png')"  click="dispatchEvent(new Event('removerEstrada', true))"/>
+										</mx:HBox>
+									</fx:Component>
+								</mx:itemRenderer>
+							</mx:DataGridColumn>
 						</mx:columns>
+						
 					</mx:DataGrid>
+					
+					<s:VGroup paddingLeft="15">
+						<s:Button id="btNovaEstrada"  label="Nova Estrada"  click="novaEstrada(event)"/>
+						<s:Button id="btVoltar" label="Voltar"  click="{dispatchEvent(new Event('voltarEvent',true))}"/>
+					</s:VGroup>
 				</s:HGroup>
 			</s:NavigatorContent>
 			
 			<s:NavigatorContent id="criacaoEstrada">
-				<s:VGroup>
+				<s:VGroup height="100%" width="100%">
 					<s:FormItem label="Nome da Estrada">
 						<s:TextInput id="tiNomeEstrada"/>
 					</s:FormItem>
@@ -271,7 +348,7 @@
 			</s:NavigatorContent>
 			
 			<s:NavigatorContent id="edicaoEstrada">
-				<s:HGroup>
+				<s:HGroup height="100%" width="100%">
 					<s:VGroup>
 						<s:HGroup>
 							<s:FormItem label="Nome da Estrada">
@@ -287,12 +364,12 @@
 						</s:FormItem>
 						<s:HGroup>
 							<s:Button  label="Salvar"  click="salvarEstrada(event)"/>
-							<s:Button  label="Cancelar"  click="cancelar_clickHandler()"/>
+							<s:Button  label="Cancelar"  click="{AlertUtil.criarJanelaConfirmacao('Tem certeza de que deseja cancelar a edição','Cancelar Edição',this,cancelarEdicaoEstrada)}"/>
 						</s:HGroup>
 					</s:VGroup>	
-						
 					
-					<mx:DataGrid id="dgSegmentos" dataProvider="{estradaEmEdicao.segmentos}">
+					
+					<mx:DataGrid id="dgSegmentos" dataProvider="{estradaEmEdicao.segmentos}" height="100%">
 						<mx:columns>
 							<mx:DataGridColumn dataField="nome" headerText="Nome"/>
 							<mx:DataGridColumn dataField="kmInicial" headerText="KM Inicial"/>
@@ -304,17 +381,32 @@
 					
 					<s:Button label="Adicionar Segmento" click="novoSegmento()" width="138" height="70"/>
 					
+					<s:Spacer width="100"/>
+					
+					<mx:DataGrid id="dgFluxosAuxiliares" dataProvider="{estradaEmEdicao.fluxosAuxiliares}" height="100%">
+						<mx:columns>
+							<mx:DataGridColumn dataField="portal.nome" headerText="Portal"/>
+							<mx:DataGridColumn dataField="tipo" headerText="Tipo"/>
+						</mx:columns>
+					</mx:DataGrid>
+
+					<s:Button id="btAdicionarFluxoAuxiliar" label="AdicioanarFluxoAuxiliar" click="adicionarFluxoAuxiliar(event)"/>
+					
 				</s:HGroup>
 			</s:NavigatorContent>
 			
 			<s:NavigatorContent id="adicionarSegmentos" >
-				<view:EditarSegmentos id="edicaoSegmento" voltar="voltarParaExibicao_Handler()" adcionarSegmento="adionarSegmento(event)"/>
+				<view:EditarSegmentos id="edicaoSegmento" voltar="voltarParaExibicao_Handler()" adcionarSegmento="adionarSegmento(event)" height="100%" width="100%"/>
+			</s:NavigatorContent>
+			
+			<s:NavigatorContent id="adicionarFluxosAuxiliares">
+				<!-- CRIAR COMPONENTE -->
 			</s:NavigatorContent>
 			
 			
 		</mx:ViewStack>
 		
-	</s:VGroup>
+	</mx:VDividedBox>
 	
 	
 </s:Group>

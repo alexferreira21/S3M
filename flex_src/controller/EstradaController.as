@@ -1,6 +1,7 @@
 package controller
 {
 	import entity.Estrada;
+	import entity.Segmento;
 	
 	import model.BaseModel;
 	
@@ -72,6 +73,13 @@ package controller
 			
 		}
 		
+		public function removerEstrada(estrada: Estrada, callbackSucces: Function, callbackFault: Function):void
+		{
+			var removerPortalToken: AsyncToken; 
+			
+			removerPortalToken = estradaService.removerEstrada(estrada);
+			removerPortalToken.addResponder(new Responder(callbackSucces, callbackFault));
+		}
 		
 		
 	}
