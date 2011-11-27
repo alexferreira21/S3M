@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" height="100%" width="100%" xmlns:mygoogle="mygoogle.*" xmlns:view="view.*">
+		 xmlns:mx="library://ns.adobe.com/flex/mx" height="100%" width="100%" xmlns:mygoogle="mygoogle.*" xmlns:view="view.*" xmlns:component="component.*" xmlns:local="*">
 	
 	<fx:Metadata>
 		[Event(name="voltarEvent", type="flash.events.Event")]
 	</fx:Metadata>
+	
 	
 	<fx:Script>
 		<![CDATA[
@@ -18,10 +19,12 @@
 			import controller.EstradaController;
 			
 			import entity.Estrada;
+			import entity.FluxoAlternativo;
 			import entity.Segmento;
 			import entity.UF;
 			
 			import events.CoordenadaEvent;
+			import events.FluxoAlternativoEvent;
 			import events.SegmentoEvent;
 			
 			import mx.collections.ArrayCollection;
@@ -38,6 +41,7 @@
 			import mygoogle.events.MarkerPortalEvent;
 			
 			import util.AlertUtil;
+			import util.TipoFluxoAlternativoEnum;
 			
 			private var rota:Directions;
 			private var optionsDefault:PolylineOptions = new PolylineOptions({ strokeStyle: new StrokeStyle({color: 0x000000, thickness: 4, alpha: 1})});
@@ -47,6 +51,8 @@
 			
 			[Bindable]
 			private var estradaController: EstradaController = new EstradaController();
+			
+			private var isEdicaoFluxoAlternativo: Boolean = false;
 			
 			protected function mapaProntoHandler(event:MapaEvent):void
 			{
@@ -58,12 +64,56 @@
 				dgEstradas.addEventListener("editarEstrada",editarEstrada);
 				dgEstradas.addEventListener("removerEstrada",confirmacaoRemoverEstrada);
 				
+				dgFluxosAlternativos.addEventListener("removerFluxoAlternativo",confirmacaoRemoverFluxoAlternativo);
+				
 			}
 			
 			private function confirmacaoRemoverEstrada(event: Event):void
 			{
 				
 				AlertUtil.criarJanelaConfirmacao("Tem certeza de que deseja remover esta estrada","Remover Estrada",this,removerEstrada);
+			}
+			
+			private function confirmacaoRemoverFluxoAlternativo(event: Event):void
+			{
+				
+				AlertUtil.criarJanelaConfirmacao("Tem certeza de que deseja remover este Fluxo Alternativo?","Remover Fluxo Alternativo",this,removerFluxoAlternativo);
+			}
+			
+			private function removerFluxoAlternativo(event:CloseEvent):void
+			{
+				if (event.detail==Alert.NO)
+				{
+					return;
+				}	
+				
+				var fluxoAlternativo: FluxoAlternativo= FluxoAlternativo(dgFluxosAlternativos.selectedItem);
+				if(isNaN(fluxoAlternativo.idFluxoAlternativo))
+				{
+					Alert.show("Este Fluxo Alternativo ainda não foi salvo, cancele a edição para removê-lo.");
+					return;
+				}
+				estradaController.removerFluxoAlternativo(fluxoAlternativo,removerFluxoAlternativoSucesso,removerFluxoAlternativoFalha);
+			}
+			
+			private function removerFluxoAlternativoSucesso(event: ResultEvent):void
+			{
+				for each (var fluxoAlternativoItem: FluxoAlternativo in estradaEmEdicao.fluxosAlternativos)
+				{
+					if(fluxoAlternativoItem.idFluxoAlternativo == FluxoAlternativo(event.result).idFluxoAlternativo)
+					{
+						var index: Number = estradaEmEdicao.fluxosAlternativos.getItemIndex(fluxoAlternativoItem);
+						estradaEmEdicao.fluxosAlternativos.removeItemAt(index);
+					}
+					
+				}
+				mapa.atualizarMapa();
+			}
+			
+			private function removerFluxoAlternativoFalha(event: FaultEvent):void
+			{
+				
+				Alert.show(event.fault.message);
 			}
 			
 			private function removerEstrada(event:CloseEvent):void
@@ -76,6 +126,7 @@
 				var estradaSelecionada:Estrada = Estrada(dgEstradas.selectedItem);
 				estradaController.removerEstrada(estradaSelecionada,removerEstradaSucesso,removerEstradaFalha);
 			}
+			
 			
 			private function removerEstradaSucesso(event: ResultEvent):void
 			{
@@ -91,7 +142,14 @@
 			
 			public function selecionarMarkerPortal(event: MarkerPortalEvent):void
 			{
-				edicaoSegmento.selecionarMarkerPortal(event);
+				if(isEdicaoFluxoAlternativo)
+				{
+					edicaoFluxoAlternativo.selecionarMarkerPortal(event);
+				}
+				else
+				{
+					edicaoSegmento.selecionarMarkerPortal(event);
+				}
 			} 
 			
 			protected function adionarSegmento(event: SegmentoEvent):void
@@ -171,6 +229,7 @@
 			
 			protected function voltarParaExibicao_Handler():void
 			{
+				isEdicaoFluxoAlternativo = false;
 				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("edicaoEstrada"));
 			}
 			
@@ -191,7 +250,7 @@
 				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("adicionarSegmentos")); 
 			}
 			
-			protected function salvarEstrada(event:MouseEvent):void
+			protected function salvarEstrada():void
 			{
 				estradaEmEdicao.setPolylineOptions(estradaEmEdicao.polyline.getOptions());
 				estradaController.salvarEstrada(estradaEmEdicao);
@@ -259,6 +318,7 @@
 				estradaEmEdicao.ufs = new ArrayCollection();
 				
 				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("criacaoEstrada"));
+				tiNomeEstrada.setFocus();
 			}
 			
 			
@@ -285,11 +345,21 @@
 				mapa.map.setCenter(primeiroPortalLatLng);
 			}
 			
-			protected function adicionarFluxoAuxiliar(event:MouseEvent):void
+			protected function novoFluxoAlternativo():void
 			{
-				//COMEÇAR DAQUI!
+				isEdicaoFluxoAlternativo = true;
 				
+				edicaoFluxoAlternativo.novoFluxoAlternativo(estradaEmEdicao);
+				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("adicionarFluxosAlternativos"));
 			}
+			
+			protected function adicionarFluxoAlternativo(event:FluxoAlternativoEvent):void
+			{
+				
+				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName('edicaoEstrada'));
+				estradaEmEdicao.fluxosAlternativos.addItem(event.fluxoAlternativo);
+			}
+			
 			
 		]]>
 	</fx:Script>
@@ -305,7 +375,7 @@
 			<s:NavigatorContent id="exibicaoEstradas">
 				<s:HGroup height="100%" width="100%">
 					
-					<view:LocalizarCoordenada novaCoordenada="centralizarMapa(event)"/>
+					<component:LocalizarCoordenada novaCoordenada="centralizarMapa(event)"/>
 					<s:Spacer width="200"/> 
 					
 					<mx:DataGrid id="dgEstradas" dataProvider="{estradaController.estradas}" height="100%"
@@ -338,7 +408,7 @@
 			<s:NavigatorContent id="criacaoEstrada">
 				<s:VGroup height="100%" width="100%">
 					<s:FormItem label="Nome da Estrada">
-						<s:TextInput id="tiNomeEstrada"/>
+						<component:SubmitTextInput id="tiNomeEstrada" submitFunction="novoSegmento"/>
 					</s:FormItem>
 					<s:HGroup>
 						<s:Button id="btAdicionarSegmentos" label="Adicionar Segmentos" click="novoSegmento()"/>
@@ -363,7 +433,7 @@
 							<mx:ColorPicker id="colorPicker" change="mudarCorEstrada(event)"/>
 						</s:FormItem>
 						<s:HGroup>
-							<s:Button  label="Salvar"  click="salvarEstrada(event)"/>
+							<s:Button  label="Salvar"  click="salvarEstrada()"/>
 							<s:Button  label="Cancelar"  click="{AlertUtil.criarJanelaConfirmacao('Tem certeza de que deseja cancelar a edição','Cancelar Edição',this,cancelarEdicaoEstrada)}"/>
 						</s:HGroup>
 					</s:VGroup>	
@@ -383,24 +453,34 @@
 					
 					<s:Spacer width="100"/>
 					
-					<mx:DataGrid id="dgFluxosAuxiliares" dataProvider="{estradaEmEdicao.fluxosAuxiliares}" height="100%">
+					<mx:DataGrid id="dgFluxosAlternativos" dataProvider="{estradaEmEdicao.fluxosAlternativos}" height="100%">
 						<mx:columns>
 							<mx:DataGridColumn dataField="portal.nome" headerText="Portal"/>
-							<mx:DataGridColumn dataField="tipo" headerText="Tipo"/>
+							<mx:DataGridColumn dataField="tipo" headerText="Tipo" labelFunction="TipoFluxoAlternativoEnum.fluxoAlternativoDataGridLabelFunction"/>
+							<mx:DataGridColumn headerText="Ações" width="80">
+								<mx:itemRenderer>
+									<fx:Component>
+										<mx:HBox paddingLeft="5">
+											<s:Image   source="@Embed('assets/excluirIcon.png')"  click="dispatchEvent(new Event('removerFluxoAlternativo', true))"/>
+										</mx:HBox>
+									</fx:Component>
+								</mx:itemRenderer>
+							</mx:DataGridColumn>
 						</mx:columns>
 					</mx:DataGrid>
 
-					<s:Button id="btAdicionarFluxoAuxiliar" label="AdicioanarFluxoAuxiliar" click="adicionarFluxoAuxiliar(event)"/>
+					<s:Button id="btAdicionarFluxoAlternativo" label="AdicioanarFluxoAlternativo" click="novoFluxoAlternativo()"/>
 					
 				</s:HGroup>
 			</s:NavigatorContent>
 			
 			<s:NavigatorContent id="adicionarSegmentos" >
-				<view:EditarSegmentos id="edicaoSegmento" voltar="voltarParaExibicao_Handler()" adcionarSegmento="adionarSegmento(event)" height="100%" width="100%"/>
+				<component:EditarSegmentos id="edicaoSegmento" voltar="voltarParaExibicao_Handler()" adicionarSegmento="adionarSegmento(event)" height="100%" width="100%"/>
 			</s:NavigatorContent>
 			
-			<s:NavigatorContent id="adicionarFluxosAuxiliares">
-				<!-- CRIAR COMPONENTE -->
+			<s:NavigatorContent id="adicionarFluxosAlternativos">
+				<component:AdicionarFluxoAlternativo id="edicaoFluxoAlternativo" estradaEmEdicao="{estradaEmEdicao}" voltar="voltarParaExibicao_Handler()" 
+													 adicionarFluxoAlternativo="adicionarFluxoAlternativo(event)" height="100%" width="100%"/>
 			</s:NavigatorContent>
 			
 			

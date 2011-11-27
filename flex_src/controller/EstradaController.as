@@ -1,6 +1,7 @@
 package controller
 {
 	import entity.Estrada;
+	import entity.FluxoAlternativo;
 	import entity.Segmento;
 	
 	import model.BaseModel;
@@ -75,10 +76,18 @@ package controller
 		
 		public function removerEstrada(estrada: Estrada, callbackSucces: Function, callbackFault: Function):void
 		{
-			var removerPortalToken: AsyncToken; 
+			var removerEstradaToken: AsyncToken; 
 			
-			removerPortalToken = estradaService.removerEstrada(estrada);
-			removerPortalToken.addResponder(new Responder(callbackSucces, callbackFault));
+			removerEstradaToken = estradaService.removerEstrada(estrada);
+			removerEstradaToken.addResponder(new Responder(callbackSucces, callbackFault));
+		}
+		
+		public function removerFluxoAlternativo(fluxoAlternativo: FluxoAlternativo, callbackSucces: Function, callbackFault: Function):void
+		{
+			var removerFluxoAlternativoToken: AsyncToken; 
+			
+			removerFluxoAlternativoToken = estradaService.removerFluxoAlternativo(fluxoAlternativo);
+			removerFluxoAlternativoToken.addResponder(new Responder(callbackSucces, callbackFault));
 		}
 		
 		

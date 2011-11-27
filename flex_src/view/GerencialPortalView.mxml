@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx"  height="100%" width="100%" xmlns:mygoogle="mygoogle.*" xmlns:view="view.*">
+		 xmlns:mx="library://ns.adobe.com/flex/mx"  height="100%" width="100%" xmlns:mygoogle="mygoogle.*" xmlns:view="view.*" xmlns:local="*" xmlns:component="component.*">
 	
 	<fx:Metadata>
 		[Event(name="voltarEvent", type="flash.events.Event")]
@@ -18,7 +18,11 @@
 			import entity.Portal;
 			import entity.UF;
 			
+			import util.SentidoEnum;
+			import util.StatusEnum;
+			
 			import events.CoordenadaEvent;
+			import events.EquipamentoEvent;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -43,6 +47,8 @@
 			{
 				dgPortais.addEventListener("editarItem",editarItem);
 				dgPortais.addEventListener("removerItem",removerItem);
+				//dgEquipamentos.addEventListener("removerEquipamento",);
+				
 				mapa.map.addEventListener(MapMouseEvent.CLICK,criarPortal, false, EventPriority.DEFAULT, true);
 				
 				for each (var markerPortalItem: MarkerPortal in mapa.markers)
@@ -144,7 +150,12 @@
 			{
 				emEdicao = true;
 				
-				portalController.portalEmEdicao = portal; 
+				portalController.portalEmEdicao = portal;
+				
+				if(!isNaN(portal.idPortal) && cbUF!=null)
+				{
+					cbUF.selectedItem = portal.municipio.uf;
+				}
 				vsPortal.selectedChild = INavigatorContent(vsPortal.getChildByName("edicao"));	
 			}
 			
@@ -220,14 +231,10 @@
 				sairEdicao();
 			}
 			
-			protected function adicionarEquipamento(event:MouseEvent):void
+			protected function novoEquipamento(event:MouseEvent):void
 			{
-				var equipamento: Equipamento = new Equipamento();
-				
-				equipamento.ordem = portalController.portalEmEdicao.equipamento.length+1;
-				equipamento.status = 1;
-				
-				portalController.portalEmEdicao.equipamento.addItem(equipamento);		
+				edicaoEquipamento.novoEquipamento(portalController.portalEmEdicao);
+				vsPortal.selectedChild = INavigatorContent(vsPortal.getChildByName("equipamento"));	
 			}
 			
 			protected function removerEquipamento(event:MouseEvent):void
@@ -247,6 +254,12 @@
 				mapa.map.setCenter(event.latLng);				
 			}
 			
+			protected function adicionarEquipamento(event:EquipamentoEvent):void
+			{
+				portalController.portalEmEdicao.equipamento.addItem(event.equipamento);		
+				vsPortal.selectedChild = INavigatorContent(vsPortal.getChildByName("edicao"));
+			}
+			
 		]]>
 	</fx:Script>
 	
@@ -255,12 +268,12 @@
 		
 		<mygoogle:Mapa id="mapa"  mapaPronto="mapaProntoHandler(event)" height="80%" width="100%" />
 		
-		<mx:ViewStack id="vsPortal" height="20%" width="100%" resizeEffect="Resize">
+		<mx:ViewStack id="vsPortal" height="20%" width="100%" resizeEffect="Resize" creationPolicy="all">
 			
 			<s:NavigatorContent id="exibicao">
 				<s:HGroup id="parteDeBaixo" height="100%" width="100%">
 					
-					<view:LocalizarCoordenada novaCoordenada="centralizarMapa(event)"/>
+					<component:LocalizarCoordenada novaCoordenada="centralizarMapa(event)"/>
 					
 					<s:Spacer width="200"/> 
 					
@@ -324,15 +337,23 @@
 						<mx:DataGrid id="dgEquipamentos" dataProvider="{portalController.portalEmEdicao.equipamento}" editable="true">
 							<mx:columns>
 								<mx:DataGridColumn dataField="nome" headerText="Nome"/>								
-								<mx:DataGridColumn dataField="ordem" headerText="Ordem"/>								
-								<mx:DataGridColumn dataField="status" headerText="Status"/>
+								<mx:DataGridColumn dataField="sentido" headerText="Sentido" labelFunction="SentidoEnum.sentidoDataGridLabelFunction"/>								
+								<mx:DataGridColumn dataField="status" headerText="Status" labelFunction="StatusEnum.statusDataGridLabelFunction"/>
+								<mx:DataGridColumn headerText="Ações" width="80">
+									<mx:itemRenderer>
+										<fx:Component>
+											<mx:HBox paddingLeft="5">
+												<s:Image   source="@Embed('assets/excluirIcon.png')"  click="dispatchEvent(new Event('removerEquipamento', true))"/>
+											</mx:HBox>
+										</fx:Component>
+									</mx:itemRenderer>
+								</mx:DataGridColumn>
 							</mx:columns>
 						</mx:DataGrid>
 					</s:VGroup>
 					
 					<s:VGroup y="{dgEquipamentos.y}">
-						<s:Button id="btAdicionarEquipamento" label="Adicionar Equipamento" click="adicionarEquipamento(event)"/>
-						<s:Button id="btRemoverEquipamento" label="Remover Equipamento" click="removerEquipamento(event)"/>
+						<s:Button id="btAdicionarEquipamento" label="Adicionar Equipamento" click="novoEquipamento(event)"/>
 					</s:VGroup>
 					
 					<s:Spacer width="100"/>
@@ -347,6 +368,9 @@
 				
 			</s:NavigatorContent>
 			
+			<s:NavigatorContent id="equipamento" height="100%" width="100%">
+				<component:AdicionarEquipamentos id="edicaoEquipamento" portalDoEquipamento="{portalController.portalEmEdicao}" adicionarEquipamento="adicionarEquipamento(event)"/>				
+			</s:NavigatorContent>
 			
 		</mx:ViewStack>
 	</mx:VDividedBox>

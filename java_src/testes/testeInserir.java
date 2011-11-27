@@ -55,15 +55,15 @@ public class testeInserir {
 		
 		Equipamento e1 = new Equipamento();
 		e1.setNome("A1Eqp1");
-		e1.setOrdem(1);
-		e1.setStatus(1);
+//		e1.setOrdem(1);
+//		e1.setStatus(1);
 		e1.setPortal(p1);
 		session.save(e1);
 		
 		Equipamento e2 = new Equipamento();
 		e2.setNome("A1Eqp2");
-		e2.setOrdem(2);
-		e2.setStatus(1);
+//		e2.setOrdem(2);
+//		e2.setStatus(1);
 		e2.setPortal(p1);
 		session.save(e2);
 

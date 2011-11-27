@@ -5,8 +5,8 @@ package entity
 	{
 		private var _idEquipamento:Number;
 		private var _nome:String;
-		private var _ordem:Number;
-		private var _status:Number = 0;
+		private var _sentido:String;
+		private var _status:String;
 		private var _portal:Portal;
 		
 
@@ -30,23 +30,23 @@ package entity
 			_nome = value;
 		}
 
-		public function get ordem():Number
+		public function get sentido():String
 		{
-			return _ordem;
+			return _sentido;
 		}
 
-		public function set ordem(value:Number):void
+		public function set sentido(value:String):void
 		{
-			_ordem = value;
+			_sentido = value;
 		}
 		
 
-		public function get status():Number
+		public function get status():String
 		{
 			return _status;
 		}
 
-		public function set status(value:Number):void
+		public function set status(value:String):void
 		{
 			_status = value;
 		}

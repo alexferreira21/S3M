@@ -35,8 +35,8 @@ public class Estrada {
 			cascade = CascadeType.ALL, fetch=FetchType.LAZY)
 	private List<Segmento> segmentos;
 	
-	@OneToMany(targetEntity=FluxoAuxiliar.class, mappedBy="estrada", cascade = CascadeType.ALL)
-	private List<FluxoAuxiliar> fluxosAuxiliares;
+	@OneToMany(targetEntity=FluxoAlternativo.class, mappedBy="estrada", cascade = CascadeType.ALL)
+	private List<FluxoAlternativo> fluxosAlternativos;
 	
 	private Integer corEstrada;
 	
@@ -62,14 +62,6 @@ public class Estrada {
 	 
 	public void inserirSegmentos() {
 	 
-	}
-
-	public Long getId() {
-		return idEstrada;
-	}
-
-	public void setId(Long id) {
-		this.idEstrada = id;
 	}
 
 	public String getNome() {
@@ -120,12 +112,12 @@ public class Estrada {
 		this.encodedPolylineString = encodedPolylineString;
 	}
 
-	public List<FluxoAuxiliar> getFluxosAuxiliares() {
-		return fluxosAuxiliares;
+	public List<FluxoAlternativo> getFluxosAlternativos() {
+		return fluxosAlternativos;
 	}
 
-	public void setFluxosAuxiliares(List<FluxoAuxiliar> fluxosAuxiliares) {
-		this.fluxosAuxiliares = fluxosAuxiliares;
+	public void setFluxosAlternativos(List<FluxoAlternativo> fluxosAlternativos) {
+		this.fluxosAlternativos = fluxosAlternativos;
 	}
 
 

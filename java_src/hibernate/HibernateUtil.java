@@ -7,7 +7,7 @@ import org.hibernate.tool.hbm2ddl.SchemaExport;
 
 import entity.Equipamento;
 import entity.Estrada;
-import entity.FluxoAuxiliar;
+import entity.FluxoAlternativo;
 import entity.Municipio;
 import entity.Portal;
 import entity.Segmento;
@@ -26,7 +26,7 @@ public class HibernateUtil {
 		.addAnnotatedClass(UF.class)
 		.addAnnotatedClass(Segmento.class)
 		.addAnnotatedClass(Estrada.class)
-		.addAnnotatedClass(FluxoAuxiliar.class);
+		.addAnnotatedClass(FluxoAlternativo.class);
 		config.configure("hibernate.cfg.xml");
 		
 		//new SchemaExport(config).create(true, true);

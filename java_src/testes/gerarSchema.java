@@ -13,8 +13,6 @@ public class gerarSchema {
 		
 		Session session = HibernateUtil.getInstance().getSession();
 		session.close();
-		
-		
 	}
 
 }

@@ -37,6 +37,11 @@ package entity
 			longitude = latLng.lng();
 		}
 		
+		
+		public function toString(): String
+		{
+			return this.nome + " " + this.municipio.nome + ", " + this.municipio.uf.sigla;
+		}
 
 		
 		public function get idPortal():Number

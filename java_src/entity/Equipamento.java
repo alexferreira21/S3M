@@ -1,6 +1,8 @@
 package entity;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -18,9 +20,11 @@ public class Equipamento {
 	
 	private String nome;
 	
-	private Integer ordem;
+	@Enumerated(EnumType.ORDINAL)
+	private SentidoEnum sentido;
 	 
-	private Integer status;
+	@Enumerated(EnumType.ORDINAL)
+	private StatusEnum status;
 	
 	@ManyToOne
 	@JoinColumn(name="idPortal")
@@ -39,19 +43,19 @@ public class Equipamento {
 	}
 
 
-	public Integer getOrdem() {
-		return ordem;
+	public SentidoEnum getSentido() {
+		return sentido;
 	}
 
-	public void setOrdem(Integer ordem) {
-		this.ordem = ordem;
+	public void setSentido(SentidoEnum sentido) {
+		this.sentido = sentido;
 	}
 
-	public Integer getStatus() {
+	public StatusEnum getStatus() {
 		return status;
 	}
 
-	public void setStatus(Integer status) {
+	public void setStatus(StatusEnum status) {
 		this.status = status;
 	}
 

@@ -7,6 +7,7 @@ import java.util.List;
 import org.hibernate.Session;
 
 import entity.Estrada;
+import entity.FluxoAlternativo;
 import entity.Segmento;
 
 public class EstradaService {
@@ -17,15 +18,17 @@ public class EstradaService {
 		
 		session.beginTransaction();
 		
-		if(estrada.getId() ==null){
+		if(estrada.getIdEstrada() ==null){
 			
 			session.save(estrada);
 		}
 		else{
 			session.merge(estrada);
 		}
+		
 		session.getTransaction().commit();
 		
+		estrada = (Estrada)session.createQuery("from Estrada where idEstrada = "+ estrada.getIdEstrada()).uniqueResult(); //Gambiarra para atualizar os ids dos fluxos, consertar isso!
 		return estrada;
 	}
 	
@@ -47,4 +50,23 @@ public class EstradaService {
 		
 		return estradaAExcluir;
 	}
+	
+	public FluxoAlternativo removerFluxoAlternativo(FluxoAlternativo fluxoAlternativo){
+		Session session = HibernateUtil.getInstance().getSession();
+		session.beginTransaction();
+		
+		Estrada estradaDoFluxoAlternativo = (Estrada)session.createQuery("from Estrada where idEstrada = "+ fluxoAlternativo.getEstrada().getIdEstrada()).uniqueResult();
+		FluxoAlternativo fluxoAlternativoAExcluir = (FluxoAlternativo) session.createQuery("from FluxoAlternativo where idFluxoAlternativo = "+ fluxoAlternativo.getIdFluxoAlternativo()).uniqueResult();
+		
+		estradaDoFluxoAlternativo.getFluxosAlternativos().remove(fluxoAlternativoAExcluir);
+		
+		session.delete(fluxoAlternativoAExcluir);
+		session.save(estradaDoFluxoAlternativo);
+		
+		session.getTransaction().commit();
+		
+		return fluxoAlternativoAExcluir;
+	}
+	
+	
 }

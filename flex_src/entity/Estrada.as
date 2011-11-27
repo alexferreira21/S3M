@@ -24,7 +24,7 @@ package entity
 		private var _numeroSegmentos: int;
 		private var _ufs : ArrayCollection;
 		private var _segmentos: ArrayCollection;
-		private var _fluxosAuxiliares: ArrayCollection;
+		private var _fluxosAlternativos: ArrayCollection;
 		
 		private var _encodedPolylineString: String;
 
@@ -216,14 +216,14 @@ package entity
 		}
 		
 		[Bindable]
-		public function get fluxosAuxiliares():ArrayCollection
+		public function get fluxosAlternativos():ArrayCollection
 		{
-			return _fluxosAuxiliares;
+			return _fluxosAlternativos;
 		}
 
-		public function set fluxosAuxiliares(value:ArrayCollection):void
+		public function set fluxosAlternativos(value:ArrayCollection):void
 		{
-			_fluxosAuxiliares = value;
+			_fluxosAlternativos = value;
 		}
 
 

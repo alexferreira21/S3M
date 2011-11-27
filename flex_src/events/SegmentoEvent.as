@@ -1,12 +1,13 @@
 package events
 {
+	
 	import entity.Segmento;
 	
 	import flash.events.Event;
 	
 	public class SegmentoEvent extends Event
 	{
-		public static const ADICIONAR_SEGMENTO: String = "adcionarSegmento";
+		public static const ADICIONAR_SEGMENTO: String = "adicionarSegmento";
 		
 		public var segmento: Segmento;
 		
