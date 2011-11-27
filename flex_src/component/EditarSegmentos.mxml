@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 currentState="StatePortalOrigem" xmlns:component="component.*"
+		 >
+	
+	
+	
+	<s:states>
+		<s:State name="StatePortalOrigem"/>
+		<s:State name="StatePortalDestino"/>
+	</s:states>
+	
+	<fx:Metadata>
+		[Event(name="voltar", type="flash.events.Event")]
+		[Event(name="adicionarSegmento", type="events.SegmentoEvent")]
+	</fx:Metadata>	
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import com.google.maps.interfaces.INavigationControl;
+			import com.google.maps.services.Directions;
+			import com.google.maps.services.DirectionsEvent;
+			
+			import entity.Estrada;
+			import entity.Portal;
+			import entity.Segmento;
+			
+			import events.SegmentoEvent;
+			
+			import mx.controls.Alert;
+			import mx.core.INavigatorContent;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			
+			import mygoogle.events.MarkerPortalEvent;
+			
+			import util.AlertUtil;
+			
+			public static const SEM_EDICAO: int = -1;  
+			public static const EDICAO_PORTAL_ORIGEM: int = 0;  
+			public static const EDICAO_PORTAL_DESTINO: int = 1; 
+			
+			public var emSelecaoPortal: int = SEM_EDICAO;
+			private var _segmentoEmEdicao: Segmento;			
+			
+			private var _portalOrigem: Portal;
+			private var _portalDestino: Portal;
+			
+			[Bindable]
+			private var _portalString: String;
+			
+			
+			public function selecionarMarkerPortal(event: MarkerPortalEvent):void
+			{	
+				var portalSelecionado: Portal = event.markerPortal.portal;
+				switch (emSelecaoPortal) 
+				{
+					case EDICAO_PORTAL_ORIGEM:
+						_portalOrigem = portalSelecionado;
+						_portalString = _portalOrigem.nome + " " + _portalOrigem.municipio.nome + ", " + _portalOrigem.municipio.uf.sigla;
+						vsSegmentos.selectedChild = INavigatorContent(vsSegmentos.getChildByName("confirmacaoPortalView"));
+						tiKM.setFocus();
+						break;
+					case EDICAO_PORTAL_DESTINO:
+						_portalDestino = portalSelecionado;
+						_portalString = _portalDestino.nome + " " + _portalDestino.municipio.nome + ", " + _portalDestino.municipio.uf.sigla;
+						
+						if(_segmentoEmEdicao.estrada.segmentos.length > 0){
+							var ultimoSegmento: Segmento = Segmento(_segmentoEmEdicao.estrada.segmentos.getItemAt(_segmentoEmEdicao.estrada.segmentos.length - 1));
+							
+							_segmentoEmEdicao.portalOrigem = ultimoSegmento.portalDestino;
+							_segmentoEmEdicao.kmInicial = ultimoSegmento.kmFinal;
+						}
+						vsSegmentos.selectedChild = INavigatorContent(vsSegmentos.getChildByName("confirmacaoPortalView"));
+						tiKM.setFocus();
+						break;
+				}
+			}
+			
+			protected function irParaSelecaoPortal():void
+			{
+				if(tiNomeSegmento.text == null || tiNomeSegmento.text == "")
+				{
+					Alert.show("Você deve digitar um nome para o segmento.");
+					return;
+				}
+				
+				if(_segmentoEmEdicao.estrada.segmentos.length == 0)
+				{
+					emSelecaoPortal = EDICAO_PORTAL_ORIGEM;
+					this.currentState = "StatePortalOrigem";
+				}
+				else
+				{
+					emSelecaoPortal = EDICAO_PORTAL_DESTINO;
+					this.currentState = "StatePortalDestino";
+				}
+				
+				_segmentoEmEdicao.nome = tiNomeSegmento.text;
+				vsSegmentos.selectedChild = INavigatorContent(vsSegmentos.getChildByName("selecaoPortalView"));
+			}			
+			
+			protected function irParaSelecaoPortalDestino():void
+			{
+				if(tiKM.text == null || tiKM.text == "")
+				{
+					Alert.show("Você deve preencher o campo KM.");
+					return;
+				}
+				
+				_segmentoEmEdicao.portalOrigem = _portalOrigem;
+				_segmentoEmEdicao.kmInicial = parseInt(tiKM.text);
+				
+				emSelecaoPortal = EDICAO_PORTAL_DESTINO;
+				this.currentState = "StatePortalDestino";
+				tiKM.text = "";
+				vsSegmentos.selectedChild = INavigatorContent(vsSegmentos.getChildByName("selecaoPortalView"));
+			}
+			
+			protected function salvarSegmento():void
+			{
+				if(tiKM.text == null || tiKM.text == "")
+				{
+					Alert.show("Você deve preencher o campo KM.")
+					return;
+				}
+				_segmentoEmEdicao.portalDestino = _portalDestino;
+				_segmentoEmEdicao.kmFinal = parseInt(tiKM.text);
+				
+				finalizarEdicao();		
+				dispatchEvent(new SegmentoEvent(SegmentoEvent.ADICIONAR_SEGMENTO,_segmentoEmEdicao));
+			}
+			
+			protected function finalizarEdicao():void
+			{
+				emSelecaoPortal = SEM_EDICAO;
+				_portalOrigem = null;
+				_portalDestino = null;
+				_portalString = null;
+				tiNomeSegmento.text = "";
+				this.currentState = "StatePortalOrigem";
+				
+				if(tiKM){
+					tiKM.text = null;
+				}
+				vsSegmentos.selectedChild = INavigatorContent(vsSegmentos.getChildByName("nomeSegmento"));
+				
+			}
+			
+			protected function cancelarEdicao(event:CloseEvent):void
+			{
+				if (event.detail==Alert.NO)
+				{
+					return;
+				}
+				
+				finalizarEdicao();
+				novoSegmento(null);
+				dispatchEvent(new Event("voltar",true));
+			}
+			
+			public function novoSegmento(estrada: Estrada):void
+			{
+				_segmentoEmEdicao = new Segmento();	
+				_segmentoEmEdicao.estrada = estrada; //Tentar colocar no construtor, ver se não dá problema no BlazeDS
+				vsSegmentos.selectedChild = INavigatorContent(vsSegmentos.getChildByName("nomeSegmento"));
+				tiNomeSegmento.setFocus();
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<mx:ViewStack id="vsSegmentos" height="100%" width="100%">
+		
+		<s:NavigatorContent id="nomeSegmento" >
+			<s:VGroup>
+				<s:FormItem label="Nome do Segmento">
+					<component:SubmitTextInput id="tiNomeSegmento" submitFunction="irParaSelecaoPortal"/>
+				</s:FormItem>
+				<s:HGroup>
+					<s:Button  label="Próximo..." click="irParaSelecaoPortal()"/>
+					<s:Button label="Cancelar" click="{AlertUtil.criarJanelaConfirmacao('Tem certeza de que deseja cancelar a edição?','Cancelar Edição',this,cancelarEdicao)}"/>
+				</s:HGroup>
+			</s:VGroup>
+		</s:NavigatorContent>
+		
+		<s:NavigatorContent id="selecaoPortalView">
+			<s:VGroup paddingTop="30">
+				<s:Label x="264" y="74" text="Selecione no mapa o portal de origem."
+						 text.StatePortalDestino="Selecione no mapa o próximo portal da estrada"
+						 text.StatePortalOrigem="Selecione no mapa o primeiro portal da estrada."/>
+				<s:Button label="Cancelar" click="{AlertUtil.criarJanelaConfirmacao('Tem certeza de que deseja cancelar a edição?','Cancelar Edição',this,cancelarEdicao)}"/>
+			</s:VGroup>
+		</s:NavigatorContent>
+		
+		<s:NavigatorContent id="confirmacaoPortalView">
+			<s:VGroup>
+				<s:FormItem label="Portal Selecionado:">
+					<s:Label id="lbPortalSelecionado" text="{_portalString}"/>
+				</s:FormItem>
+				<s:FormItem label="KM:">
+					<component:SubmitTextInput id="tiKM" width="31" restrict="0-9" 
+											   submitFunction.StatePortalOrigem="irParaSelecaoPortalDestino"
+											   submitFunction.StatePortalDestino="salvarSegmento"/>
+				</s:FormItem>
+				
+				<s:HGroup>
+					<s:Button id="btAcao" label="Próximo..."
+							  label.StatePortalDestino="Terminar"
+							  click.StatePortalOrigem="irParaSelecaoPortalDestino()"
+							  click.StatePortalDestino="salvarSegmento()"/>
+					
+					<s:Spacer width="20"/>
+					
+					<s:Button id="btCancelar"  label="Cancelar"  click="{AlertUtil.criarJanelaConfirmacao('Tem certeza de que deseja cancelar a edição?','Cancelar Edição',this,cancelarEdicao)}"/>
+				</s:HGroup>
+			</s:VGroup>
+		</s:NavigatorContent>
+		
+	</mx:ViewStack>
+	
+	
+	
+	
+	
+</s:Group>

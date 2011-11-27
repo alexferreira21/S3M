@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	
+	<fx:Metadata>
+		[Event(name="voltar", type="flash.events.Event")]
+		[Event(name="adicionarEquipamento", type="events.EquipamentoEvent")]
+	</fx:Metadata>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import entity.Equipamento;
+			import entity.Portal;
+			
+			import events.EquipamentoEvent;
+			
+			import mx.collections.ArrayCollection;
+			
+			import util.SentidoEnum;
+			import util.StatusEnum;
+			
+			public var portalDoEquipamento: Portal;
+			private var equipamentoEmEdicao: Equipamento;
+			
+			[Bindable]
+			private var sentidoProvider:ArrayCollection = new ArrayCollection([SentidoEnum.POSITIVO, SentidoEnum.NEGATIVO]);
+			
+			[Bindable]
+			private var statusProvider:ArrayCollection = new ArrayCollection([StatusEnum.OPERANTE, StatusEnum.INOPERANTE]);
+			
+			
+			
+			protected function cancelarEdicao(event:MouseEvent):void
+			{
+				novoEquipamento(null);
+				finalizarEdicao();
+				
+				dispatchEvent(new Event("voltar",true));
+			}
+			
+			protected function salvarEquipamento(event:MouseEvent):void
+			{
+				equipamentoEmEdicao.nome = tiNomeEquipamento.text;
+				equipamentoEmEdicao.sentido = String(cbSentido.selectedItem);
+				equipamentoEmEdicao.status = String(cbStatus.selectedItem);
+				
+				dispatchEvent(new EquipamentoEvent(EquipamentoEvent.ADICIONAR_EQUIPAMENTO,equipamentoEmEdicao));
+				
+				finalizarEdicao();
+				novoEquipamento(null);
+			}
+			
+			private function finalizarEdicao():void
+			{
+				tiNomeEquipamento.text = "";
+				cbSentido.selectedIndex = -1;
+				cbStatus.selectedIndex = -1;
+			}
+			
+			public function novoEquipamento(portal: Portal):void
+			{
+				equipamentoEmEdicao = new Equipamento();
+				equipamentoEmEdicao.portal = portal;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	
+	
+	<s:Label x="18" y="20" text="Nome"/>
+	<s:TextInput id="tiNomeEquipamento" x="81" y="14"/>
+	
+	<s:Label x="10" y="55" text="Sentido"/>
+	<s:ComboBox id="cbSentido" x="81" y="48" dataProvider="{sentidoProvider}"
+				labelFunction="SentidoEnum.sentidoLabelFunction"/>
+	
+	<s:Label x="17" y="91" text="Status"/>
+	<s:ComboBox id="cbStatus" x="81" y="83" dataProvider="{statusProvider}"
+				labelFunction="StatusEnum.statusLabelFunction"/>
+	
+	<s:HGroup x="-2" y="142">
+		<s:Button id="btSalvar" label="Salvar" click="salvarEquipamento(event)"/>
+		<s:Button id="btCancelar" label="Cancelar" click="cancelarEdicao(event)"/>
+	</s:HGroup>
+	
+	
+</s:Group>

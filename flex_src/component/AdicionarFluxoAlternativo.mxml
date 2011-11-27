@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300">
+	
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	
+	<fx:Metadata>
+		[Event(name="voltar", type="flash.events.Event")]
+		[Event(name="adicionarFluxoAlternativo", type="events.FluxoAlternativoEvent")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import entity.Estrada;
+			import entity.FluxoAlternativo;
+			import entity.Portal;
+			import entity.Segmento;
+			
+			import events.FluxoAlternativoEvent;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.INavigatorContent;
+			import mx.core.mx_internal;
+			import mx.events.CloseEvent;
+			
+			import mygoogle.events.MarkerPortalEvent;
+			
+			import util.AlertUtil;
+			import util.TipoFluxoAlternativoEnum;
+			
+			[Bindable]
+			public var estradaEmEdicao: Estrada;
+			
+			[Bindable]
+			private var fluxoAlternativoEmEdicao: FluxoAlternativo;
+			
+			[Bindable]
+			private var tipoFluxoAlternativoProvider:ArrayCollection = new ArrayCollection([TipoFluxoAlternativoEnum.ENTRADA, TipoFluxoAlternativoEnum.SAIDA, TipoFluxoAlternativoEnum.ENTRADA_SAIDA]);
+			
+			
+			public function selecionarMarkerPortal(event: MarkerPortalEvent):void
+			{	
+				var portalSelecionado: Portal = event.markerPortal.portal;
+				var encontrou: Boolean = false;
+				
+				for each (var segmentoItem: Segmento in estradaEmEdicao.segmentos)
+				{
+					if(portalSelecionado.idPortal == segmentoItem.portalOrigem.idPortal || portalSelecionado.idPortal == segmentoItem.portalDestino.idPortal)
+					{
+						encontrou = true;
+						break;
+					}
+				}	
+				
+				if(!encontrou)
+				{
+					Alert.show("Você deve selecionar um portal pertencente a "+ estradaEmEdicao.nome+".");
+					return;
+				}
+				
+				for each (var fluxoAlternativoItem: FluxoAlternativo in estradaEmEdicao.fluxosAlternativos)
+				{
+					if(portalSelecionado.idPortal == fluxoAlternativoItem.portal.idPortal)
+					{
+						Alert.show("Portal já selecionado");
+						return;
+					}
+				}
+				
+				
+				fluxoAlternativoEmEdicao.portal = portalSelecionado;
+				vsFluxoAlternativo.selectedChild = INavigatorContent(vsFluxoAlternativo.getChildByName("confirmacao"));
+			}
+			
+			private function salvarFluxoAlternativo(event:MouseEvent):void
+			{
+				fluxoAlternativoEmEdicao.tipo = String(cbTipo.selectedItem);
+				
+				dispatchEvent(new FluxoAlternativoEvent(FluxoAlternativoEvent.ADICIONAR_FLUXO_ALTERNATIVO,fluxoAlternativoEmEdicao));
+				finalizarEdicao();
+			}
+			
+			
+			
+			protected function cancelarEdicao(event:CloseEvent):void
+			{
+				if (event.detail==Alert.NO)
+				{
+					return;
+				}
+				
+				finalizarEdicao();
+				novoFluxoAlternativo(null);
+				dispatchEvent(new Event("voltar",true));
+			}
+			
+			private function finalizarEdicao():void
+			{
+				estradaEmEdicao = null; 
+				cbTipo.selectedIndex = -1;
+			}
+			
+			public function novoFluxoAlternativo(estrada: Estrada):void
+			{
+				estradaEmEdicao = estrada;
+				
+				fluxoAlternativoEmEdicao = new FluxoAlternativo();
+				fluxoAlternativoEmEdicao.estrada = estrada; //Tentar colocar no construtor, ver se não dá problema no BlazeDS
+				vsFluxoAlternativo.selectedChild = INavigatorContent(vsFluxoAlternativo.getChildByName("selecaoPortal"));
+			}
+			
+		]]>
+	</fx:Script>
+	
+	
+	
+	
+	<mx:ViewStack id="vsFluxoAlternativo" height="100%" width="100%">
+		
+		<s:NavigatorContent id="selecaoPortal">
+			<s:layout>
+				<s:VerticalLayout/>
+			</s:layout>
+			
+			<s:Label text="Selecione no mapa o portal do fluxo auxiliar"/>
+			<s:Button label="Cancelar" click="{AlertUtil.criarJanelaConfirmacao('Tem certeza de que deseja cancelar?', 'Cancelar Seleção',this,cancelarEdicao)}"/>
+		</s:NavigatorContent>
+		
+		<s:NavigatorContent id="confirmacao">
+			<s:layout>
+				<s:VerticalLayout/>
+			</s:layout>				
+			
+			<s:FormItem label="Portal Selecionado">
+				<s:Label id="lbPortalSelecionado" text="{fluxoAlternativoEmEdicao.portal.toString()}"/>
+			</s:FormItem>
+			
+			<s:FormItem label="Tipo">
+				<s:ComboBox id="cbTipo" dataProvider="{tipoFluxoAlternativoProvider}" labelFunction="util.TipoFluxoAlternativoEnum.fluxoAlternativoLabelFunction"/>
+			</s:FormItem>
+			
+			<s:HGroup>
+				<s:Button id="btSalval" label="Salvar" click="salvarFluxoAlternativo(event)"/>
+				<s:Button id="btCancelar" label="Cancelar" click="{AlertUtil.criarJanelaConfirmacao('Tem certeza de que deseja cancelar?', 'Cancelar Edição',this,cancelarEdicao)}"/>
+			</s:HGroup>
+		</s:NavigatorContent>
+		
+		
+	</mx:ViewStack>
+	
+	
+	
+	
+	
+</s:Group>
