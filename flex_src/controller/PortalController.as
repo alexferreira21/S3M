@@ -8,7 +8,6 @@ package controller
 	
 	import entity.Municipio;
 	import entity.Portal;
-	import entity.StatusEquipamentoEnum;
 	import entity.UF;
 	
 	import model.BaseModel;
@@ -29,22 +28,31 @@ package controller
 		
 		private var portalService: RemoteObject = new RemoteObject("portalService");
 		
+		private static var instance:PortalController;
+		
 		[Bindable]
 		public var portais: ArrayCollection = BaseModel.getInstance().portais;
 		
 		private var _portalEmEdicao: Portal;
-		private var _ufDataProvider: ArrayCollection;
+		
+		[Bindable]
+		public var ufDataProvider: ArrayCollection;
 		
 		public var geocoder: ClientGeocoder;
 		private var sucessoGeocoderRetornoView: Function;
 		private var falhaGeocoderRetornoView: Function;
 		
 		
+		public static function getInstance() : PortalController {  
+			if (instance == null)  
+				instance = new PortalController( new SingletonEnforcer );  
+			return instance;  
+		}
 		
-
-		
-		public function PortalController()
+		public function PortalController(enforcer:SingletonEnforcer)
 		{
+			if (enforcer == null)  
+				throw new Error("Só pode haver uma instância de Singleton");
 			
 			var ufDataProviderToken: AsyncToken = portalService.getUFDataProvider();
 			ufDataProviderToken.addResponder(new Responder(getUFDataProviderResult, getUFDataProviderFault));
@@ -52,7 +60,7 @@ package controller
 		
 		private function getUFDataProviderResult(event: ResultEvent):void
 		{
-			_ufDataProvider = ArrayCollection(event.result);
+			ufDataProvider = ArrayCollection(event.result);
 		}
 		
 		private function getUFDataProviderFault(event: FaultEvent):void
@@ -69,11 +77,6 @@ package controller
 		public function set portalEmEdicao(value:Portal):void
 		{
 			_portalEmEdicao = value;
-		}
-		
-		public function get ufDataProvider():ArrayCollection
-		{
-			return _ufDataProvider;
 		}
 		
 		public function salvarPortal():void
@@ -185,16 +188,6 @@ package controller
 			
 		}
 		
-		
-		public function get equipamentosDataProvider():ArrayCollection //PARA O COMBOBOX DO STATUS DE EQUIPAMENTO
-		{
-			var array:ArrayCollection = new ArrayCollection();
-			array.addItem(StatusEquipamentoEnum.OPERANTE);
-			array.addItem(StatusEquipamentoEnum.INOPERANTE);
-			
-			return array;
-		}
-		
 		public function removerPortal(portal:Portal, callbackSucces: Function, callbackFault: Function):void
 		{
 			var removerPortalToken: AsyncToken; 
@@ -207,3 +200,6 @@ package controller
 		
 	}
 }
+
+//Para bloquear o acesso ao constructor.
+internal class SingletonEnforcer {} 

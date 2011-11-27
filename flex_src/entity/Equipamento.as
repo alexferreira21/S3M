@@ -6,7 +6,6 @@ package entity
 		private var _idEquipamento:Number;
 		private var _nome:String;
 		private var _sentido:String;
-		private var _status:String;
 		private var _portal:Portal;
 		
 
@@ -40,16 +39,6 @@ package entity
 			_sentido = value;
 		}
 		
-
-		public function get status():String
-		{
-			return _status;
-		}
-
-		public function set status(value:String):void
-		{
-			_status = value;
-		}
 
 		public function get portal():Portal
 		{

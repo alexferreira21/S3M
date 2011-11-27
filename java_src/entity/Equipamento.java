@@ -22,9 +22,6 @@ public class Equipamento {
 	
 	@Enumerated(EnumType.ORDINAL)
 	private SentidoEnum sentido;
-	 
-	@Enumerated(EnumType.ORDINAL)
-	private StatusEnum status;
 	
 	@ManyToOne
 	@JoinColumn(name="idPortal")
@@ -49,14 +46,6 @@ public class Equipamento {
 
 	public void setSentido(SentidoEnum sentido) {
 		this.sentido = sentido;
-	}
-
-	public StatusEnum getStatus() {
-		return status;
-	}
-
-	public void setStatus(StatusEnum status) {
-		this.status = status;
 	}
 
 	public Portal getPortal() {

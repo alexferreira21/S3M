@@ -7,6 +7,7 @@
 		[Event(name="voltarEvent", type="flash.events.Event")]
 	</fx:Metadata>
 	
+	
 	<fx:Script>
 		<![CDATA[
 			import com.google.maps.MapMouseEvent;
@@ -18,9 +19,6 @@
 			import entity.Portal;
 			import entity.UF;
 			
-			import util.SentidoEnum;
-			import util.StatusEnum;
-			
 			import events.CoordenadaEvent;
 			import events.EquipamentoEvent;
 			
@@ -28,6 +26,7 @@
 			import mx.controls.Alert;
 			import mx.core.EventPriority;
 			import mx.core.INavigatorContent;
+			import mx.events.CloseEvent;
 			import mx.events.ListEvent;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
@@ -36,8 +35,11 @@
 			import mygoogle.events.MapaEvent;
 			import mygoogle.events.MarkerPortalEvent;
 			
+			import util.AlertUtil;
+			import util.SentidoEnum;
+			
 			[Bindable]
-			private var portalController: PortalController = new PortalController(); //FAZER UMA INTERFACE CONTROLLER;
+			private var portalController: PortalController = PortalController.getInstance(); //FAZER UMA INTERFACE CONTROLLER;
 			private var emEdicao: Boolean = false;
 			private var _markerSelecionado: MarkerPortal;
 			
@@ -45,8 +47,7 @@
 			
 			protected function mapaProntoHandler(event:MapaEvent):void
 			{
-				dgPortais.addEventListener("editarItem",editarItem);
-				dgPortais.addEventListener("removerItem",removerItem);
+				dgPortais.addEventListener("removerItem",confirmacaoRemoverPortal);
 				//dgEquipamentos.addEventListener("removerEquipamento",);
 				
 				mapa.map.addEventListener(MapMouseEvent.CLICK,criarPortal, false, EventPriority.DEFAULT, true);
@@ -57,7 +58,23 @@
 				}
 			}
 			
+			private function confirmacaoRemoverPortal(event: Event):void
+			{
+				
+				AlertUtil.criarJanelaConfirmacao("Tem certeza de que deseja remover este portal?","Remover Portal",this,removerPortal);
+			}
 			
+			protected function removerPortal(event:CloseEvent):void
+			{
+				if (event.detail==Alert.NO)
+				{
+					return;
+				}	
+				
+				var portal:Portal = Portal(dgPortais.selectedItem);
+				
+				portalController.removerPortal(portal,removerPortalSucesso,removerPortalFalha);
+			}
 			
 			private function selecionarMarkerPortal(event: MarkerPortalEvent):void
 			{
@@ -109,19 +126,17 @@
 			{
 				setMarkerSelecionado(null);
 				
-				if(!emEdicao)
+				if(emEdicao)
 				{
-					var portal:Portal = new Portal();
-					portal.equipamento = new ArrayCollection();
-					portal.latLng = event.latLng;
-					var novoMarkerPortal:MarkerPortal = mapa.adicionarMarkerPortal(portal);
+					portalController.portalEmEdicao = new Portal();
+					portalController.portalEmEdicao.equipamento = new ArrayCollection();
+					portalController.portalEmEdicao.latLng = event.latLng;
+					var novoMarkerPortal:MarkerPortal = mapa.adicionarMarkerPortal(portalController.portalEmEdicao);
 					novoMarkerPortal.addEventListener(MarkerPortalEvent.PORTAL_CLICK,selecionarMarkerPortal);
 					portalController.geocodificar(event.latLng.toString(),sucessoGeocodificacao,falhaGeocodificacao);
-					editarPortal(portal);
-				}
-				else
-				{
-					Alert.show("Não é possível adicionar um portal enquanto estiver no modo edição");
+					
+					vsPortal.selectedChild = INavigatorContent(vsPortal.getChildByName("edicao"));	
+					emEdicao = false;
 				}
 				
 			}
@@ -146,31 +161,6 @@
 				Alert.show(event.fault.message);
 			}
 			
-			protected function editarPortal(portal:Portal):void
-			{
-				emEdicao = true;
-				
-				portalController.portalEmEdicao = portal;
-				
-				if(!isNaN(portal.idPortal) && cbUF!=null)
-				{
-					cbUF.selectedItem = portal.municipio.uf;
-				}
-				vsPortal.selectedChild = INavigatorContent(vsPortal.getChildByName("edicao"));	
-			}
-			
-			
-			protected function editarItem(e:Event):void
-			{
-				editarPortal(Portal(dgPortais.selectedItem));
-			}
-			
-			protected function removerItem(e:Event):void
-			{
-				var portal:Portal = Portal(dgPortais.selectedItem);
-				
-				portalController.removerPortal(portal,removerPortalSucesso,removerPortalFalha);
-			}
 			
 			private function removerPortalSucesso(event: ResultEvent):void
 			{
@@ -260,6 +250,28 @@
 				vsPortal.selectedChild = INavigatorContent(vsPortal.getChildByName("edicao"));
 			}
 			
+			protected function voltarParaMenu(event:MouseEvent):void
+			{
+				sairEdicao();
+				dispatchEvent(new Event('voltarEvent'));
+			}
+			
+			protected function novoPortal(event:MouseEvent):void
+			{
+				emEdicao = true;
+				vsPortal.selectedChild = INavigatorContent(vsPortal.getChildByName("ncNovoPortal"));	
+			}
+			
+			protected function cancelarNovoPortal(event:MouseEvent):void
+			{
+				sairEdicao();
+			}
+			
+			protected function cancelarEdicaoEquipamento(event:Event):void
+			{
+				vsPortal.selectedChild = INavigatorContent(vsPortal.getChildByName("edicao"));			
+			}
+			
 		]]>
 	</fx:Script>
 	
@@ -276,18 +288,21 @@
 					<component:LocalizarCoordenada novaCoordenada="centralizarMapa(event)"/>
 					
 					<s:Spacer width="200"/> 
-					
+
 					<mx:DataGrid id="dgPortais"  doubleClickEnabled="true" dataProvider="{portalController.portais}"
 								 height="100%" itemClick="selecionarPortalNoDatagrid(event)" itemDoubleClick="itemDoubleClickHandler(event)">
 						<mx:columns>
 							<mx:DataGridColumn dataField="nome" headerText="Nome" width="200"/>
 							<mx:DataGridColumn dataField="latitude" headerText="Latitude" width="150"/>
 							<mx:DataGridColumn dataField="longitude" headerText="Longitude" width="150"/>	
-							<mx:DataGridColumn headerText="Ações" width="80">
+							<mx:DataGridColumn dataField="altitude" headerText="Altitude" width="50"/>	
+							<mx:DataGridColumn dataField="municipio.nome" headerText="Municipio" width="150"/>	
+							<mx:DataGridColumn dataField="municipio.uf.sigla" headerText="UF" width="50"/>	
+							<mx:DataGridColumn dataField="equipamento.length" headerText="Equipamentos" width="100"/>	
+							<mx:DataGridColumn headerText="Ações" width="50">
 								<mx:itemRenderer>
 									<fx:Component>
 										<mx:HBox paddingLeft="5">
-											<s:Image   source="@Embed('assets/editIcon.png')" click="dispatchEvent(new Event('editarItem', true))"/>
 											<s:Image   source="@Embed('assets/excluirIcon.png')"  click="dispatchEvent(new Event('removerItem', true))"/>
 										</mx:HBox>
 									</fx:Component>
@@ -296,8 +311,10 @@
 						</mx:columns>
 					</mx:DataGrid>
 					
-					<s:Button id="btVoltar" label="Voltar" click="{dispatchEvent(new Event('voltarEvent'))}"/>
-					
+					<s:VGroup>
+						<s:Button id="btNovoPortal" label="AdicionarPortal" click="novoPortal(event)"/>
+						<s:Button id="btVoltar" label="Voltar" click="voltarParaMenu(event)"/>
+					</s:VGroup>
 				</s:HGroup>
 			</s:NavigatorContent>
 			
@@ -334,12 +351,11 @@
 					<s:VGroup>
 						<s:Label text="Equipamentos"/> 
 						
-						<mx:DataGrid id="dgEquipamentos" dataProvider="{portalController.portalEmEdicao.equipamento}" editable="true">
+						<mx:DataGrid id="dgEquipamentos" dataProvider="{portalController.portalEmEdicao.equipamento}">
 							<mx:columns>
 								<mx:DataGridColumn dataField="nome" headerText="Nome"/>								
 								<mx:DataGridColumn dataField="sentido" headerText="Sentido" labelFunction="SentidoEnum.sentidoDataGridLabelFunction"/>								
-								<mx:DataGridColumn dataField="status" headerText="Status" labelFunction="StatusEnum.statusDataGridLabelFunction"/>
-								<mx:DataGridColumn headerText="Ações" width="80">
+								<mx:DataGridColumn headerText="Ações" width="50">
 									<mx:itemRenderer>
 										<fx:Component>
 											<mx:HBox paddingLeft="5">
@@ -361,7 +377,6 @@
 					<s:VGroup height="100%">
 						<s:Button id="btSalvar" label="Salvar" height="50%" click="salvarEdicao(event)"/> 
 						<s:Button id="btCancelar" label="Cancelar" height="50%" click="cancelarEdicao()"/>
-						
 					</s:VGroup>
 					
 				</s:HGroup>
@@ -369,9 +384,17 @@
 			</s:NavigatorContent>
 			
 			<s:NavigatorContent id="equipamento" height="100%" width="100%">
-				<component:AdicionarEquipamentos id="edicaoEquipamento" portalDoEquipamento="{portalController.portalEmEdicao}" adicionarEquipamento="adicionarEquipamento(event)"/>				
+				<component:AdicionarEquipamentos id="edicaoEquipamento" voltar="cancelarEdicaoEquipamento(event)" portalDoEquipamento="{portalController.portalEmEdicao}" adicionarEquipamento="adicionarEquipamento(event)"/>				
 			</s:NavigatorContent>
 			
+			<s:NavigatorContent id="ncNovoPortal" width="100%" height="100%">
+				<s:VGroup>
+					<s:Label text="Selecione no mapa o ponto em que deseja adicionar um portal."/>
+					<s:Button id="btCancelarNovoPortal" label="Cancelar" click="cancelarNovoPortal(event)"/>
+				</s:VGroup>
+			</s:NavigatorContent>			
+		
+		
 		</mx:ViewStack>
 	</mx:VDividedBox>
 </s:Group>

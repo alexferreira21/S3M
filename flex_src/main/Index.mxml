@@ -12,7 +12,7 @@
 			{
 				vs.selectedChild= INavigatorContent(vs.getChildByName('ncPortais'));
 				
-				 if(gerenciarPortalView != null)
+				if(gerenciarPortalView != null)
 				{
 					gerenciarPortalView.mapa.atualizarMapa();
 				} 

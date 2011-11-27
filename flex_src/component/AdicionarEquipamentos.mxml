@@ -20,7 +20,6 @@
 			import mx.collections.ArrayCollection;
 			
 			import util.SentidoEnum;
-			import util.StatusEnum;
 			
 			public var portalDoEquipamento: Portal;
 			private var equipamentoEmEdicao: Equipamento;
@@ -28,8 +27,6 @@
 			[Bindable]
 			private var sentidoProvider:ArrayCollection = new ArrayCollection([SentidoEnum.POSITIVO, SentidoEnum.NEGATIVO]);
 			
-			[Bindable]
-			private var statusProvider:ArrayCollection = new ArrayCollection([StatusEnum.OPERANTE, StatusEnum.INOPERANTE]);
 			
 			
 			
@@ -45,7 +42,6 @@
 			{
 				equipamentoEmEdicao.nome = tiNomeEquipamento.text;
 				equipamentoEmEdicao.sentido = String(cbSentido.selectedItem);
-				equipamentoEmEdicao.status = String(cbStatus.selectedItem);
 				
 				dispatchEvent(new EquipamentoEvent(EquipamentoEvent.ADICIONAR_EQUIPAMENTO,equipamentoEmEdicao));
 				
@@ -57,7 +53,6 @@
 			{
 				tiNomeEquipamento.text = "";
 				cbSentido.selectedIndex = -1;
-				cbStatus.selectedIndex = -1;
 			}
 			
 			public function novoEquipamento(portal: Portal):void
@@ -81,10 +76,6 @@
 	<s:Label x="10" y="55" text="Sentido"/>
 	<s:ComboBox id="cbSentido" x="81" y="48" dataProvider="{sentidoProvider}"
 				labelFunction="SentidoEnum.sentidoLabelFunction"/>
-	
-	<s:Label x="17" y="91" text="Status"/>
-	<s:ComboBox id="cbStatus" x="81" y="83" dataProvider="{statusProvider}"
-				labelFunction="StatusEnum.statusLabelFunction"/>
 	
 	<s:HGroup x="-2" y="142">
 		<s:Button id="btSalvar" label="Salvar" click="salvarEquipamento(event)"/>

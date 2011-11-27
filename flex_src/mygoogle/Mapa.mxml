@@ -36,7 +36,7 @@
 			import mygoogle.events.MarkerPortalEvent;
 			
 			[Bindable]
-			private var portalController: PortalController = new PortalController(); //FAZER UMA INTERFACE CONTROLLER;
+			private var portalController:PortalController = PortalController.getInstance();  
 			
 			[Bindable]
 			private var estradaController: EstradaController = new EstradaController();
