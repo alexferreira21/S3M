@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			   xmlns:s="library://ns.adobe.com/flex/spark" 
-			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:view="view.*">
+			   xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:view="view.*">
 	<fx:Script>
 		<![CDATA[
 			import mx.controls.Alert;
@@ -29,6 +29,7 @@
 				} 
 			}
 			
+			
 		]]>
 	</fx:Script>
 
@@ -41,11 +42,13 @@
 	<mx:ViewStack id="vs" height="100%" width="100%">
 		
 		<s:NavigatorContent id="menuPrincipal">
-			<s:Button id="btGerenciarPortais" x="428" y="290" label="Gerenciar Portais"
-					  click="gerenciarPortais(event)"/>
-					  
-			<s:Button id="btGerenciarEstradas" x="428" y="336" label="Gerenciar Estradas"
-					  click="gerenciarEstradas(event)"/>
+			<s:VGroup verticalCenter="0" horizontalCenter="0">
+				<s:Button id="btGerenciarPortais" label="Gerenciar Portais" click="gerenciarPortais(event)"/>
+				<s:Spacer height="10"/>
+				<s:Button id="btGerenciarEstradas"  label="Gerenciar Estradas" click="gerenciarEstradas(event)"/>
+				<s:Spacer height="10"/>
+				<s:Button id="btGraficos"  label="Gráficos" click="{vs.selectedChild= INavigatorContent(vs.getChildByName('ncGraficos'))}"/>
+			</s:VGroup>
 			
 		</s:NavigatorContent>
 		
@@ -57,6 +60,9 @@
 			<view:GerenciarEstradaView id="gerenciarEstradaView" voltarEvent="{vs.selectedIndex = 0}" />
 		</s:NavigatorContent>
 		
+		<s:NavigatorContent id="ncGraficos" width="100%" height="100%">
+			<view:GraficosView id="graficosView"/>
+		</s:NavigatorContent>
 		
 	</mx:ViewStack>		  
 	
