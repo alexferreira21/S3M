@@ -43,7 +43,7 @@
 			
 			public var markers: ArrayCollection = BaseModel.getInstance().markers;
 			
-			protected var centroDoMapa: LatLng = new LatLng(-22.823616,-43.170162); 
+			protected var centroDoMapa: LatLng = new LatLng(-22.931606,-43.980210); 
 			
 			
 			

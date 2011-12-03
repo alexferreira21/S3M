@@ -315,6 +315,7 @@
 			{
 				estradaEmEdicao = new Estrada();
 				estradaEmEdicao.segmentos = new ArrayCollection();
+				estradaEmEdicao.fluxosAlternativos = new ArrayCollection();
 				estradaEmEdicao.ufs = new ArrayCollection();
 				
 				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("criacaoEstrada"));
@@ -382,7 +383,8 @@
 								 doubleClickEnabled="true" itemDoubleClick="centralizarNoInicioDaEstrada(event)">
 						<mx:columns>
 							<mx:DataGridColumn dataField="nome" headerText="Nome"/> 
-							<mx:DataGridColumn dataField="segmentos.length" headerText="Numero de Segmentos"/> 
+							<mx:DataGridColumn dataField="segmentos.length" headerText="Segmentos" width="80"/> 
+							<mx:DataGridColumn dataField="fluxosAlternativos.length" headerText="Fluxos Alternativos" width="130"/> 
 							<mx:DataGridColumn dataField="ufs" headerText="Estados"/> 
 							<mx:DataGridColumn headerText="Ações" width="80">
 								<mx:itemRenderer>
@@ -449,7 +451,7 @@
 						</mx:columns>
 					</mx:DataGrid>
 					
-					<s:Button label="Adicionar Segmento" click="novoSegmento()" width="138" height="70"/>
+					<s:Button label="Adicionar Segmento" click="novoSegmento()"/>
 					
 					<s:Spacer width="100"/>
 					
@@ -469,7 +471,7 @@
 						</mx:columns>
 					</mx:DataGrid>
 
-					<s:Button id="btAdicionarFluxoAlternativo" label="AdicioanarFluxoAlternativo" click="novoFluxoAlternativo()"/>
+					<s:Button id="btAdicionarFluxoAlternativo" label="Adicioanar Fluxo Alternativo" click="novoFluxoAlternativo()"/>
 					
 				</s:HGroup>
 			</s:NavigatorContent>

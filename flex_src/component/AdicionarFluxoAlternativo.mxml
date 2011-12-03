@@ -126,7 +126,7 @@
 				<s:VerticalLayout/>
 			</s:layout>
 			
-			<s:Label text="Selecione no mapa o portal do fluxo auxiliar"/>
+			<s:Label text="Selecione no mapa o portal do fluxo alternativo"/>
 			<s:Button label="Cancelar" click="{AlertUtil.criarJanelaConfirmacao('Tem certeza de que deseja cancelar?', 'Cancelar Seleção',this,cancelarEdicao)}"/>
 		</s:NavigatorContent>
 		

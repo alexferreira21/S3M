@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<flexProperties enableServiceManager="false" flexServerFeatures="4" flexServerType="2" serverContextRoot="/S3M" serverRoot="C:/Users/Dclick/Projeto Final/Workspace/S3M/WebContent" serverRootURL="http://localhost:8080/S3M" toolCompile="true" useServerFlexSDK="false" version="2"/>
+<flexProperties enableServiceManager="false" flexServerFeatures="4" flexServerType="2" serverContextRoot="/S3M" serverRoot="C:/Users/Alexandre/Projeto Final/Workspace/S3M/WebContent" serverRootURL="http://localhost:80/S3M" toolCompile="true" useServerFlexSDK="false" version="2"/>
