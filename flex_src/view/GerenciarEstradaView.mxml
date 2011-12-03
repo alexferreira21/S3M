@@ -379,7 +379,7 @@
 					<component:LocalizarCoordenada novaCoordenada="centralizarMapa(event)"/>
 					<s:Spacer width="200"/> 
 					
-					<mx:DataGrid id="dgEstradas" dataProvider="{estradaController.estradas}" height="100%"
+					<mx:DataGrid id="dgEstradas" dataProvider="{estradaController.estradas}" height="100%" width="100%"
 								 doubleClickEnabled="true" itemDoubleClick="centralizarNoInicioDaEstrada(event)">
 						<mx:columns>
 							<mx:DataGridColumn dataField="nome" headerText="Nome"/> 
@@ -441,7 +441,7 @@
 					</s:VGroup>	
 					
 					
-					<mx:DataGrid id="dgSegmentos" dataProvider="{estradaEmEdicao.segmentos}" height="100%">
+					<mx:DataGrid id="dgSegmentos" dataProvider="{estradaEmEdicao.segmentos}" height="100%" width="100%">
 						<mx:columns>
 							<mx:DataGridColumn dataField="nome" headerText="Nome"/>
 							<mx:DataGridColumn dataField="kmInicial" headerText="KM Inicial"/>
@@ -455,7 +455,7 @@
 					
 					<s:Spacer width="100"/>
 					
-					<mx:DataGrid id="dgFluxosAlternativos" dataProvider="{estradaEmEdicao.fluxosAlternativos}" height="100%">
+					<mx:DataGrid id="dgFluxosAlternativos" dataProvider="{estradaEmEdicao.fluxosAlternativos}" height="100%" width="100%">
 						<mx:columns>
 							<mx:DataGridColumn dataField="portal.nome" headerText="Portal"/>
 							<mx:DataGridColumn dataField="tipo" headerText="Tipo" labelFunction="TipoFluxoAlternativoEnum.fluxoAlternativoDataGridLabelFunction"/>
