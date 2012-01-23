@@ -287,10 +287,11 @@
 					
 					<component:LocalizarCoordenada novaCoordenada="centralizarMapa(event)"/>
 					
-					<s:Spacer width="200"/> 
+					<s:Spacer width="80"/> 
 
 					<mx:DataGrid id="dgPortais"  doubleClickEnabled="true" dataProvider="{portalController.portais}"
-								 height="100%" itemClick="selecionarPortalNoDatagrid(event)" itemDoubleClick="itemDoubleClickHandler(event)">
+								 height="100%" width="100%" itemClick="selecionarPortalNoDatagrid(event)" 
+								  itemDoubleClick="itemDoubleClickHandler(event)">
 						<mx:columns>
 							<mx:DataGridColumn dataField="nome" headerText="Nome" width="200"/>
 							<mx:DataGridColumn dataField="latitude" headerText="Latitude" width="150"/>
@@ -318,7 +319,7 @@
 				</s:HGroup>
 			</s:NavigatorContent>
 			
-			<s:NavigatorContent id="edicao">
+			<s:NavigatorContent id="edicao" height="100%" width="100%">
 				<s:HGroup  height="100%" width="100%">
 					<s:Form>
 						<s:FormItem label="Nome">
@@ -348,10 +349,10 @@
 						</s:FormItem>
 					</s:Form>
 					
-					<s:VGroup>
+					<s:VGroup height="100%" width="100%">
 						<s:Label text="Equipamentos"/> 
 						
-						<mx:DataGrid id="dgEquipamentos" dataProvider="{portalController.portalEmEdicao.equipamento}">
+						<mx:DataGrid id="dgEquipamentos" height="100%" width="100%" dataProvider="{portalController.portalEmEdicao.equipamento}">
 							<mx:columns>
 								<mx:DataGridColumn dataField="nome" headerText="Nome"/>								
 								<mx:DataGridColumn dataField="sentido" headerText="Sentido" labelFunction="SentidoEnum.sentidoDataGridLabelFunction"/>								
@@ -375,8 +376,8 @@
 					<s:Spacer width="100"/>
 					
 					<s:VGroup height="100%">
-						<s:Button id="btSalvar" label="Salvar" height="50%" click="salvarEdicao(event)"/> 
-						<s:Button id="btCancelar" label="Cancelar" height="50%" click="cancelarEdicao()"/>
+						<s:Button id="btSalvar" label="Salvar"  click="salvarEdicao(event)"/> 
+						<s:Button id="btCancelar" label="Cancelar" click="cancelarEdicao()"/>
 					</s:VGroup>
 					
 				</s:HGroup>

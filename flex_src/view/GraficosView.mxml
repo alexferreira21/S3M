@@ -110,7 +110,7 @@
 								</mx:series>
 							</mx:ColumnChart>
 							
-							<mx:Legend x="1194" y="3" color="0x323232" dataProvider="{columnCargaXSemana}"/>
+							<mx:Legend x="50" y="10" color="0x323232" dataProvider="{columnCargaXSemana}"/>
 						</s:NavigatorContent>
 						
 						<s:NavigatorContent id="ncPesoXSemana" height="100%" width="100%">
@@ -166,7 +166,7 @@
 								</mx:series>
 							</mx:LineChart>
 							
-							<mx:Legend x="1120" y="10" color="0x323232" dataProvider="{linechart}"/>
+							<mx:Legend x="326" y="10" color="0x323232" dataProvider="{linechart}"/>
 						</s:NavigatorContent>
 					</mx:ViewStack>
 					<s:Image click="{dispatchEvent(new Event('voltarEvent',true))}" source="@Embed('assets/ico-voltar.png')"/>
