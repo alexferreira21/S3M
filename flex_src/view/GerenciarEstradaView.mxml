@@ -252,6 +252,11 @@
 			
 			protected function salvarEstrada():void
 			{
+				if(estradaEmEdicao.segmentos.length == 0)
+				{
+					Alert.show("Não é possível salvar uma estrada sem segmentos. Adicione pelo menos um segmento antes de salvar a estrada.");
+					return;
+				}
 				estradaEmEdicao.setPolylineOptions(estradaEmEdicao.polyline.getOptions());
 				estradaController.salvarEstrada(estradaEmEdicao);
 				finalizarEdicao();
@@ -292,9 +297,9 @@
 				
 				if(!isNaN(estradaEmEdicao.idEstrada))
 				{
-					//buscar denovo estrada no banco, para apagar segmentos adicionados antes de cancelar.
+					//Se a performace cair, trocar a linha de baixo pela busca de somente a estrada em edição.
+					mapa.atualizarMapa(); 
 					estradaEmEdicao.setPolylineOptions(Estrada.criarOptionsViaCor(estradaEmEdicao.corEstrada)); //mudar para o método novo e testar
-					mapa.map.addOverlay(estradaEmEdicao.polyline);
 				}
 				
 				
@@ -408,7 +413,7 @@
 			</s:NavigatorContent>
 			
 			<s:NavigatorContent id="criacaoEstrada">
-				<s:VGroup height="100%" width="100%">
+				<s:VGroup height="100%" width="100%" horizontalAlign="center">
 					<s:FormItem label="Nome da Estrada">
 						<component:SubmitTextInput id="tiNomeEstrada" submitFunction="novoSegmento"/>
 					</s:FormItem>
@@ -420,8 +425,8 @@
 			</s:NavigatorContent>
 			
 			<s:NavigatorContent id="edicaoEstrada">
-				<s:HGroup height="100%" width="100%">
-					<s:VGroup>
+				<s:HGroup height="100%" width="100%" horizontalAlign="center">
+					<s:VGroup horizontalAlign="center">
 						<s:HGroup>
 							<s:FormItem label="Nome da Estrada">
 								<s:Label id="lbNomeEstrada" text="{estradaEmEdicao.nome}"/>
@@ -477,11 +482,11 @@
 			</s:NavigatorContent>
 			
 			<s:NavigatorContent id="adicionarSegmentos" >
-				<component:EditarSegmentos id="edicaoSegmento" voltar="voltarParaExibicao_Handler()" adicionarSegmento="adionarSegmento(event)" height="100%" width="100%"/>
+				<view:EditarSegmentosView id="edicaoSegmento" voltar="voltarParaExibicao_Handler()" adicionarSegmento="adionarSegmento(event)" height="100%" width="100%"/>
 			</s:NavigatorContent>
 			
 			<s:NavigatorContent id="adicionarFluxosAlternativos">
-				<component:AdicionarFluxoAlternativo id="edicaoFluxoAlternativo" estradaEmEdicao="{estradaEmEdicao}" voltar="voltarParaExibicao_Handler()" 
+				<view:AdicionarFluxoAlternativoView id="edicaoFluxoAlternativo" estradaEmEdicao="{estradaEmEdicao}" voltar="voltarParaExibicao_Handler()" 
 													 adicionarFluxoAlternativo="adicionarFluxoAlternativo(event)" height="100%" width="100%"/>
 			</s:NavigatorContent>
 			

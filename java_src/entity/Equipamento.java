@@ -24,7 +24,7 @@ public class Equipamento {
 	private SentidoEnum sentido;
 	
 	@ManyToOne
-	@JoinColumn(name="idPortal")
+	@JoinColumn(name="idPortal", nullable = false)
 	private Portal portal;
 
 	public Long getIdEquipamento() {

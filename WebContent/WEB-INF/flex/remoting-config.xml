@@ -25,4 +25,18 @@
 			<scope>application</scope>
 		</properties>
 	</destination>
+	
+	<destination id="cargaService">
+		<properties>
+			<source>service.CargaService</source>
+			<scope>application</scope>
+		</properties>
+	</destination>
+	
+	<destination id="geradorService">
+		<properties>
+			<source>service.GeradorTrafegoService</source>
+			<scope>application</scope>
+		</properties>
+	</destination>
 </service>

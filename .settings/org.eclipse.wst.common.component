@@ -3,7 +3,6 @@
     <wb-module deploy-name="S3M">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/java_src"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/flex_src"/>
         <property name="context-root" value="S3M"/>
         <property name="java-output-path" value="/S3M/build/classes"/>
     </wb-module>

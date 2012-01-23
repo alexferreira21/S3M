@@ -3,24 +3,50 @@ package entity;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="TB_CTE")
 public class CTe {
 	
+	@Id
+	@GeneratedValue
 	private Long id;
 	
 	private Integer identificador;
 	 
 	private Date dataEmissao;
 	 
-	private Integer status;
+	@Enumerated(EnumType.ORDINAL)
+	private StatusEnum status;
 	 
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "cTe")
 	private List<Registro> registro;
 	 
+	@ManyToOne
+	@JoinColumn(name = "idVeiculo", nullable = false)
 	private Veiculo veiculo;
 	 
+	@OneToOne
+	@JoinColumn(name = "idCargaPredominante", nullable = false)
 	private CargaPredominante cargaPredominante;
 	 
+	@OneToOne
+	@JoinColumn(name = "idMunicipioOrigem", nullable = false)
 	private Municipio municipioOrigem;
 	 
+	@OneToOne
+	@JoinColumn(name = "idMunicipioDestino", nullable = false)
 	private Municipio municipioDestino;
 	
 	
@@ -49,11 +75,11 @@ public class CTe {
 		this.dataEmissao = dataEmissao;
 	}
 
-	public Integer getStatus() {
+	public StatusEnum getStatus() {
 		return status;
 	}
 
-	public void setStatus(Integer status) {
+	public void setStatus(StatusEnum status) {
 		this.status = status;
 	}
 

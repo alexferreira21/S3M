@@ -29,7 +29,6 @@
 				} 
 			}
 			
-			
 		]]>
 	</fx:Script>
 
@@ -38,8 +37,8 @@
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	
-	
-	<mx:ViewStack id="vs" height="100%" width="100%">
+	 
+	<mx:ViewStack id="vs" height="100%" width="100%"> 
 		
 		<s:NavigatorContent id="menuPrincipal">
 			<s:VGroup verticalCenter="0" horizontalCenter="0">
@@ -49,7 +48,7 @@
 				<s:Spacer height="10"/>
 				<s:Button id="btGerenciarEstradas" width="333" height="43" label="Gerenciar Estradas"  click="gerenciarEstradas(event)"/>
 				<s:Spacer height="10"/>
-				<s:Button id="btGraficos" width="333" height="43" label="Gráficos" click="{vs.selectedChild= INavigatorContent(vs.getChildByName('ncGraficos'))}"/>
+				<s:Button id="btGeradorTrafego" width="333" height="43" label="Gerador de Tráfego" click="{vs.selectedChild= INavigatorContent(vs.getChildByName('geradorTrafegoView'))}"/>
 					
 			</s:VGroup>
 			
@@ -63,9 +62,9 @@
 			<view:GerenciarEstradaView id="gerenciarEstradaView" voltarEvent="{vs.selectedIndex = 0}" />
 		</s:NavigatorContent>
 		
-		<s:NavigatorContent id="ncGraficos" width="100%" height="100%">
-			<view:GraficosView id="graficosView" voltarEvent="{vs.selectedIndex = 0}"/>
-		</s:NavigatorContent>
+		<view:GeradorTrafegoView id="geradorTrafegoView" voltarEvent="{vs.selectedIndex = 0}" />
+		
+		
 		
 	</mx:ViewStack>		  
 	

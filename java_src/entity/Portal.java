@@ -30,7 +30,7 @@ public class Portal {
 	private Double altitude;
 	
 	@ManyToOne
-	@JoinColumn(name="id_municipio")
+	@JoinColumn(name="id_municipio", nullable = false)
 	private Municipio municipio;
 	
 	@OneToMany(targetEntity=Equipamento.class, mappedBy="portal", 

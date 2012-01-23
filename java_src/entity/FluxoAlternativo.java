@@ -25,7 +25,7 @@ public class FluxoAlternativo {
 	private TipoFluxoAlternativoEnum tipo;
 
 	@ManyToOne
-	@JoinColumn(name="idEstrada")
+	@JoinColumn(name="idEstrada", nullable = false)
 	private Estrada estrada;
 	
 	

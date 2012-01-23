@@ -384,7 +384,7 @@
 			</s:NavigatorContent>
 			
 			<s:NavigatorContent id="equipamento" height="100%" width="100%">
-				<component:AdicionarEquipamentos id="edicaoEquipamento" voltar="cancelarEdicaoEquipamento(event)" portalDoEquipamento="{portalController.portalEmEdicao}" adicionarEquipamento="adicionarEquipamento(event)"/>				
+				<view:AdicionarEquipamentosView id="edicaoEquipamento" voltar="cancelarEdicaoEquipamento(event)" portalDoEquipamento="{portalController.portalEmEdicao}" adicionarEquipamento="adicionarEquipamento(event)"/>				
 			</s:NavigatorContent>
 			
 			<s:NavigatorContent id="ncNovoPortal" width="100%" height="100%">

@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:NavigatorContent xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" height="100%" width="100%" xmlns:entity="entity.*"
+					show="onShow()" xmlns:component="component.*"
+					>
+	
+	<fx:Metadata>
+		[Event(name="voltarEvent", type="flash.events.Event")]
+	</fx:Metadata>
+	<fx:Script>
+		<![CDATA[
+			import controller.CargaController;
+			import controller.EstradaController;
+			
+			import dto.GeradorDTO;
+			
+			import entity.Estrada;
+			import entity.FluxoAlternativo;
+			import entity.Portal;
+			import entity.Segmento;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.remoting.RemoteObject;
+			
+			import spark.events.IndexChangeEvent;
+			
+			import util.TipoFluxoAlternativoEnum;
+			
+			private var estradaController:EstradaController = new EstradaController();
+			private var cargaController: CargaController = new CargaController();
+			
+			[Bindable]
+			private var estradas: ArrayCollection; 
+			
+			
+			
+			private function carregarEstradasResult(event: ResultEvent):void
+			{
+				cursorManager.removeBusyCursor();
+				estradas = ArrayCollection(event.result);
+			}
+			private function carregarEstradasFault(event: FaultEvent):void
+			{
+				Alert.show(event.fault.message);
+			}
+			
+			protected function onShow():void
+			{
+				estradaController.carregarEstradas(carregarEstradasResult,carregarEstradasFault);
+				cargaController.carregarTiposMercadorias(carregarTipoMercadoriaResult);
+			}
+			
+			private function carregarTipoMercadoriaResult(event: ResultEvent):void
+			{
+				listCargas.dataProvider = event.result;
+			}
+			
+			protected function onEstradaChange(event:IndexChangeEvent):void
+			{
+				cbSegInicial.selectedIndex = -1;
+				cbSegFinal.selectedIndex = -1;
+				
+				dgEntradas.dataProvider = null;
+				dgSaidas.dataProvider = null;
+				
+				cbSegInicial.dataProvider = Estrada(estradas.getItemAt(event.newIndex)).segmentos;				
+				cbSegFinal.dataProvider = Estrada(estradas.getItemAt(event.newIndex)).segmentos;				
+			}
+			
+			protected function onSegFinalChange(event:IndexChangeEvent):void
+			{
+				var estrada: Estrada = Estrada(cbEstrada.selectedItem);
+				var segInicial: Segmento = Segmento(cbSegInicial.selectedItem);
+				var segFinal: Segmento = Segmento(cbSegFinal.selectedItem);
+				
+				var indexInicial: int = estrada.segmentos.getItemIndex(segInicial);
+				var indexFinal: int = estrada.segmentos.getItemIndex(segFinal);
+				
+				var portais: ArrayCollection = new ArrayCollection();
+				var fluxosEntrada: ArrayCollection = new ArrayCollection();
+				var fluxosSaida: ArrayCollection = new ArrayCollection();
+				
+				var fluxoInicial: FluxoAlternativo = new FluxoAlternativo();
+				var fluxoFinal: FluxoAlternativo = new FluxoAlternativo();
+				
+				
+				fluxoInicial.tipo = TipoFluxoAlternativoEnum.ENTRADA;
+				fluxoFinal.tipo = TipoFluxoAlternativoEnum.SAIDA;
+				
+				if(indexInicial == indexFinal || indexInicial < indexFinal)
+				{
+					fluxoInicial.portal = segInicial.portalOrigem;
+					fluxosEntrada.addItem(fluxoInicial);
+					
+					fluxoFinal.portal = segFinal.portalDestino;
+					fluxosSaida.addItem(fluxoFinal);
+				}
+				else
+				{
+					fluxoInicial.portal = segInicial.portalDestino;
+					fluxosEntrada.addItem(fluxoInicial);
+					
+					fluxoFinal.portal = segFinal.portalOrigem;
+					fluxosSaida.addItem(fluxoFinal);
+				}
+				
+				
+				for (var i:int = Math.min(indexInicial,indexFinal) ; i<= Math.max(indexInicial,indexFinal) ; i++)
+				{
+					if(i == Math.min(indexInicial,indexFinal))
+					{
+						portais.addItem(Segmento(estrada.segmentos.getItemAt(i)).portalOrigem);				
+					}
+					portais.addItem(Segmento(estrada.segmentos.getItemAt(i)).portalDestino);				
+				}
+				
+				for each (var fluxoItem: FluxoAlternativo in estrada.fluxosAlternativos)
+				{
+					for each(var portalItem: Portal in portais)
+					{
+						if(fluxoItem.portal.idPortal == portalItem.idPortal)
+						{
+							if(fluxoItem.tipo == TipoFluxoAlternativoEnum.ENTRADA_SAIDA)
+							{
+								adicionarFluxo(fluxoItem,fluxosEntrada);
+								
+								var copiaFluxoAlternativo: FluxoAlternativo = new FluxoAlternativo();
+								copiaFluxoAlternativo.portal = fluxoItem.portal;
+								copiaFluxoAlternativo.tipo = TipoFluxoAlternativoEnum.SAIDA;
+								
+								adicionarFluxo(copiaFluxoAlternativo,fluxosSaida);
+							}
+							if(fluxoItem.tipo == TipoFluxoAlternativoEnum.ENTRADA)
+							{
+								adicionarFluxo(fluxoItem,fluxosEntrada);
+							}
+							if(fluxoItem.tipo == TipoFluxoAlternativoEnum.SAIDA)
+							{
+								adicionarFluxo(fluxoItem,fluxosSaida);
+							}
+							break;
+						}
+					}
+				}
+				
+				dgEntradas.dataProvider = fluxosEntrada;
+				dgSaidas.dataProvider = fluxosSaida;
+			}
+			
+			private function adicionarFluxo(fluxo: FluxoAlternativo, arrayFluxos: ArrayCollection):void
+			{
+				for each(var fluxoItem: FluxoAlternativo in arrayFluxos)
+				{
+					if(fluxo.portal.idPortal == fluxoItem.portal.idPortal)
+					{
+						return;
+					}
+				}
+				arrayFluxos.addItem(fluxo);
+			}
+			
+			protected function onSegInicialChange(event:IndexChangeEvent):void
+			{
+				cbSegFinal.selectedIndex = -1;
+				
+				dgEntradas.dataProvider = null;
+				dgSaidas.dataProvider = null;
+			}
+			
+			protected function gerarTrafego(event:MouseEvent):void
+			{
+				var geradorDTO: GeradorDTO = new GeradorDTO();
+				var geradorService: RemoteObject = new RemoteObject("geradorService");
+				
+				geradorDTO.dataInicial = dfDataInicial.selectedDate;
+				geradorDTO.dataFinal = dfDataFinal.selectedDate;
+				
+				geradorDTO.horaInicial = nsHoraInicial.value;
+				geradorDTO.minutoInicial = nsMinutoInicial.value;
+				
+				geradorDTO.horaFinal = nsHoraFinal.value;
+				geradorDTO.minutoFinal = nsMinutoFinal.value;
+				
+				geradorDTO.estrada = cbEstrada.selectedItem;
+				
+				geradorDTO.segmentoInicial = cbSegInicial.selectedItem;
+				geradorDTO.segmentoFinal = cbSegFinal.selectedItem;
+				
+				geradorDTO.fluxosEntrada = ArrayCollection(dgEntradas.dataProvider);
+				geradorDTO.fluxosSaida = ArrayCollection(dgSaidas.dataProvider);
+				
+				geradorDTO.qtdCaminhoes = parseInt(tiQtdCaminhoes.text);
+				geradorDTO.qtdOutrosVeiculos = parseInt(tiQdtOutrosVeiculos.text);
+				
+				geradorDTO.velocidadeInicial = nsVelocidadeInferior.value;
+				geradorDTO.velocidadeFinal = nsVelocidadeSuperior.value;
+				
+				geradorDTO.tiposCarga = ArrayCollection(listCargas.dataProvider);
+				
+				geradorService.gerarTrafego(geradorDTO);
+				
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<fx:Array id="arr">
+			<entity:TipoMercadoria descricao="Madeira" isSelected="false"/>
+			<entity:TipoMercadoria descricao="Peixe" isSelected="false"/>
+			<entity:TipoMercadoria descricao="Leite" isSelected="false"/>
+		</fx:Array>
+		
+	</fx:Declarations>
+	
+	<s:VGroup horizontalAlign="center" horizontalCenter="0" paddingTop="10">
+		<s:Label text="Gerador de Tráfego" fontSize="16" fontWeight="bold"/>
+		<s:Spacer height="15"/>
+		
+		<s:Label text="Datas" fontSize="14" fontWeight="bold"/>
+		<s:Spacer height="5"/>
+		<s:BorderContainer width="606" height="98">
+			<s:layout>
+				<s:VerticalLayout/>
+			</s:layout>
+			
+			<s:HGroup>
+				<s:FormItem id="fiDataInicial" label="Data Inicial" >
+					<component:BRDatefield id="dfDataInicial"/>
+				</s:FormItem>
+				
+				<s:FormItem id="fiDataFinal" label="Data Final" >
+					<component:BRDatefield id="dfDataFinal"/>
+				</s:FormItem>
+			</s:HGroup>
+			
+			<s:HGroup>
+				<s:FormItem label="Entre">
+					<s:HGroup>
+						<s:NumericStepper id="nsHoraInicial" maximum="23"/>
+						<s:Label text=":" paddingTop="8"/>
+						<s:NumericStepper id="nsMinutoInicial" maximum="59"/>
+					</s:HGroup>
+				</s:FormItem>
+				
+				<s:FormItem label="Até">
+					<s:HGroup>
+						<s:NumericStepper id="nsHoraFinal" maximum="23"/>
+						<s:Label text=":" paddingTop="8"/>
+						<s:NumericStepper id="nsMinutoFinal" maximum="59"/>
+					</s:HGroup>
+				</s:FormItem>					
+			</s:HGroup>
+		</s:BorderContainer> 
+		
+		<s:Spacer height="15"/>
+		<s:Label text="Estrada" fontSize="14" fontWeight="bold"/>
+		<s:Spacer height="5"/>
+		<s:BorderContainer width="608">
+			<s:layout>
+				<s:HorizontalLayout/>
+			</s:layout>
+			
+			<s:VGroup paddingLeft="10" paddingTop="10">
+				<s:Label text="Estrada" fontWeight="bold"/>	
+				<s:ComboBox id="cbEstrada" labelField="nome" dataProvider="{estradas}" change="onEstradaChange(event)"/>
+				<s:Spacer height="30"/>
+				
+				<s:Label text="Segmento Inicial" fontWeight="bold"/>	
+				<s:ComboBox id="cbSegInicial" labelField="nome" change="onSegInicialChange(event)"/>
+				
+				<s:Label text="Segmento Final" fontWeight="bold"/>	
+				<s:ComboBox id="cbSegFinal" labelField="nome" change="onSegFinalChange(event)"/>
+			</s:VGroup>
+			
+			<s:Spacer width="150"/>
+			
+			<s:VGroup paddingTop="10" paddingBottom="5">
+				<s:Label text="Entradas" fontWeight="bold"/>
+				<mx:DataGrid id="dgEntradas" editable="true" rowCount="3">
+					<mx:columns>
+						<mx:DataGridColumn headerText="Nome" dataField="portal.nome" editable="false"/>						
+						<mx:DataGridColumn headerText="%" dataField="percentual" editable="true"/>						
+					</mx:columns>
+				</mx:DataGrid>
+				
+				
+				
+				<s:Spacer height="10"/>
+				<s:Label text="Saidas" fontWeight="bold"/>
+				<mx:DataGrid id="dgSaidas" editable="true" rowCount="3">
+					<mx:columns>
+						<mx:DataGridColumn headerText="Nome" dataField="portal.nome" editable="false"/>						
+						<mx:DataGridColumn headerText="%" dataField="percentual" editable="true"/>						
+					</mx:columns>
+				</mx:DataGrid>
+			</s:VGroup>
+		</s:BorderContainer>
+		
+		<s:Spacer height="15"/>
+		<s:Label text="Veículos" fontSize="14" fontWeight="bold"/>
+		<s:Spacer height="5"/>
+		
+		<s:BorderContainer width="605" height="110">
+			<s:layout>
+				<s:VerticalLayout/>
+			</s:layout>
+			
+			<s:HGroup>
+				<s:FormItem id="fiQtdCaminhoes" label="Caminhões">
+					<s:TextInput id="tiQtdCaminhoes" restrict="0-9" width="50" text="0"/>
+				</s:FormItem>
+				
+				<s:FormItem id="fiQtdOutrosVeiculos" label="Outros Veículos">
+					<s:TextInput id="tiQdtOutrosVeiculos" restrict="0-9" width="50" text="0"/>
+				</s:FormItem>
+				
+				<s:Label text="Total: " paddingTop="17"/>
+				<s:Label text="{parseInt(tiQtdCaminhoes.text) + parseInt(tiQdtOutrosVeiculos.text)}" paddingTop="17"/>
+			</s:HGroup>
+			
+			<s:Spacer height="10"/>
+			
+			<s:Label text="Velocidades" fontWeight="bold" paddingLeft="15"/>
+			<s:HGroup paddingLeft="15">
+				<s:Label text="Entre" paddingTop="8"/>
+				<s:NumericStepper id="nsVelocidadeInferior" width="45" maximum="300"/>
+				<s:Label text="e" paddingTop="8"/>
+				<s:NumericStepper id="nsVelocidadeSuperior" width="45" maximum="300"/>
+				<s:Label text="Km/h" paddingTop="8"/>
+			</s:HGroup>
+		</s:BorderContainer>
+		
+		<s:Spacer height="15"/>
+		<s:Label text="Tipos de Cargas" fontSize="14" fontWeight="bold"/>
+		<s:Spacer height="5"/>
+		
+		<s:BorderContainer x="0" width="608" height="121">
+			<mx:List id="listCargas" x="96" width="416" height="119"
+					 alternatingItemColors="[#EEEEEE, white]" labelField="descricao" rowCount="5">
+				<mx:itemRenderer>
+					<fx:Component>
+						<mx:CheckBox selectedField="isSelected"
+									 change="onChange(event);">
+							<fx:Script>
+								<![CDATA[
+									private function onChange(evt:Event):void {
+										data.isSelected = !data.isSelected;
+									}
+								]]>
+							</fx:Script>
+						</mx:CheckBox>
+					</fx:Component>
+				</mx:itemRenderer>
+			</mx:List>
+		</s:BorderContainer>
+		
+		<s:HGroup>
+			<s:Button id="btGerar" label="Gerar!" click="gerarTrafego(event)"/>
+			<s:Button id="btVoltar" label="Voltar" click="{dispatchEvent(new Event('voltarEvent'))}"/>
+		</s:HGroup>
+		
+	</s:VGroup>
+</s:NavigatorContent>

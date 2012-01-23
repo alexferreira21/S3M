@@ -72,7 +72,7 @@
 			
 			private function carregarEstradasSucesso(event : ResultEvent) : void 
 			{
-				cursorManager.removeBusyCursor();
+				cursorManager.removeBusyCursor(); //Isso está muito errado, quem tem que remover esse cursor é um método de classe pai. 
 				
 				estradaController.estradas.removeAll();
 				estradaController.estradas.addAll(ArrayCollection(event.result));

@@ -1,7 +1,18 @@
 package entity;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "TB_CARGA_PREDOMINANTE")
 public class CargaPredominante {
 	
+	@Id
+	@GeneratedValue
 	private Long id;
  
 	private Float peso;
@@ -10,16 +21,14 @@ public class CargaPredominante {
 	 
 	private Float valor;
 	 
-	private CTe cTe;
-	 
-	private TipoMeradoria tipoMeradoria;
-	
+	@ManyToOne
+	@JoinColumn(name = "idTipoMercadoria", nullable = false)
+	private TipoMercadoria tipoMeradoria;
 	
 	 
 	public Double calculaPeso() {
 		return null;
 	}
-
 
 
 	public Long getId() {
@@ -69,26 +78,13 @@ public class CargaPredominante {
 	}
 
 
-
-	public CTe getcTe() {
-		return cTe;
-	}
-
-
-
-	public void setcTe(CTe cTe) {
-		this.cTe = cTe;
-	}
-
-
-
-	public TipoMeradoria getTipoMeradoria() {
+	public TipoMercadoria getTipoMeradoria() {
 		return tipoMeradoria;
 	}
 
 
 
-	public void setTipoMeradoria(TipoMeradoria tipoMeradoria) {
+	public void setTipoMeradoria(TipoMercadoria tipoMeradoria) {
 		this.tipoMeradoria = tipoMeradoria;
 	}
 	

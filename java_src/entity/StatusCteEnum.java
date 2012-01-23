@@ -1,6 +1,8 @@
 package entity;
 
-public class StatusCteEnum {
+public enum StatusCteEnum {
+	
+	CONCLUIDO, EM_TRANSITO;
  
 }
  

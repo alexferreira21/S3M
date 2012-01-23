@@ -1,7 +1,17 @@
 package entity;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+
+@Entity
+@Table(name = "TB_ESPECIE_TIPO")
 public class Especie_Tipo {
 	
+	@Id
+	@GeneratedValue
 	private Long id;
  
 	private String descricao;

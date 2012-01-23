@@ -63,7 +63,7 @@ package controller
 			
 		}
 		
-		public function carregarEstradas(callbackSucesso:Function, callbackFalha:Function):void
+		public function carregarEstradas(callbackSucesso:Function, callbackFalha:Function = null):void
 		{
 			var token: AsyncToken; 
 			
@@ -72,6 +72,14 @@ package controller
 			token = estradaService.carregarEstradas();
 			token.addResponder(new mx.rpc.Responder(callbackSucesso, callbackFalha));
 			
+		}
+		
+		public function carregarEstradaPorId(callbackSucesso:Function, callbackFalha:Function, id:Number):void
+		{
+			var token: AsyncToken; 
+			
+			token = estradaService.carregarEstradaPorId(id);
+			token.addResponder(new mx.rpc.Responder(callbackSucesso, callbackFalha));
 		}
 		
 		public function removerEstrada(estrada: Estrada, callbackSucces: Function, callbackFault: Function):void

@@ -176,7 +176,7 @@
 	<mx:ViewStack id="vsSegmentos" height="100%" width="100%">
 		
 		<s:NavigatorContent id="nomeSegmento" >
-			<s:VGroup>
+			<s:VGroup horizontalAlign="center" width="100%" height="100%">
 				<s:FormItem label="Nome do Segmento">
 					<component:SubmitTextInput id="tiNomeSegmento" submitFunction="irParaSelecaoPortal"/>
 				</s:FormItem>
@@ -188,7 +188,7 @@
 		</s:NavigatorContent>
 		
 		<s:NavigatorContent id="selecaoPortalView">
-			<s:VGroup paddingTop="30">
+			<s:VGroup paddingTop="30" horizontalAlign="center" width="100%" height="100%">
 				<s:Label x="264" y="74" text="Selecione no mapa o portal de origem."
 						 text.StatePortalDestino="Selecione no mapa o próximo portal da estrada"
 						 text.StatePortalOrigem="Selecione no mapa o primeiro portal da estrada."/>
@@ -197,7 +197,7 @@
 		</s:NavigatorContent>
 		
 		<s:NavigatorContent id="confirmacaoPortalView">
-			<s:VGroup>
+			<s:VGroup horizontalAlign="center" width="100%" height="100%">
 				<s:FormItem label="Portal Selecionado:">
 					<s:Label id="lbPortalSelecionado" text="{_portalString}"/>
 				</s:FormItem>

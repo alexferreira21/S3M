@@ -32,7 +32,7 @@ public class Segmento {
 	 
 
 	@ManyToOne
-	@JoinColumn(name="idEstrada")
+	@JoinColumn(name="idEstrada", nullable = false)
 	private Estrada estrada;
 
 	

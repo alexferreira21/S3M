@@ -39,6 +39,11 @@ public class EstradaService {
 		return estradas;
 	}
 	
+	public Estrada carregarEstradaPorId(Long id){
+		Session session = HibernateUtil.getInstance().getSession();
+		return (Estrada)session.createQuery("from Estrada where idEstrada = "+ id).uniqueResult();
+	}
+	
 	public Estrada removerEstrada(Estrada estrada){
 		Session session = HibernateUtil.getInstance().getSession();
 		session.beginTransaction();

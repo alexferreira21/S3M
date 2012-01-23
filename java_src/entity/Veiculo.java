@@ -1,7 +1,18 @@
 package entity;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "TB_VEICULO")
 public class Veiculo {
 	
+	@Id
+	@GeneratedValue
 	private Long id;
  
 	private String placa;
@@ -18,12 +29,14 @@ public class Veiculo {
 	 
 	private Float capacidadeM3;
 	 
+	@ManyToOne
+	@JoinColumn(name = "idCategoria", nullable = false)
 	private Categoria categoria;
 	 
+	@ManyToOne
+	@JoinColumn(name = "idEspecie_Tipo", nullable = false)
 	private Especie_Tipo especie_Tipo;
 	
-	
-		
 	
 	public Long getId() {
 		return id;

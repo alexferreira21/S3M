@@ -8,6 +8,7 @@ package entity
 		private var _portal: Portal;
 		private var _tipo: String;
 		private var _estrada: Estrada;
+		private var _percentual: int;
 		
 		
 
@@ -55,6 +56,16 @@ package entity
 		public function set estrada(value:Estrada):void
 		{
 			_estrada = value;
+		}
+
+		public function get percentual():int
+		{
+			return _percentual;
+		}
+
+		public function set percentual(value:int):void
+		{
+			_percentual = value;
 		}
 
 
