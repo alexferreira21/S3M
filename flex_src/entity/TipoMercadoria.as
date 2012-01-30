@@ -1,5 +1,6 @@
 package entity
 {
+	[RemoteClass(alias="entity.TipoMercadoria")]
 	public class TipoMercadoria
 	{
 		public var idTipoMercadoria: Number;

@@ -84,22 +84,6 @@ public class Segmento {
 		this.kmFinal = kmFinal;
 	}
 
-	public Portal getDestino() {
-		return portalDestino;
-	}
-
-	public void setDestino(Portal destino) {
-		portalDestino = destino;
-	}
-
-	public Portal getOrigem() {
-		return portalOrigem;
-	}
-
-	public void setOrigem(Portal origem) {
-		portalOrigem = origem;
-	}
-
 	public Estrada getEstrada() {
 		return estrada;
 	}

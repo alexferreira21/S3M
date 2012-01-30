@@ -17,7 +17,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="TB_CTE")
-public class CTe {
+public class ConhecimentoTransporte {
 	
 	@Id
 	@GeneratedValue

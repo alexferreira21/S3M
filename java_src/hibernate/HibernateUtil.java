@@ -5,7 +5,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 
-import entity.CTe;
+import entity.ConhecimentoTransporte;
 import entity.CargaPredominante;
 import entity.Categoria;
 import entity.Equipamento;
@@ -35,7 +35,7 @@ public class HibernateUtil {
 		.addAnnotatedClass(Segmento.class)
 		.addAnnotatedClass(Estrada.class)
 		.addAnnotatedClass(FluxoAlternativo.class)
-		.addAnnotatedClass(CTe.class)
+		.addAnnotatedClass(ConhecimentoTransporte.class)
 		.addAnnotatedClass(Veiculo.class)
 		.addAnnotatedClass(Categoria.class)
 		.addAnnotatedClass(Especie_Tipo.class)

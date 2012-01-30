@@ -12,7 +12,7 @@ import entity.Municipio;
 import entity.Portal;
 import entity.UF;
 
-public class testeInserir {
+public class TesteInserir {
 
 	public static void main(String[] args) {
 //		AnnotationConfiguration config = new AnnotationConfiguration();

@@ -3,7 +3,7 @@ package service;
 import java.util.List;
 
 import org.hibernate.Session;
-import dao.MunicipioDao;
+import dao.MunicipioDAO;
 
 import hibernate.HibernateUtil;
 import entity.Portal;
@@ -11,7 +11,7 @@ import entity.UF;
 
 public class PortalService {
 	
-	MunicipioDao municipoDao = new MunicipioDao();
+	MunicipioDAO municipoDao = new MunicipioDAO();
 
 	public Portal salvarPortal(Portal portal){
 		Session session = HibernateUtil.getInstance().getSession();

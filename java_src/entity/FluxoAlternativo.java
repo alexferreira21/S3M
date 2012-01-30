@@ -28,8 +28,7 @@ public class FluxoAlternativo {
 	@JoinColumn(name="idEstrada", nullable = false)
 	private Estrada estrada;
 	
-	
-	
+	private Integer percentual;
 	
 	
 	
@@ -63,6 +62,14 @@ public class FluxoAlternativo {
 
 	public void setEstrada(Estrada estrada) {
 		this.estrada = estrada;
+	}
+
+	public Integer getPercentual() {
+		return percentual;
+	}
+
+	public void setPercentual(Integer percentual) {
+		this.percentual = percentual;
 	}
 	
 

@@ -15,7 +15,6 @@ public class CargaPredominante {
 	@GeneratedValue
 	private Long id;
  
-	private Float peso;
 	 
 	private Float quantidade;
 	 
@@ -26,8 +25,8 @@ public class CargaPredominante {
 	private TipoMercadoria tipoMeradoria;
 	
 	 
-	public Double calculaPeso() {
-		return null;
+	public Float getPeso() {
+		return tipoMeradoria.getFatorPeso() * quantidade;
 	}
 
 
@@ -39,18 +38,6 @@ public class CargaPredominante {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-
-
-	public Float getPeso() {
-		return peso;
-	}
-
-
-
-	public void setPeso(Float peso) {
-		this.peso = peso;
 	}
 
 

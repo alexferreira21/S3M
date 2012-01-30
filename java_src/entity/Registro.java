@@ -21,7 +21,7 @@ public class Registro {
 	 
 	@ManyToOne
 	@JoinColumn(name = "idCTE", nullable = false)
-	private CTe cTe;
+	private ConhecimentoTransporte cTe;
 	 
 	@ManyToOne
 	@JoinColumn(name = "idEquipamento", nullable = false)
@@ -43,11 +43,11 @@ public class Registro {
 		this.timestamp = timestamp;
 	}
 
-	public CTe getcTe() {
+	public ConhecimentoTransporte getcTe() {
 		return cTe;
 	}
 
-	public void setcTe(CTe cTe) {
+	public void setcTe(ConhecimentoTransporte cTe) {
 		this.cTe = cTe;
 	}
 
