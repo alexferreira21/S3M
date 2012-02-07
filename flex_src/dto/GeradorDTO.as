@@ -31,6 +31,8 @@ package dto
 		public var velocidadeInicial: int;
 		public var velocidadeFinal: int;
 		
+		public var sentido: String;
+		
 		public var tiposCarga: ArrayCollection;
 		
 	}

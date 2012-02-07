@@ -20,12 +20,16 @@ public class Registro {
 	private Date timestamp;
 	 
 	@ManyToOne
-	@JoinColumn(name = "idCTE", nullable = false)
+	@JoinColumn(name = "idCTE")
 	private ConhecimentoTransporte cTe;
 	 
 	@ManyToOne
 	@JoinColumn(name = "idEquipamento", nullable = false)
 	private Equipamento equipamento;
+	
+	@ManyToOne
+	@JoinColumn(name = "idVeiculo", nullable = false)
+	private Veiculo veiculo;
 	
 	public Long getId() {
 		return id;
@@ -57,6 +61,14 @@ public class Registro {
 
 	public void setEquipamento(Equipamento equipamento) {
 		this.equipamento = equipamento;
+	}
+
+	public Veiculo getVeiculo() {
+		return veiculo;
+	}
+
+	public void setVeiculo(Veiculo veiculo) {
+		this.veiculo = veiculo;
 	}
 
 }

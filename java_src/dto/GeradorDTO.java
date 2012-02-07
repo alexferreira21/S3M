@@ -7,6 +7,7 @@ import java.util.List;
 import entity.Estrada;
 import entity.FluxoAlternativo;
 import entity.Segmento;
+import entity.SentidoEnum;
 import entity.TipoMercadoria;
 
 public class GeradorDTO {
@@ -33,6 +34,8 @@ public class GeradorDTO {
 
 	private Integer velocidadeInicial;
 	private Integer velocidadeFinal;
+	
+	private SentidoEnum sentido;
 
 	private List<TipoMercadoria> tiposCarga;
 	
@@ -163,6 +166,14 @@ public class GeradorDTO {
 
 	public void setTiposCarga(List<TipoMercadoria> tiposCarga) {
 		this.tiposCarga = tiposCarga;
+	}
+
+	public SentidoEnum getSentido() {
+		return sentido;
+	}
+
+	public void setSentido(SentidoEnum sentidoOriginal) {
+		this.sentido = sentidoOriginal;
 	}
 
 }

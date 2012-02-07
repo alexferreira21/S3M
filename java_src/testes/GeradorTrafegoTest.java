@@ -16,7 +16,7 @@ import dto.GeradorDTO;
 import entity.Estrada;
 import entity.FluxoAlternativo;
 
-import service.GeradorTrafegoService;
+import service.GeradorTrafegoService.GeradorTrafegoService;
 
 public class GeradorTrafegoTest {
 

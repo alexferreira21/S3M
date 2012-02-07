@@ -29,6 +29,7 @@
 			
 			import spark.events.IndexChangeEvent;
 			
+			import util.SentidoEnum;
 			import util.TipoFluxoAlternativoEnum;
 			
 			private var estradaController:EstradaController = new EstradaController();
@@ -36,6 +37,8 @@
 			
 			[Bindable]
 			private var estradas: ArrayCollection; 
+			
+			private var sentido: String;
 			
 			
 			
@@ -99,6 +102,8 @@
 					
 					fluxoFinal.portal = segFinal.portalDestino;
 					fluxosSaida.addItem(fluxoFinal);
+					
+					sentido = SentidoEnum.POSITIVO;
 				}
 				else
 				{
@@ -107,6 +112,8 @@
 					
 					fluxoFinal.portal = segFinal.portalOrigem;
 					fluxosSaida.addItem(fluxoFinal);
+					
+					sentido = SentidoEnum.NEGATIVO;
 				}
 				
 				
@@ -190,6 +197,8 @@
 				
 				geradorDTO.segmentoInicial = cbSegInicial.selectedItem;
 				geradorDTO.segmentoFinal = cbSegFinal.selectedItem;
+				
+				geradorDTO.sentido = this.sentido;
 				
 				geradorDTO.fluxosEntrada = ArrayCollection(dgEntradas.dataProvider);
 				geradorDTO.fluxosSaida = ArrayCollection(dgSaidas.dataProvider);

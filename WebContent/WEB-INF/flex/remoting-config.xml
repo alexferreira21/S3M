@@ -35,7 +35,7 @@
 	
 	<destination id="geradorService">
 		<properties>
-			<source>service.GeradorTrafegoService</source>
+			<source>service.GeradorTrafegoService.GeradorTrafegoService</source>
 			<scope>application</scope>
 		</properties>
 	</destination>

@@ -33,7 +33,7 @@ public class ConhecimentoTransporte {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "cTe")
 	private List<Registro> registro;
 	 
-	@ManyToOne
+	@OneToOne
 	@JoinColumn(name = "idVeiculo", nullable = false)
 	private Veiculo veiculo;
 	 
@@ -42,11 +42,11 @@ public class ConhecimentoTransporte {
 	private CargaPredominante cargaPredominante;
 	 
 	@OneToOne
-	@JoinColumn(name = "idMunicipioOrigem", nullable = false)
+	@JoinColumn(name = "idMunicipioOrigem")
 	private Municipio municipioOrigem;
 	 
 	@OneToOne
-	@JoinColumn(name = "idMunicipioDestino", nullable = false)
+	@JoinColumn(name = "idMunicipioDestino")
 	private Municipio municipioDestino;
 	
 	

@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -38,6 +39,10 @@ public class Veiculo {
 	@ManyToOne
 	@JoinColumn(name = "idEspecie_Tipo", nullable = false)
 	private Especie_Tipo especie_Tipo;
+	
+	@OneToOne
+	@JoinColumn(name = "id_Cte")
+	private ConhecimentoTransporte cte;
 	
 	
 	public Long getId() {
@@ -118,6 +123,14 @@ public class Veiculo {
 
 	public void setEspecie_Tipo(Especie_Tipo especie_Tipo) {
 		this.especie_Tipo = especie_Tipo;
+	}
+
+	public ConhecimentoTransporte getCte() {
+		return cte;
+	}
+
+	public void setCte(ConhecimentoTransporte cte) {
+		this.cte = cte;
 	}
 	 
 }
