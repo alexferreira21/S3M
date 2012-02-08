@@ -23,6 +23,14 @@ public class TipoMercadoria {
 	@JoinColumn(name = "idUnidadeMedida", nullable = false)
 	private UnidadeMedida unidadeMedida;
 
+	public Long getIdTipoMercadoria() {
+		return idTipoMercadoria;
+	}
+
+	public void setIdTipoMercadoria(Long idTipoMercadoria) {
+		this.idTipoMercadoria = idTipoMercadoria;
+	}
+
 	public String getDescricao() {
 		return descricao;
 	}
@@ -45,14 +53,6 @@ public class TipoMercadoria {
 
 	public void setUnidadeMedida(UnidadeMedida unidadeMedida) {
 		this.unidadeMedida = unidadeMedida;
-	}
-
-	public Long getId() {
-		return idTipoMercadoria;
-	}
-
-	public void setId(Long id) {
-		this.idTipoMercadoria = id;
 	}
 	 
 }

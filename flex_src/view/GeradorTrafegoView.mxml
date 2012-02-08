@@ -19,6 +19,7 @@
 			import entity.FluxoAlternativo;
 			import entity.Portal;
 			import entity.Segmento;
+			import entity.TipoMercadoria;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -209,6 +210,11 @@
 				geradorDTO.velocidadeInicial = nsVelocidadeInferior.value;
 				geradorDTO.velocidadeFinal = nsVelocidadeSuperior.value;
 				
+				var tiposSelecionados: ArrayCollection = new ArrayCollection();
+				for each(var tipoMercadoriaItem: TipoMercadoria in listCargas.dataProvider){
+					tiposSelecionados.addItem(tipoMercadoriaItem);
+				}
+				
 				geradorDTO.tiposCarga = ArrayCollection(listCargas.dataProvider);
 				
 				geradorService.gerarTrafego(geradorDTO);
@@ -217,15 +223,6 @@
 			
 		]]>
 	</fx:Script>
-	
-	<fx:Declarations>
-		<fx:Array id="arr">
-			<entity:TipoMercadoria descricao="Madeira" isSelected="false"/>
-			<entity:TipoMercadoria descricao="Peixe" isSelected="false"/>
-			<entity:TipoMercadoria descricao="Leite" isSelected="false"/>
-		</fx:Array>
-		
-	</fx:Declarations>
 	
 	<s:VGroup horizontalAlign="center" horizontalCenter="0" paddingTop="10">
 		<s:Label text="Gerador de Tráfego" fontSize="16" fontWeight="bold"/>

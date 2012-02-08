@@ -16,6 +16,8 @@ import org.omg.DynamicAny.DynValueOperations;
 import util.RandomUtils;
 
 import dao.Especie_TipoDAO;
+import dao.GeradorTrafegoDAO;
+import dao.PortalDAO;
 import dto.GeradorDTO;
 import entity.ConhecimentoTransporte;
 import entity.CargaPredominante;
@@ -32,9 +34,13 @@ import entity.Veiculo;
 
 public class GeradorTrafegoService {
 
+	private GeradorTrafegoDAO geradorDAO = new GeradorTrafegoDAO();
 	private Especie_TipoDAO especieDAO = new Especie_TipoDAO();
+	private PortalDAO portalDAO = new PortalDAO();
+	
 	private GeradorDTO geradorDTO;
 	private List<PortalKm> portaisNaEstrada = new ArrayList<PortalKm>();
+	
 
 
 	@SuppressWarnings("all")
@@ -181,8 +187,8 @@ public class GeradorTrafegoService {
 
 			Registro primeiroRegistro = new Registro();
 			primeiroRegistro.setVeiculo(veiculo);
-			Equipamento eqp = portaisNaEstrada.get(indexPortalInicial).getPortal().getEquipamento().get(RandomUtils.menorQue(portaisNaEstrada.get(indexPortalFinal).getPortal().getEquipamento().size()));
-			primeiroRegistro.setEquipamento(eqp);
+			Long idEquipamento = portaisNaEstrada.get(indexPortalInicial).getPortal().getEquipamento().get(RandomUtils.menorQue(portaisNaEstrada.get(indexPortalFinal).getPortal().getEquipamento().size())).getIdEquipamento();
+			primeiroRegistro.setEquipamento(portalDAO.findEquipamentoById(idEquipamento));
 			primeiroRegistro.setcTe(veiculo.getCte());
 
 			Calendar timestamp = Calendar.getInstance();
@@ -199,7 +205,7 @@ public class GeradorTrafegoService {
 
 			primeiroRegistro.setTimestamp(new Date(timestamp.getTimeInMillis()));
 
-			HibernateUtil.getInstance().getSession().save(primeiroRegistro);
+			geradorDAO.salvarRegistro(primeiroRegistro);
 			
 			Registro ultimoRegistro = primeiroRegistro;
 
@@ -213,9 +219,11 @@ public class GeradorTrafegoService {
 				proxRegistro.setTimestamp(timestampFinal);
 				proxRegistro.setVeiculo(veiculo);
 				proxRegistro.setcTe(veiculo.getCte());
-				proxRegistro.setEquipamento(portaisNaEstrada.get(indexPortalInicial + i).getPortal().getEquipamento().get(RandomUtils.menorQue(portaisNaEstrada.get(indexPortalFinal).getPortal().getEquipamento().size())));
-
-				HibernateUtil.getInstance().getSession().save(proxRegistro);
+				
+				idEquipamento = portaisNaEstrada.get(indexPortalInicial + i).getPortal().getEquipamento().get(RandomUtils.menorQue(portaisNaEstrada.get(indexPortalFinal).getPortal().getEquipamento().size())).getIdEquipamento();
+				proxRegistro.setEquipamento(portalDAO.findEquipamentoById(idEquipamento));
+				
+				geradorDAO.salvarRegistro(proxRegistro);
 				
 				ultimoRegistro = proxRegistro;
 			}

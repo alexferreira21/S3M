@@ -34,7 +34,7 @@ public class Portal {
 	private Municipio municipio;
 	
 	@OneToMany(targetEntity=Equipamento.class, mappedBy="portal", 
-			cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+			cascade = CascadeType.ALL, fetch=FetchType.EAGER)
 	private List<Equipamento> equipamento;
 	 
 	@Transient

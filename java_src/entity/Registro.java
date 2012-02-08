@@ -2,6 +2,7 @@ package entity;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -19,7 +20,7 @@ public class Registro {
  
 	private Date timestamp;
 	 
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "idCTE")
 	private ConhecimentoTransporte cTe;
 	 
@@ -27,7 +28,7 @@ public class Registro {
 	@JoinColumn(name = "idEquipamento", nullable = false)
 	private Equipamento equipamento;
 	
-	@ManyToOne
+	@ManyToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name = "idVeiculo", nullable = false)
 	private Veiculo veiculo;
 	

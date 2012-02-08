@@ -1,5 +1,6 @@
 package entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -40,8 +41,7 @@ public class Veiculo {
 	@JoinColumn(name = "idEspecie_Tipo", nullable = false)
 	private Especie_Tipo especie_Tipo;
 	
-	@OneToOne
-	@JoinColumn(name = "id_Cte")
+	@OneToOne(mappedBy="veiculo")
 	private ConhecimentoTransporte cte;
 	
 	

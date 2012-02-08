@@ -13,10 +13,10 @@ package controller
 		
 		public function carregarTiposMercadorias(callbackSucesso:Function): void
 		{
-			var salvarEstradaToken: AsyncToken; 
+			var cargaToken: AsyncToken; 
 			
-			salvarEstradaToken = cargaService.carregarTipoMercadoria();
-			salvarEstradaToken.addResponder(new Responder(callbackSucesso, defaultFault));
+			cargaToken = cargaService.carregarTipoMercadoria();
+			cargaToken.addResponder(new Responder(callbackSucesso, defaultFault));
 		}
 		
 		public function defaultFault(event: FaultEvent):void

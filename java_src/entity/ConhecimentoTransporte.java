@@ -10,7 +10,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -33,11 +32,11 @@ public class ConhecimentoTransporte {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "cTe")
 	private List<Registro> registro;
 	 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "idVeiculo", nullable = false)
 	private Veiculo veiculo;
 	 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "idCargaPredominante", nullable = false)
 	private CargaPredominante cargaPredominante;
 	 

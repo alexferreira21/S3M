@@ -31,6 +31,10 @@ public class Equipamento {
 		return idEquipamento;
 	}
 	
+	public void setIdEquipamento(Long idEquipamento) {
+		this.idEquipamento = idEquipamento;
+	}
+
 	public String getNome() {
 		return nome;
 	}
