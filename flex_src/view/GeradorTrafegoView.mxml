@@ -12,6 +12,7 @@
 		<![CDATA[
 			import controller.CargaController;
 			import controller.EstradaController;
+			import controller.GeradorTrafegoController;
 			
 			import dto.GeradorDTO;
 			
@@ -22,6 +23,7 @@
 			import entity.TipoMercadoria;
 			
 			import mx.collections.ArrayCollection;
+			import mx.collections.IList;
 			import mx.controls.Alert;
 			import mx.events.FlexEvent;
 			import mx.rpc.events.FaultEvent;
@@ -30,6 +32,7 @@
 			
 			import spark.events.IndexChangeEvent;
 			
+			import util.AlertUtil;
 			import util.SentidoEnum;
 			import util.TipoFluxoAlternativoEnum;
 			
@@ -182,8 +185,15 @@
 			
 			protected function gerarTrafego(event:MouseEvent):void
 			{
+				var mensagemErro: String = validarTela();
+				
+				if(mensagemErro.length > 0)
+				{
+					AlertUtil.criarJanelaErro("Não foi possível gerar os registros. \n\n Causas: \n\n" + mensagemErro, "Erro", this);
+					return;
+				}
+				
 				var geradorDTO: GeradorDTO = new GeradorDTO();
-				var geradorService: RemoteObject = new RemoteObject("geradorService");
 				
 				geradorDTO.dataInicial = dfDataInicial.selectedDate;
 				geradorDTO.dataFinal = dfDataFinal.selectedDate;
@@ -212,12 +222,138 @@
 				
 				var tiposSelecionados: ArrayCollection = new ArrayCollection();
 				for each(var tipoMercadoriaItem: TipoMercadoria in listCargas.dataProvider){
-					tiposSelecionados.addItem(tipoMercadoriaItem);
+					if(tipoMercadoriaItem.isSelected)
+					{
+						tiposSelecionados.addItem(tipoMercadoriaItem);
+					}
 				}
 				
 				geradorDTO.tiposCarga = ArrayCollection(listCargas.dataProvider);
 				
-				geradorService.gerarTrafego(geradorDTO);
+				cursorManager.setBusyCursor();
+				
+				new GeradorTrafegoController(geradorResult).gerarTrafego(geradorDTO);
+			}
+			
+			private function geradorResult(event: ResultEvent):void
+			{
+				cursorManager.removeBusyCursor();
+				Alert.show(String(event.result));
+			}
+			
+			
+			private function validarTela():String
+			{
+				
+				var mensagemErro: String = "";
+				
+				if(dfDataInicial.selectedDate == null || dfDataFinal.selectedDate == null)
+				{
+					mensagemErro += "- Campos de data não preenchidos corretamente. \n";	
+				}
+				else
+				{
+					if(dfDataInicial.selectedDate.time > dfDataFinal.selectedDate.time)
+					{
+						mensagemErro += "- A data inicial deve ser menor do que a data final. \n";
+					}
+				}
+				
+				if( isNaN(nsHoraInicial.value) || isNaN(nsMinutoInicial.value) || isNaN(nsHoraFinal.value) || isNaN(nsMinutoFinal.value))
+				{
+					mensagemErro += "- Campos de horário não preenchidos corretamente. \n";
+				}
+				else
+				{
+					if(!(nsHoraInicial.value * 60 + nsMinutoInicial.value < nsHoraFinal.value * 60 + nsMinutoFinal.value))
+					{
+						mensagemErro += "- O horário inicial deve ser menor do que o horário final. \n";
+					}
+				}
+				
+				if(cbEstrada.selectedIndex == -1)
+				{
+					mensagemErro += "- Estrada não selecionada. \n";
+				}
+				
+				if(cbSegInicial.selectedIndex == -1)
+				{
+					mensagemErro += "- Segmento inicial não selecionado. \n";
+				}
+				
+				if(cbSegFinal.selectedIndex == -1)
+				{
+					mensagemErro += "- Segmento Final não selecionado. \n";
+				}
+				
+				var totalEntrada: Number = 0;
+				
+				for each(var fluxoEntradaItem: FluxoAlternativo in dgEntradas.dataProvider)
+				{
+					totalEntrada += fluxoEntradaItem.percentual;
+				}
+				
+				if(totalEntrada != 100)
+				{
+					mensagemErro += "- A soma dos percentuais para os fluxos de entrada deve totalizar 100%. \n";
+				}
+				
+				var totalSaida: Number = 0;
+				
+				for each(var fluxoSaidaItem: FluxoAlternativo in dgSaidas.dataProvider)
+				{
+					totalSaida += fluxoSaidaItem.percentual;
+				}
+				
+				if(totalSaida != 100)
+				{
+					mensagemErro += "- A soma dos percentuais para os fluxos de saida deve totalizar 100%. \n";
+				}
+				
+				if((nsVelocidadeInferior.value == 0 || nsVelocidadeSuperior.value == 0) || (isNaN(nsVelocidadeInferior.value) || isNaN(nsVelocidadeSuperior.value)))
+				{
+					mensagemErro += "- As velocidades devem ser maiores que zero. \n";
+				}
+				else
+				{
+					if(nsVelocidadeInferior.value > nsVelocidadeSuperior.value)
+					{
+						mensagemErro += "- A velocidade inicial deve ser menor ou igual a velocidade final. \n";
+					}
+				}
+				
+				if((tiQtdCaminhoes.text == "0" || tiQtdCaminhoes.text.length == 0) && (tiQdtOutrosVeiculos.text == "0" || tiQdtOutrosVeiculos.text.length == 0))
+				{
+					mensagemErro += "- É preciso selecionar pelo menos um veículo. \n";
+				}
+				
+				var tiposSelecionados: ArrayCollection = new ArrayCollection();
+				for each(var tipoMercadoriaItem: TipoMercadoria in listCargas.dataProvider){
+					if(tipoMercadoriaItem.isSelected)
+					{
+						tiposSelecionados.addItem(tipoMercadoriaItem);
+					}
+				}
+				
+				if(Number(tiQtdCaminhoes.text) > 0 && tiposSelecionados.length == 0)
+				{
+					mensagemErro += "- É preciso selecionar pelo menos um tipo de carga."
+				}
+				
+				
+				return mensagemErro;
+			}
+			
+			
+			
+			protected function selecinarTodasAsCargas(event:MouseEvent):void
+			{
+				for each(var tipoMercadoriaItem: TipoMercadoria in listCargas.dataProvider)
+				{
+					tipoMercadoriaItem.isSelected = true;
+				}
+				
+				listCargas.invalidateList();
 				
 			}
 			
@@ -347,23 +483,28 @@
 		<s:Spacer height="5"/>
 		
 		<s:BorderContainer x="0" width="608" height="121">
-			<mx:List id="listCargas" x="96" width="416" height="119"
-					 alternatingItemColors="[#EEEEEE, white]" labelField="descricao" rowCount="5">
-				<mx:itemRenderer>
-					<fx:Component>
-						<mx:CheckBox selectedField="isSelected"
-									 change="onChange(event);">
-							<fx:Script>
-								<![CDATA[
-									private function onChange(evt:Event):void {
-										data.isSelected = !data.isSelected;
-									}
-								]]>
-							</fx:Script>
-						</mx:CheckBox>
-					</fx:Component>
-				</mx:itemRenderer>
-			</mx:List>
+			<s:HGroup>
+				<s:Button label="Selecionar Todos" click="selecinarTodasAsCargas(event)" verticalCenter="0"/>
+				
+				<mx:List id="listCargas" x="96" width="416" height="119"
+						 alternatingItemColors="[#EEEEEE, white]" labelField="descricao" rowCount="5">
+					<mx:itemRenderer>
+						<fx:Component>
+							<mx:CheckBox selectedField="isSelected"
+										 change="onChange(event);"
+										 selected="@{data.isSelected}">
+								<fx:Script>
+									<![CDATA[
+										private function onChange(evt:Event):void {
+											data.isSelected = !data.isSelected;
+										}
+									]]>
+								</fx:Script>
+							</mx:CheckBox>
+						</fx:Component>
+					</mx:itemRenderer>
+				</mx:List>
+			</s:HGroup>
 		</s:BorderContainer>
 		
 		<s:HGroup>

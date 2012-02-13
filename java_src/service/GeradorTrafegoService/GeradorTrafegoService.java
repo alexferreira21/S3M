@@ -34,18 +34,21 @@ import entity.Veiculo;
 
 public class GeradorTrafegoService {
 
+	private static final Long UM_DIA = 86400000L;
+
 	private GeradorTrafegoDAO geradorDAO = new GeradorTrafegoDAO();
 	private Especie_TipoDAO especieDAO = new Especie_TipoDAO();
 	private PortalDAO portalDAO = new PortalDAO();
-	
+
 	private GeradorDTO geradorDTO;
 	private List<PortalKm> portaisNaEstrada = new ArrayList<PortalKm>();
-	
 
 
 	@SuppressWarnings("all")
-	public void gerarTrafego(GeradorDTO geradorDTO){
+	public String gerarTrafego(GeradorDTO geradorDTO){
 		this.geradorDTO = geradorDTO;
+		
+		String mensagemRetorno = "";
 
 		prepararListaDePortais();
 
@@ -53,52 +56,70 @@ public class GeradorTrafegoService {
 
 		Especie_Tipo especieCaminhao = especieDAO.getEspecieCaminhao();
 		List<Especie_Tipo> especieOutros = especieDAO.getEspecieOutros();
+		List<Date> datasAGerar = new ArrayList<Date>();
 
-		List<Veiculo> veiculos = new ArrayList<Veiculo>();
-		List<ConhecimentoTransporte> CTs = new ArrayList<ConhecimentoTransporte>();
-
-		for(int i=1; i<= geradorDTO.getQtdCaminhoes() ; i++){
-			Veiculo novoVeiculo = new Veiculo();
-			novoVeiculo.setCategoria(categorias.get(0));
-			novoVeiculo.setEspecie_Tipo(especieCaminhao);
-
-			CargaPredominante novaCarga = new CargaPredominante();
-			novaCarga.setTipoMeradoria((TipoMercadoria)RandomUtils.selecionarAleatoriamente(geradorDTO.getTiposCarga()));
-			novaCarga.setQuantidade(RandomUtils.entreValores(100.0f, 15000.0f));		
-			novaCarga.setValor(RandomUtils.entreValores(0.0f, 10000000.0f));
-
-			ConhecimentoTransporte ct = new ConhecimentoTransporte();
-			ct.setVeiculo(novoVeiculo);
-			ct.setCargaPredominante(novaCarga);
-
-			novoVeiculo.setCte(ct);
-
-			veiculos.add(novoVeiculo);
+		Date data = geradorDTO.getDataInicial();
+		while(data.compareTo(geradorDTO.getDataFinal()) <= 0){
+			datasAGerar.add(data);
+			data = new Date(data.getTime() + UM_DIA);
 		}
 
-		for(int i=1; i<= geradorDTO.getQtdOutrosVeiculos() ; i++){
-			Veiculo novoVeiculo = new Veiculo();
-			novoVeiculo.setCategoria(categorias.get(0));
-			novoVeiculo.setEspecie_Tipo((Especie_Tipo)RandomUtils.selecionarAleatoriamente(especieOutros));
+		for(Date dataItem : datasAGerar){
 
-			veiculos.add(novoVeiculo);
-		}
+			List<Veiculo> veiculosGerados = new ArrayList<Veiculo>();
+			List<ConhecimentoTransporte> CTs = new ArrayList<ConhecimentoTransporte>();
 
-		Integer totalVeiculos = veiculos.size();
-		for (FluxoAlternativo fluxoEntradaItem : geradorDTO.getFluxosEntrada()){
-			List<Veiculo> listaEntrada = new ArrayList<Veiculo>();
-			Integer percentual = (int) ((fluxoEntradaItem.getPercentual() * totalVeiculos) / 100); 
-			for(int i=0 ; i < percentual ; i++){
-				listaEntrada.add(veiculos.remove(RandomUtils.menorQue(veiculos.size())));
+			for(int i=1; i<= geradorDTO.getQtdCaminhoes() ; i++){
+				Veiculo novoVeiculo = new Veiculo();
+				novoVeiculo.setCategoria(categorias.get(0));
+				novoVeiculo.setEspecie_Tipo(especieCaminhao);
+
+				CargaPredominante novaCarga = new CargaPredominante();
+				novaCarga.setTipoMeradoria((TipoMercadoria)RandomUtils.selecionarAleatoriamente(geradorDTO.getTiposCarga()));
+				novaCarga.setQuantidade(RandomUtils.entreValores(100.0f, 15000.0f));		
+				novaCarga.setValor(RandomUtils.entreValores(0.0f, 10000000.0f));
+
+				ConhecimentoTransporte ct = new ConhecimentoTransporte();
+				ct.setVeiculo(novoVeiculo);
+				ct.setCargaPredominante(novaCarga);
+
+				novoVeiculo.setCte(ct);
+
+				veiculosGerados.add(novoVeiculo);
 			}
 
-			for(FluxoAlternativo fluxoSaidaItem : geradorDTO.getFluxosSaida()){
-				if(ordemDoFluxo(fluxoSaidaItem) > ordemDoFluxo(fluxoEntradaItem)){
-					gerarRegistros(fluxoEntradaItem, fluxoSaidaItem, (int)( (listaEntrada.size() * fluxoSaidaItem.getPercentual()) / 100), listaEntrada);
+			for(int i=1; i<= geradorDTO.getQtdOutrosVeiculos() ; i++){
+				Veiculo novoVeiculo = new Veiculo();
+				novoVeiculo.setCategoria(categorias.get(0));
+				novoVeiculo.setEspecie_Tipo((Especie_Tipo)RandomUtils.selecionarAleatoriamente(especieOutros));
+
+				veiculosGerados.add(novoVeiculo);
+			}
+
+
+			Integer totalVeiculos = veiculosGerados.size();
+			for (FluxoAlternativo fluxoEntradaItem : geradorDTO.getFluxosEntrada()){
+				List<Veiculo> listaEntrada = new ArrayList<Veiculo>();
+				Integer percentual = (int) ((fluxoEntradaItem.getPercentual() * totalVeiculos) / 100); 
+				for(int i=0 ; i < percentual ; i++){
+					listaEntrada.add(veiculosGerados.remove(RandomUtils.menorQue(veiculosGerados.size())));
 				}
-			}
-		}		
 
+				for(FluxoAlternativo fluxoSaidaItem : geradorDTO.getFluxosSaida()){
+					if(ordemDoFluxo(fluxoSaidaItem) > ordemDoFluxo(fluxoEntradaItem)){
+						Integer quantidadeGerada = (int)( (listaEntrada.size() * fluxoSaidaItem.getPercentual()) / 100);
+						gerarRegistros(fluxoEntradaItem, fluxoSaidaItem, quantidadeGerada, listaEntrada, dataItem);
+						
+						if(dataItem.equals(geradorDTO.getDataInicial())){
+							mensagemRetorno += "Foram gerados " + quantidadeGerada + " veículos entre " + fluxoEntradaItem.getPortal().getNome() + " e " + fluxoSaidaItem.getPortal().getNome() + ". \n";
+						}
+					}
+				}
+			}		
+
+		}
+		
+		return mensagemRetorno;
 	}
 
 
@@ -155,20 +176,16 @@ public class GeradorTrafegoService {
 	}
 
 	private Integer ordemDoFluxo(FluxoAlternativo fluxo){
-		if(fluxo.getPortal().getIdPortal() == geradorDTO.getEstrada().getSegmentos().get(0).getPortalOrigem().getIdPortal()){
-			return 0;
-		}
-
-		for(Segmento segmentoItem : geradorDTO.getEstrada().getSegmentos()){
-			if(fluxo.getPortal().getIdPortal() == segmentoItem.getPortalDestino().getIdPortal()){
-				return geradorDTO.getEstrada().getSegmentos().indexOf(segmentoItem) + 1;
+		for (PortalKm portalKMItem : portaisNaEstrada){
+			if(fluxo.getPortal().getIdPortal() == portalKMItem.getPortal().getIdPortal()){
+				return portaisNaEstrada.indexOf(portalKMItem);
 			}
 		}
 
-		return null;
+		return null;		
 	}
 
-	private void gerarRegistros(FluxoAlternativo inicio, FluxoAlternativo fim, Integer qtd, List<Veiculo> listaVeiculos){
+	private void gerarRegistros(FluxoAlternativo inicio, FluxoAlternativo fim, Integer qtd, List<Veiculo> listaVeiculos, Date data){
 
 		for(int k=0 ; k < qtd ; k++){
 			Integer indexPortalInicial = -1;
@@ -192,7 +209,7 @@ public class GeradorTrafegoService {
 			primeiroRegistro.setcTe(veiculo.getCte());
 
 			Calendar timestamp = Calendar.getInstance();
-			timestamp.setTime(geradorDTO.getDataInicial());
+			timestamp.setTime(data);
 
 			Integer minutosInicial = calcularMinutos(geradorDTO.getHoraInicial(), geradorDTO.getMinutoInicial());
 			Integer minutosFinal = calcularMinutos(geradorDTO.getHoraFinal(), geradorDTO.getMinutoFinal());
@@ -206,7 +223,7 @@ public class GeradorTrafegoService {
 			primeiroRegistro.setTimestamp(new Date(timestamp.getTimeInMillis()));
 
 			geradorDAO.salvarRegistro(primeiroRegistro);
-			
+
 			Registro ultimoRegistro = primeiroRegistro;
 
 			for(int i=0 ; i<Math.abs(indexPortalFinal - indexPortalInicial) ; i++){
@@ -219,12 +236,12 @@ public class GeradorTrafegoService {
 				proxRegistro.setTimestamp(timestampFinal);
 				proxRegistro.setVeiculo(veiculo);
 				proxRegistro.setcTe(veiculo.getCte());
-				
+
 				idEquipamento = portaisNaEstrada.get(indexPortalInicial + i).getPortal().getEquipamento().get(RandomUtils.menorQue(portaisNaEstrada.get(indexPortalFinal).getPortal().getEquipamento().size())).getIdEquipamento();
 				proxRegistro.setEquipamento(portalDAO.findEquipamentoById(idEquipamento));
-				
+
 				geradorDAO.salvarRegistro(proxRegistro);
-				
+
 				ultimoRegistro = proxRegistro;
 			}
 		}
@@ -235,8 +252,5 @@ public class GeradorTrafegoService {
 
 		return hora * 60 + minuto;
 	}
-
-
-
 
 }
