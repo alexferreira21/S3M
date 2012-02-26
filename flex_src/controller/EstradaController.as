@@ -15,22 +15,22 @@ package controller
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.remoting.RemoteObject;
 
-	public class EstradaController
+	public class EstradaController extends Controller
 	{
 		
 		[Bindable]
 		public var estradas: ArrayCollection = BaseModel.getInstance().estradas;
-		private var estradaService: RemoteObject = new RemoteObject("estradaService");
 		
 		public function EstradaController()
 		{
+			super('estradaService');
 		}
 		
 		public function salvarEstrada(estrada: Estrada):void
 		{
 			var salvarEstradaToken: AsyncToken; 
 			
-			salvarEstradaToken = estradaService.salvarEstrada(estrada);
+			salvarEstradaToken = service.salvarEstrada(estrada);
 			salvarEstradaToken.addResponder(new Responder(salvarEstradaResult, salvarEstradaFault));
 		}
 		
@@ -69,8 +69,16 @@ package controller
 			
 			CursorManager.setBusyCursor();
 			
-			token = estradaService.carregarEstradas();
-			token.addResponder(new mx.rpc.Responder(callbackSucesso, callbackFalha));
+			token = service.carregarEstradas();
+			
+			if(callbackFalha != null)
+			{
+				token.addResponder(new mx.rpc.Responder(callbackSucesso, callbackFalha));
+			}		
+			else
+			{
+				token.addResponder(new mx.rpc.Responder(callbackSucesso, defaultFault));	
+			}
 			
 		}
 		
@@ -78,7 +86,7 @@ package controller
 		{
 			var token: AsyncToken; 
 			
-			token = estradaService.carregarEstradaPorId(id);
+			token = service.carregarEstradaPorId(id);
 			token.addResponder(new mx.rpc.Responder(callbackSucesso, callbackFalha));
 		}
 		
@@ -86,7 +94,7 @@ package controller
 		{
 			var removerEstradaToken: AsyncToken; 
 			
-			removerEstradaToken = estradaService.removerEstrada(estrada);
+			removerEstradaToken = service.removerEstrada(estrada);
 			removerEstradaToken.addResponder(new Responder(callbackSucces, callbackFault));
 		}
 		
@@ -94,7 +102,7 @@ package controller
 		{
 			var removerFluxoAlternativoToken: AsyncToken; 
 			
-			removerFluxoAlternativoToken = estradaService.removerFluxoAlternativo(fluxoAlternativo);
+			removerFluxoAlternativoToken = service.removerFluxoAlternativo(fluxoAlternativo);
 			removerFluxoAlternativoToken.addResponder(new Responder(callbackSucces, callbackFault));
 		}
 		

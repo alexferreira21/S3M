@@ -6,23 +6,22 @@ package controller
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.remoting.RemoteObject;
 
-	public class CargaController
+	public class CargaController extends Controller
 	{
-		
-		private var cargaService: RemoteObject = new RemoteObject("cargaService");
+		public function CargaController()
+		{
+			super('cargaService');
+		}
 		
 		public function carregarTiposMercadorias(callbackSucesso:Function): void
 		{
 			var cargaToken: AsyncToken; 
 			
-			cargaToken = cargaService.carregarTipoMercadoria();
+			cargaToken = service.carregarTipoMercadoria();
 			cargaToken.addResponder(new Responder(callbackSucesso, defaultFault));
 		}
 		
-		public function defaultFault(event: FaultEvent):void
-		{
-			Alert.show(event.fault.message);	
-		}
+		
 	
 	}
 }

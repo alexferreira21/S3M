@@ -11,14 +11,12 @@ package controller
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.remoting.RemoteObject;
 
-	public class GeradorTrafegoController
+	public class GeradorTrafegoController extends Controller
 	{
-		private var geradorService: RemoteObject = new RemoteObject("geradorService");
-		private var responder: Responder;
-		
 		
 		public function GeradorTrafegoController(callbackSucesso:Function)
 		{
+			super('geradorService');
 			this.responder = new Responder(callbackSucesso,defaultFault);
 		}
 		
@@ -26,14 +24,9 @@ package controller
 		{
 			var geradorToken: AsyncToken; 
 			
-			geradorToken = geradorService.gerarTrafego(geradorDTO);
+			geradorToken = service.gerarTrafego(geradorDTO);
 			geradorToken.addResponder(responder);
 		}
 		
-		public function defaultFault(event: FaultEvent):void
-		{
-			CursorManager.removeBusyCursor();
-			Alert.show(event.fault.message);	
-		}
 	}
 }

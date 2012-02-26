@@ -228,7 +228,7 @@
 					}
 				}
 				
-				geradorDTO.tiposCarga = ArrayCollection(listCargas.dataProvider);
+				geradorDTO.tiposCarga = tiposSelecionados;
 				
 				cursorManager.setBusyCursor();
 				

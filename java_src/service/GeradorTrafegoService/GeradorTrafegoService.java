@@ -2,16 +2,11 @@ package service.GeradorTrafegoService;
 
 import hibernate.HibernateUtil;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
-import org.omg.DynamicAny.DynValueOperations;
 
 import util.RandomUtils;
 
@@ -27,7 +22,6 @@ import entity.Especie_Tipo;
 import entity.FluxoAlternativo;
 import entity.Portal;
 import entity.Registro;
-import entity.Segmento;
 import entity.SentidoEnum;
 import entity.TipoMercadoria;
 import entity.Veiculo;
@@ -49,7 +43,7 @@ public class GeradorTrafegoService {
 		this.geradorDTO = geradorDTO;
 		
 		String mensagemRetorno = "";
-
+		
 		prepararListaDePortais();
 
 		List<Categoria> categorias = HibernateUtil.getInstance().getSession().createQuery("from Categoria").list(); //CRIAR GENERIC DAO

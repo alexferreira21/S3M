@@ -1,179 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%">
-	
-	<fx:Declarations>
-		<fx:Array id="buttonsDp">
-			<fx:String>Carga por Semana</fx:String>
-			<fx:String>Peso por Semana</fx:String>
-			<fx:String>Tipos de Veículos</fx:String>
-			<fx:String>Valor Total por Mês</fx:String>
-		</fx:Array>
-	</fx:Declarations>
+		 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:view="view.*" height="100%" width="100%">
+
 
 	<fx:Metadata>
 		[Event(name="voltarEvent", type="flash.events.Event")]
-	</fx:Metadata>
-
+	</fx:Metadata>		
 	<fx:Script>
 		<![CDATA[
-			import mx.collections.ArrayCollection;
+			import events.EstradaSelecionadaEvent;
+			
+			import mx.controls.Alert;
 			import mx.core.INavigatorContent;
-			import mx.events.ItemClickEvent;
 			
-			[Bindable]
-			private var cargasXsemanaDp:ArrayCollection = new ArrayCollection([
-				{ Dia: "Segunda", Leite: 35, Peixe:39, Madeira:28, Gasolina:51},
-				{ Dia: "Terça", Leite: 22, Peixe:50, Madeira:10, Gasolina:23},
-				{ Dia: "Quarta",Leite: 30, Peixe:22, Madeira:60, Gasolina:24},
-				{ Dia: "Quinta", Leite: 28, Peixe:7, Madeira:12, Gasolina:44},
-				{ Dia: "Sexta", Leite: 40, Peixe:41, Madeira:35, Gasolina:37}]);
-			
-			[Bindable]
-			private var pesoXsemanaDp:ArrayCollection = new ArrayCollection([
-				{ Dia: "Segunda", Peso: 15000},
-				{ Dia: "Terça", Peso: 27000},
-				{ Dia: "Quarta", Peso: 12000},
-				{ Dia: "Quinta", Peso: 49000},
-				{ Dia: "Sexta", Peso: 8000}]);
-			
-			[Bindable]
-			private var TiposVeiculosDp:ArrayCollection = new ArrayCollection([
-				{ Tipo: "Leves", Quantidade: 75000},
-				{ Tipo: "Utilitarios", Quantidade: 10000},
-				{ Tipo: "Ônibus", Quantidade: 7000},
-				{ Tipo: "Caminhões", Quantidade: 52000},
-				{ Tipo: "Semi-reboques", Quantidade: 2500},
-				{ Tipo: "Outros", Quantidade: 1750}]);
-			
-			[Bindable]
-			private var ValorDp:ArrayCollection = new ArrayCollection([
-				{ Mes: "Janeiro", Valor: 3500000},
-				{ Mes: "Fevereiro", Valor: 1500000},
-				{ Mes: "Março", Valor: 700000},
-				{ Mes: "Abril", Valor: 500000},
-				{ Mes: "Maio", Valor: 2000000},
-				{ Mes: "Junho", Valor: 2200000},
-				{ Mes: "Julho", Valor: 600000},
-				{ Mes: "Agosto", Valor: 1750000},
-				{ Mes: "Setembro", Valor: 2000000},
-				{ Mes: "Outubro", Valor: 2700000},
-				{ Mes: "Novembro", Valor: 3000000},
-				{ Mes: "Dezembro", Valor: 4000000}]);
-			
-			protected function togglebuttonbar1_itemClickHandler(event:ItemClickEvent):void
+			protected function estradaSelecionada(event: EstradaSelecionadaEvent):void
 			{
-				vsGraficos.selectedIndex = event.index;				
-			}
-			
-			private function displayGold(data:Object, field:String, index:Number, percentValue:Number):String {
-				var temp:String= (" " + percentValue).substr(0,6);
-				return data.Tipo + ": " + '\n' + "Total de Veículos: " + data.Quantidade + '\n' + temp + "%";
+				graficosEstrada.estradaSelecionada = event.estrada;
+				vsGraficosView.selectedChild = INavigatorContent(vsGraficosView.getChildByName('graficosEstrada'));
 			}
 			
 		]]>
 	</fx:Script>
 	
-	<mx:ViewStack id="vsTelaPrincipal" width="100%" height="100%">
+	
+	<mx:ViewStack id="vsGraficosView" height="100%" width="100%">
 		
-		<s:NavigatorContent height="100%" width="100%">
-			<s:VGroup verticalCenter="0" horizontalCenter="0">
-				<s:FormItem label="Estrada">
-					<s:ComboBox dataProvider="{new ArrayCollection(['BR 101'])}"/>
-				</s:FormItem>
-				<s:Spacer height="10"/>
-				<s:Button label="Selecionar" click="{vsTelaPrincipal.selectedChild = INavigatorContent(vsTelaPrincipal.getChildByName('ncGraficos'))}"/>
-			</s:VGroup>
-		</s:NavigatorContent>
 		
-		<s:NavigatorContent id="ncGraficos" width="100%" height="100%">
-				<s:HGroup height="100%" width="100%">
-					<mx:ToggleButtonBar dataProvider="{buttonsDp}" direction="vertical" height="100%" width="20%" verticalGap="10" itemClick="togglebuttonbar1_itemClickHandler(event)"/>				
-					
-					<mx:ViewStack id="vsGraficos" width="95%" height="100%">
-						
-						<s:NavigatorContent id="nccargaXsemana" height="100%" width="100%">
-							
-							<mx:ColumnChart id="columnCargaXSemana" height="100%" width="100%" color="0x323232"
-											showDataTips="true" dataProvider="{cargasXsemanaDp}">
-								
-								<mx:horizontalAxis>
-									<mx:CategoryAxis categoryField="Dia"/>
-								</mx:horizontalAxis>
-								
-								<mx:series>
-									<mx:ColumnSeries xField="Dia" yField="Leite" displayName="Leite"/>
-									<mx:ColumnSeries xField="Dia" yField="Peixe" displayName="Peixe"/>
-									<mx:ColumnSeries xField="Dia" yField="Madeira" displayName="Madeira"/>
-									<mx:ColumnSeries xField="Dia" yField="Gasolina" displayName="Gasolina"/>
-								</mx:series>
-							</mx:ColumnChart>
-							
-							<mx:Legend x="50" y="10" color="0x323232" dataProvider="{columnCargaXSemana}"/>
-						</s:NavigatorContent>
-						
-						<s:NavigatorContent id="ncPesoXSemana" height="100%" width="100%">
-							
-							<mx:ColumnChart id="columnPesoXSemana" height="100%" width="100%" color="0x323232" 
-											showDataTips="true" dataProvider="{pesoXsemanaDp}">
-								
-								<mx:horizontalAxis>
-									<mx:CategoryAxis categoryField="Dia"/>
-								</mx:horizontalAxis>
-								
-								<mx:series>
-									<mx:ColumnSeries xField="Dia" yField="Peso" displayName="Peso (Kg)"/>
-								</mx:series>
-							</mx:ColumnChart>
-							
-							<mx:Legend x="326" y="10" color="0x323232" dataProvider="{columnPesoXSemana}"/>
-						</s:NavigatorContent>
-						
-						
-						<s:NavigatorContent id="ncTiposDeVeiculo" height="100%" width="100%">
-							
-							<mx:PieChart id="chart" height="100%" width="100%" paddingRight="5" paddingLeft="5" color="0x323232"
-										 showDataTips="true" dataProvider="{TiposVeiculosDp}" >
-								
-								<mx:series>
-									<mx:PieSeries labelPosition="callout" field="Quantidade" labelFunction="displayGold">
-										<mx:calloutStroke>
-											<s:SolidColorStroke weight="0" color="0x888888" alpha="1.0"/>
-										</mx:calloutStroke>
-										<mx:radialStroke>
-											<s:SolidColorStroke weight="0" color="#FFFFFF" alpha="0.20"/>
-										</mx:radialStroke>
-										<mx:stroke>
-											<s:SolidColorStroke color="0" alpha="0.20" weight="2"/>
-										</mx:stroke>
-									</mx:PieSeries>
-								</mx:series>
-							</mx:PieChart>
-						</s:NavigatorContent>
-						
-						<s:NavigatorContent id="ncValorTotal" height="100%" width="100%">
-							
-							<mx:LineChart id="linechart" color="0x323232" height="100%" width="100%"
-										  showDataTips="true" dataProvider="{ValorDp}">
-								
-								<mx:horizontalAxis>
-									<mx:CategoryAxis categoryField="Mes"/>
-								</mx:horizontalAxis>
-								
-								<mx:series>
-									<mx:LineSeries yField="Valor" form="curve" displayName="Valor Transportado (R$)"/>
-								</mx:series>
-							</mx:LineChart>
-							
-							<mx:Legend x="326" y="10" color="0x323232" dataProvider="{linechart}"/>
-						</s:NavigatorContent>
-					</mx:ViewStack>
-					<s:Image click="{dispatchEvent(new Event('voltarEvent',true))}" source="@Embed('assets/ico-voltar.png')"/>
-				</s:HGroup>
-		</s:NavigatorContent>
+		<view:SelecionarEstradaView estradaSelecionada="estradaSelecionada(event)"/>
+			
+		<view:GraficosEstradaView id="graficosEstrada"/>
+		
 		
 	</mx:ViewStack>
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 </s:Group>

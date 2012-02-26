@@ -39,4 +39,11 @@
 			<scope>application</scope>
 		</properties>
 	</destination>
+	
+	<destination id="graficosService">
+		<properties>
+			<source>service.GraficosService</source>
+			<scope>application</scope>
+		</properties>
+	</destination>
 </service>

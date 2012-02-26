@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:NavigatorContent xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:component="component.*"
+		 show="onShow(event)">
+	
+	
+	<fx:Declarations>
+		<s:NumberFormatter id="decimalFormatter" fractionalDigits="2" decimalSeparator="," groupingSeparator="."/>
+		<s:NumberFormatter  id="integerFormatter"  fractionalDigits="0" groupingSeparator="." />
+		
+		<fx:Array id="buttonsDp">
+			<fx:String>Carga por Semana</fx:String>
+		</fx:Array>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import controller.GraficosController;
+			
+			import entity.Estrada;
+			
+			import events.DataSelecionadaEvent;
+			
+			import mx.charts.HitData;
+			import mx.charts.series.items.LineSeriesItem;
+			import mx.controls.Alert;
+			import mx.core.INavigatorContent;
+			import mx.events.FlexEvent;
+			import mx.events.ItemClickEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.formatters.NumberFormatter;
+
+			[Bindable]
+			public var estradaSelecionada: Estrada;
+			[Bindable]
+			public var dataInicial: Date = new Date();
+			[Bindable]
+			public var dataFinal: Date = new Date();
+			
+			private var callbackGraficoSelecionado: Function;
+			
+			protected function onShow(event:FlexEvent):void
+			{
+				barraDatas.dfDataInicial.selectedDate = new Date(2012,1,1);			
+				barraDatas.dfDataFinal.selectedDate = new Date(2012,7,1);	
+				
+				criarGraficoValorPorMes();
+			}
+			
+			protected function dataAlterada(event:DataSelecionadaEvent):void
+			{
+				callbackGraficoSelecionado.call();
+			}
+			
+			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/////////////////////////////////////// GRAFICO VALOR POR MES ///////////////////////////////////////////////////////
+			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			protected function criarGraficoValorPorMes():void
+			{
+				new GraficosController(resultCriarGraficoValorPorMes).graficoValorPorMes(estradaSelecionada.idEstrada, dataInicial, dataFinal);
+				callbackGraficoSelecionado = criarGraficoValorPorMes;
+			}
+			
+			private function resultCriarGraficoValorPorMes(event: ResultEvent):void
+			{
+				graficoValorPorMes.dataProvider = event.result;
+			}
+			
+			
+			private function dataTipGraficoValorPorMes(data:HitData):String
+			{
+				var s:String;   
+				s = "<b>" + data.item.descricao +"</b>\n";
+				s += "R$ " + decimalFormatter.format(data.item.valor);
+				
+				return s;
+			}
+			
+			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/////////////////////////////////////// GRAFICO TIPOS DE VEÍCULO ////////////////////////////////////////////////////
+			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			
+			private function criarGraficoTiposDeVeiculo():void
+			{
+				new GraficosController(resultCriarGraficoTiposDeVeiculo).graficoTiposDeVeiculos(estradaSelecionada.idEstrada, dataInicial, dataFinal);
+				callbackGraficoSelecionado = criarGraficoTiposDeVeiculo;
+			}
+			
+			private function resultCriarGraficoTiposDeVeiculo(event: ResultEvent):void
+			{
+				graficoTiposDeVeiculo.dataProvider = event.result;
+			}
+			
+			
+			private function formatPercentual(data:Object, field:String, index:Number, percentValue:Number):String {
+				var temp:String= (" " + percentValue).substr(0,6);
+				return data.descricao + ": " + '\n' + "Total de Veículos: " + integerFormatter.format(data.valor) + '\n' + decimalFormatter.format(Number(temp)) + "%";
+			}
+		
+			private function dataTipGraficoTiposDeVeiculos(data:HitData):String
+			{
+				var s:String;   
+				s = "<b>" + data.item.descricao +"</b>\n";
+				s += integerFormatter.format(data.item.valor) + " veículos.";
+				
+				return s;
+			}
+			
+			
+			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/////////////////////////////////////// GRAFICO TIPOS DE VEÍCULO ////////////////////////////////////////////////////
+			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			
+			private function criarGraficoPesoPorSemana():void
+			{
+				new GraficosController(resultGraficoPesoPorSemana).graficoPesoPorSemana(estradaSelecionada.idEstrada, dataInicial, dataFinal);
+				callbackGraficoSelecionado = criarGraficoPesoPorSemana;
+			}
+			
+			private function resultGraficoPesoPorSemana(event: ResultEvent):void
+			{
+				graficoPesoPorSemana.dataProvider = event.result;
+			}
+			
+			private function dataTipGraficoPesoPorSemana(data:HitData):String
+			{
+				var s:String;   
+				s = "<b>" + data.item.descricao +"</b>\n";
+				s += decimalFormatter.format(data.item.valor) + " Toneladas.";
+				
+				return s;
+			}
+			
+			
+		]]>
+	</fx:Script>
+	
+	
+	<s:HGroup height="100%" width="100%">
+		<s:VGroup height="100%" width="20%">
+			<s:Button width="100%" height="25%" id="btGraficoValoresPorMes" label="Valor Total por Mês" click="{vsGraficos.selectedChild = INavigatorContent(vsGraficos.getChildByName('ncGraficoValorPorMes'))}"/>
+			<s:Button width="100%" height="25%" id="btGraficoTiposDeVeiculos" label="Tipos de Veículos" click="{vsGraficos.selectedChild = INavigatorContent(vsGraficos.getChildByName('ncGraficoTiposDeVeiculos'))}"/>
+			<s:Button width="100%" height="25%" id="btGraficoPesoPorSemana" label="Peso por Semana" click="{vsGraficos.selectedChild = INavigatorContent(vsGraficos.getChildByName('ncGraficoPesoPorSemana'))}"/>
+			
+		</s:VGroup>
+		
+		<s:VGroup height="100%" width="80%">
+			
+			<component:BarraSelecaoData id="barraDatas" dataInical="@{dataInicial}" dataFinal="@{dataFinal}" dataAlterada="dataAlterada(event)" height="5%" width="100%"/>
+			
+			<mx:ViewStack id="vsGraficos" width="95%" height="100%" creationPolicy="all">
+				
+				<s:NavigatorContent id="ncGraficoValorPorMes" height="100%" width="100%" show="criarGraficoValorPorMes()">
+					<mx:LineChart id="graficoValorPorMes" color="0x323232" height="100%" width="100%"
+								  showDataTips="true" dataTipFunction="dataTipGraficoValorPorMes">
+						
+						<mx:horizontalAxis>
+							<mx:CategoryAxis categoryField="descricao"/>
+						</mx:horizontalAxis>
+						
+						<mx:series>
+							<mx:LineSeries yField="valor" form="curve" displayName="Valor Transportado (R$)"/>
+						</mx:series>
+					</mx:LineChart>
+					
+					<mx:Legend x="326" y="10" color="0x323232" dataProvider="{graficoValorPorMes}"/>
+				</s:NavigatorContent>
+				
+				<s:NavigatorContent id="ncGraficoTiposDeVeiculos" show="criarGraficoTiposDeVeiculo()">
+					<mx:PieChart id="graficoTiposDeVeiculo" height="100%" width="100%" paddingRight="5" paddingLeft="5" color="0x323232"
+								 showDataTips="true" dataTipFunction="dataTipGraficoTiposDeVeiculos">
+						
+						<mx:series>
+							<mx:PieSeries labelPosition="callout" field="valor" labelFunction="formatPercentual">
+								<mx:calloutStroke>
+									<s:SolidColorStroke weight="0" color="0x888888" alpha="1.0"/>
+								</mx:calloutStroke>
+								<mx:radialStroke>
+									<s:SolidColorStroke weight="0" color="#FFFFFF" alpha="0.20"/>
+								</mx:radialStroke>
+								<mx:stroke>
+									<s:SolidColorStroke color="0" alpha="0.20" weight="2"/>
+								</mx:stroke>
+							</mx:PieSeries>
+						</mx:series>
+					</mx:PieChart>
+					
+				</s:NavigatorContent>
+				
+				<s:NavigatorContent id="ncGraficoPesoPorSemana" show="criarGraficoPesoPorSemana()">
+					
+					<mx:ColumnChart id="graficoPesoPorSemana" height="100%" width="100%" color="0x323232" 
+									showDataTips="true" dataTipFunction="dataTipGraficoPesoPorSemana">
+						
+						<mx:horizontalAxis>
+							<mx:CategoryAxis categoryField="descricao"/>
+						</mx:horizontalAxis>
+						
+						<mx:series>
+							<mx:ColumnSeries xField="descricao" yField="valor" displayName="Peso (ton)"/>
+						</mx:series>
+					</mx:ColumnChart>
+					
+					<mx:Legend x="326" y="10" color="0x323232" dataProvider="{graficoPesoPorSemana}"/>
+					
+				</s:NavigatorContent>
+				
+			</mx:ViewStack>
+		</s:VGroup>
+			
+			
+			
+			
+	</s:HGroup>
+	
+	
+	
+	
+	
+	
+	
+	
+</s:NavigatorContent>
