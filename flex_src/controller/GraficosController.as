@@ -18,7 +18,7 @@ package controller
 		{
 			var graficoToken: AsyncToken; 
 			
-			graficoToken = service.graficoValorPorMes(idEstrada, dataInicial, dataFinal)
+			graficoToken = service.graficoValorPorMes(idEstrada, dataInicial, dataFinal);
 			graficoToken.addResponder(responder);
 		}
 		
@@ -27,7 +27,7 @@ package controller
 		{
 			var graficoToken: AsyncToken; 
 			
-			graficoToken = service.graficoTiposDeVeiculos(idEstrada, dataInicial, dataFinal)
+			graficoToken = service.graficoTiposDeVeiculos(idEstrada, dataInicial, dataFinal);
 			graficoToken.addResponder(responder);
 		}
 		
@@ -35,10 +35,17 @@ package controller
 		{
 			var graficoToken: AsyncToken; 
 			
-			graficoToken = service.graficoPesoPorSemana(idEstrada, dataInicial, dataFinal)
+			graficoToken = service.graficoPesoPorSemana(idEstrada, dataInicial, dataFinal);
 			graficoToken.addResponder(responder);
 		}
 		
+		public function graficoTipoDeCargaPorSemana(idEstrada: Number, diaSemana: int, dataInicial: Date, dataFinal: Date):void
+		{
+			var graficoToken: AsyncToken; 
+			
+			graficoToken = service.graficoTipoDeCargaPorSemana(idEstrada, 0, dataInicial, dataFinal);
+			graficoToken.addResponder(responder);
+		}
 		
 	}
 }

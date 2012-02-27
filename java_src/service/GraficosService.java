@@ -73,6 +73,25 @@ public class GraficosService {
 		return retornoService;
 	}
 	
+	public List<ValorGrafico> graficoTipoDeCargaPorSemana(Long idEstrada, Integer diaSemana, Date dataInicio, Date dataFim){
+		
+		List<Object[]> retornoDAO = graficosDAO.graficoTipoDeCargaPorSemana(idEstrada, diaSemana, dataInicio, dataFim);
+		List<ValorGrafico> retornoService = new ArrayList<ValorGrafico>();
+
+		
+		for( Object[] array : retornoDAO){
+			ValorGrafico valorGrafico = new ValorGrafico();
+			valorGrafico.setDescricao((String)array[0]);
+			
+			Double valorDouble = (Double)array[1];
+			valorGrafico.setValor(valorDouble.floatValue()/1000); 
+					
+			retornoService.add(valorGrafico);
+		}
+		
+		
+		return retornoService;
+	}
 	
 	private String substituirDiasDaSemana(Integer numero){
 		
