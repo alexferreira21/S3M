@@ -146,12 +146,15 @@
 				var ufRetornada: UF = UF(event.result);
 				portalController.portalEmEdicao.municipio.uf = ufRetornada;
 				
-				for each(var ufItem:UF in cbUF.dataProvider)
+				if(ufRetornada != null)
 				{
-					if(ufItem.idUF ==  ufRetornada.idUF)
+					for each(var ufItem:UF in cbUF.dataProvider)
 					{
-						cbUF.selectedItem = ufItem;
-						break;
+						if(ufItem.idUF ==  ufRetornada.idUF)
+						{
+							cbUF.selectedItem = ufItem;
+							break;
+						}
 					}
 				}
 			}
@@ -288,10 +291,10 @@
 					<component:LocalizarCoordenada novaCoordenada="centralizarMapa(event)"/>
 					
 					<s:Spacer width="80"/> 
-
+					
 					<mx:DataGrid id="dgPortais"  doubleClickEnabled="true" dataProvider="{portalController.portais}"
 								 height="100%" width="100%" itemClick="selecionarPortalNoDatagrid(event)" 
-								  itemDoubleClick="itemDoubleClickHandler(event)">
+								 itemDoubleClick="itemDoubleClickHandler(event)">
 						<mx:columns>
 							<mx:DataGridColumn dataField="nome" headerText="Nome" width="200"/>
 							<mx:DataGridColumn dataField="latitude" headerText="Latitude" width="150"/>
@@ -394,8 +397,8 @@
 					<s:Button id="btCancelarNovoPortal" label="Cancelar" click="cancelarNovoPortal(event)"/>
 				</s:VGroup>
 			</s:NavigatorContent>			
-		
-		
+			
+			
 		</mx:ViewStack>
 	</mx:VDividedBox>
 </s:Group>

@@ -45,7 +45,7 @@ public class GraficosDAO {
 	public List<Object[]> graficoTiposDeVeiculos(Long idEstrada, Date dataInicio, Date dataFim){
 		Query query = 
 				session.createSQLQuery
-				("SELECT et.descricao AS descricao, COUNT(idVeiculo) * 100 AS total "+
+				("SELECT et.descricao AS descricao, COUNT(idVeiculo) AS total "+
 						"FROM tb_registro r "+
 						"	INNER JOIN tb_veiculo v ON r.idVeiculo = v.id "+
 						"	INNER JOIN tb_especie_tipo et ON et.id = v.idEspecie_Tipo "+
@@ -56,7 +56,7 @@ public class GraficosDAO {
 						"			INNER JOIN tb_portal p ON p.idPortal = eqp.idPortal "+
 						"			INNER JOIN tb_segmento seg ON seg.portalOrigem_idPortal = p.idPortal "+
 						"			INNER JOIN tb_estrada e ON e.idEstrada = seg.idEstrada "+
-						"		WHERE e.idEstrada = 3 AND TIMESTAMP BETWEEN '" + formatter.format(dataInicio) + "' AND '" + formatter.format(dataFim) +"') sq  "+
+						"		WHERE e.idEstrada = " + idEstrada + " AND TIMESTAMP BETWEEN '" + formatter.format(dataInicio) + "' AND '" + formatter.format(dataFim) +"') sq  "+
 						"	ON 1 = 1 "+
 						"	INNER JOIN tb_equipamento eqp ON eqp.idEquipamento = r.idEquipamento "+
 						"	INNER JOIN tb_portal p ON p.idPortal = eqp.idPortal "+

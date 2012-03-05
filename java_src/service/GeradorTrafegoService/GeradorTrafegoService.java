@@ -220,7 +220,7 @@ public class GeradorTrafegoService {
 
 			Registro ultimoRegistro = primeiroRegistro;
 
-			for(int i=0 ; i<Math.abs(indexPortalFinal - indexPortalInicial) ; i++){
+			for(int i=1 ; i<=Math.abs(indexPortalFinal - indexPortalInicial) ; i++){
 				Registro proxRegistro = new Registro();
 				Integer velocidade = RandomUtils.entreValores(geradorDTO.getVelocidadeInicial(), geradorDTO.getVelocidadeFinal());
 				Integer distancia = Math.abs(portaisNaEstrada.get(indexPortalFinal).getKm() - portaisNaEstrada.get(indexPortalInicial).getKm());
