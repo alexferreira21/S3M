@@ -73,7 +73,7 @@
 				
 				
 				fluxoAlternativoEmEdicao.portal = portalSelecionado;
-				vsFluxoAlternativo.selectedChild = INavigatorContent(vsFluxoAlternativo.getChildByName("confirmacao"));
+				vsFluxoAlternativo.selectedChild = confirmacao;
 			}
 			
 			private function salvarFluxoAlternativo(event:MouseEvent):void
@@ -110,7 +110,7 @@
 				
 				fluxoAlternativoEmEdicao = new FluxoAlternativo();
 				fluxoAlternativoEmEdicao.estrada = estrada; //Tentar colocar no construtor, ver se não dá problema no BlazeDS
-				vsFluxoAlternativo.selectedChild = INavigatorContent(vsFluxoAlternativo.getChildByName("selecaoPortal"));
+				vsFluxoAlternativo.selectedChild = selecaoPortal
 			}
 			
 		]]>

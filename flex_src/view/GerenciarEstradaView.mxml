@@ -154,7 +154,7 @@
 			
 			protected function adionarSegmento(event: SegmentoEvent):void
 			{
-				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName('edicaoEstrada'));
+				vsEstrada.selectedChild = edicaoEstrada;
 				
 				estradaEmEdicao.segmentos.addItem(event.segmento);
 				
@@ -230,7 +230,7 @@
 			protected function voltarParaExibicao_Handler():void
 			{
 				isEdicaoFluxoAlternativo = false;
-				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("edicaoEstrada"));
+				vsEstrada.selectedChild = edicaoEstrada;
 			}
 			
 			
@@ -247,7 +247,7 @@
 				}
 
 				edicaoSegmento.novoSegmento(estradaEmEdicao);
-				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("adicionarSegmentos")); 
+				vsEstrada.selectedChild = adicionarSegmentos; 
 			}
 			
 			protected function salvarEstrada():void
@@ -313,7 +313,7 @@
 				optionsDefault = new PolylineOptions({ strokeStyle: new StrokeStyle({color: 0x000000, thickness: 4, alpha: 1})});
 				colorPicker.selectedColor = 0;
 				
-				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("exibicaoEstradas"));
+				vsEstrada.selectedChild = exibicaoEstradas;
 			}
 			
 			protected function novaEstrada(event:MouseEvent):void
@@ -323,7 +323,7 @@
 				estradaEmEdicao.fluxosAlternativos = new ArrayCollection();
 				estradaEmEdicao.ufs = new ArrayCollection();
 				
-				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("criacaoEstrada"));
+				vsEstrada.selectedChild = criacaoEstrada;
 				tiNomeEstrada.setFocus();
 			}
 			
@@ -332,7 +332,7 @@
 			{
 				estradaEmEdicao = Estrada(dgEstradas.selectedItem);
 				
-				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName('edicaoEstrada'));
+				vsEstrada.selectedChild = edicaoEstrada;
 				colorPicker.selectedColor = estradaEmEdicao.corEstrada;
 				optionsDefault = estradaEmEdicao.polyline.getOptions();
 			}
@@ -356,13 +356,13 @@
 				isEdicaoFluxoAlternativo = true;
 				
 				edicaoFluxoAlternativo.novoFluxoAlternativo(estradaEmEdicao);
-				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName("adicionarFluxosAlternativos"));
+				vsEstrada.selectedChild = adicionarFluxosAlternativos;
 			}
 			
 			protected function adicionarFluxoAlternativo(event:FluxoAlternativoEvent):void
 			{
 				
-				vsEstrada.selectedChild = INavigatorContent(vsEstrada.getChildByName('edicaoEstrada'));
+				vsEstrada.selectedChild = edicaoEstrada;
 				estradaEmEdicao.fluxosAlternativos.addItem(event.fluxoAlternativo);
 			}
 			

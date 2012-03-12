@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="592" height="160"
+		 creationComplete="init()" xmlns:controller="controller.*" xmlns:component="component.*"			
+		 >
+	
+	<fx:Metadata>
+		[Event(name="gerarRelatorio", type="events.RelatorioEvent")]
+	</fx:Metadata>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import events.RelatorioEvent;
+			
+			import mx.collections.IList;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import util.AlertUtil;
+			
+			protected function init():void
+			{
+				cargaController.carregarTiposMercadorias(carregarTipoMercadoriaResult);
+			}
+			
+			private function carregarTipoMercadoriaResult(event: ResultEvent):void
+			{
+				cbTipoMercadoria.dataProvider = IList(event.result);
+			}
+			
+			protected function btGerar_clickHandler(event:MouseEvent):void
+			{
+				if(!validate())
+				{
+					AlertUtil.criarJanelaErro("É preciso preencher todos os campos acima.", "Erro", this);
+					return;
+				}
+				
+				var evt: RelatorioEvent = new RelatorioEvent(RelatorioEvent.GERAR_RELATORIO, cbTipoMercadoria.selectedItem);
+				dispatchEvent(evt);				
+			}
+			
+			private function validate():Boolean
+			{
+				return cbTipoMercadoria.selectedIndex != -1 && dfDataInicial.selectedDate != null && dfDataFinal.selectedDate != null;	
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<controller:CargaController id="cargaController"/>
+	</fx:Declarations>
+	
+	
+	
+	<s:BorderContainer width="100%" height="100%" cornerRadius="26" borderWeight="6" dropShadowVisible="true">
+		<s:Label x="170" y="10" text="Relatório de Destinos das Mercadorias"/>
+		<s:Label x="420" y="44" text="Data inicial"/>
+		<component:BRDatefield id="dfDataInicial" x="274" y="65"/>
+		<s:Label x="274" y="45" text="Data FInal"/>
+		<component:BRDatefield id="dfDataFinal" x="419" y="64"/>
+		<s:Label x="86" y="49" text="Tipo da Mercadoria"/>
+		<s:ComboBox id="cbTipoMercadoria" x="66" y="66" labelField="descricao"/>
+		<s:Button id="btGerar" x="231" y="114" width="105" height="24" label="Gerar" click="btGerar_clickHandler(event)"/>
+		
+		
+		
+		
+	</s:BorderContainer>
+	
+	
+	
+</s:Group>

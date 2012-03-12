@@ -2,12 +2,12 @@ package dto
 {
 	import flashx.textLayout.formats.Float;
 
-	[RemoteClass(alias="dto.ValorGrafico")]
-	public class ValorGrafico
+	[RemoteClass(alias="dto.DuplaValores")]
+	public class DuplaValores
 	{
 		
 		public var descricao: String;
-		public var valor: Float;
+		public var valor: Object;
 		
 	}
 }

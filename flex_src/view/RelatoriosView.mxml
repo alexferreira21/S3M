@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:NavigatorContent xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" height="100%" width="100%"
+					xmlns:component="component.*">
+	
+	<fx:Metadata>
+		[Event(name="voltarEvent", type="flash.events.Event")]
+	</fx:Metadata>
+	<fx:Script>
+		<![CDATA[
+			import component.TabelaRelatorio;
+			
+			import controller.CargaController;
+			import controller.RelatorioController;
+			
+			import dto.DuplaValores;
+			import dto.RelatorioDTO;
+			
+			import entity.TipoMercadoria;
+			
+			import events.RelatorioEvent;
+			
+			import mx.charts.chartClasses.DualStyleObject;
+			import mx.collections.ArrayCollection;
+			import mx.collections.IList;
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.events.IndexChangeEvent;
+			
+			protected function gerarRelatorio(event:RelatorioEvent):void
+			{
+				principalGroup.removeAllElements()
+				new RelatorioController(destinosPorUFeTipoMercadoriaResult).destinosPorUFeTipoMercadoria(event.tipoMercadoria.idTipoMercadoria, header.dfDataInicial.selectedDate, header.dfDataFinal.selectedDate);
+				
+				cursorManager.setBusyCursor();
+				
+			}
+			
+			private function destinosPorUFeTipoMercadoriaResult(event: ResultEvent):void
+			{
+				cursorManager.removeBusyCursor();
+				var result: ArrayCollection = ArrayCollection(event.result);
+				
+				for each(var item: RelatorioDTO in result)
+				{
+					var tabela: TabelaRelatorio= new TabelaRelatorio();
+					tabela.uf = item.uf;
+					tabela.dataprovider = item.destinos;
+					
+					principalGroup.addElement(tabela);
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	
+	<s:VGroup horizontalAlign="center" height="100%" width="100%">
+		<component:RelatorioHeader id="header" gerarRelatorio="gerarRelatorio(event)"/>
+		<s:Button id="btVoltar" label="Voltar" click="{dispatchEvent(new Event('voltarEvent',true))}"/> 
+		
+		<s:Scroller  height="100%" width="100%">
+			<s:HGroup id="principalGroup" horizontalAlign="center" height="100%" width="100%">
+				
+				
+				
+				
+				
+			</s:HGroup>
+		</s:Scroller>
+	</s:VGroup>
+	
+	
+</s:NavigatorContent>

@@ -135,7 +135,7 @@
 					novoMarkerPortal.addEventListener(MarkerPortalEvent.PORTAL_CLICK,selecionarMarkerPortal);
 					portalController.geocodificar(event.latLng.toString(),sucessoGeocodificacao,falhaGeocodificacao);
 					
-					vsPortal.selectedChild = INavigatorContent(vsPortal.getChildByName("edicao"));	
+					vsPortal.selectedChild = edicao;	
 					emEdicao = false;
 				}
 				
@@ -194,7 +194,7 @@
 				
 				portalController.portalEmEdicao = null;
 				emEdicao = false;
-				vsPortal.selectedChild = INavigatorContent(vsPortal.getChildByName("exibicao"));
+				vsPortal.selectedChild = exibicao;
 			}
 			
 			protected function cancelarEdicao():void
@@ -227,7 +227,7 @@
 			protected function novoEquipamento(event:MouseEvent):void
 			{
 				edicaoEquipamento.novoEquipamento(portalController.portalEmEdicao);
-				vsPortal.selectedChild = INavigatorContent(vsPortal.getChildByName("equipamento"));	
+				vsPortal.selectedChild = equipamento;	
 			}
 			
 			protected function removerEquipamento(event:MouseEvent):void
@@ -250,7 +250,7 @@
 			protected function adicionarEquipamento(event:EquipamentoEvent):void
 			{
 				portalController.portalEmEdicao.equipamento.addItem(event.equipamento);		
-				vsPortal.selectedChild = INavigatorContent(vsPortal.getChildByName("edicao"));
+				vsPortal.selectedChild = edicao;
 			}
 			
 			protected function voltarParaMenu(event:MouseEvent):void
@@ -262,7 +262,7 @@
 			protected function novoPortal(event:MouseEvent):void
 			{
 				emEdicao = true;
-				vsPortal.selectedChild = INavigatorContent(vsPortal.getChildByName("ncNovoPortal"));	
+				vsPortal.selectedChild = ncNovoPortal;	
 			}
 			
 			protected function cancelarNovoPortal(event:MouseEvent):void
@@ -272,7 +272,7 @@
 			
 			protected function cancelarEdicaoEquipamento(event:Event):void
 			{
-				vsPortal.selectedChild = INavigatorContent(vsPortal.getChildByName("edicao"));			
+				vsPortal.selectedChild = edicao;			
 			}
 			
 		]]>

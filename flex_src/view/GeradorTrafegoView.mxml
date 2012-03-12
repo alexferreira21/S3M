@@ -366,7 +366,7 @@
 		
 		<s:Label text="Datas" fontSize="14" fontWeight="bold"/>
 		<s:Spacer height="5"/>
-		<s:BorderContainer width="606" height="98">
+		<s:BorderContainer width="606" height="98" cornerRadius="26" borderWeight="6" dropShadowVisible="true">
 			<s:layout>
 				<s:VerticalLayout/>
 			</s:layout>
@@ -403,7 +403,7 @@
 		<s:Spacer height="15"/>
 		<s:Label text="Estrada" fontSize="14" fontWeight="bold"/>
 		<s:Spacer height="5"/>
-		<s:BorderContainer width="608">
+		<s:BorderContainer width="608" cornerRadius="26" borderWeight="6" dropShadowVisible="true">
 			<s:layout>
 				<s:HorizontalLayout/>
 			</s:layout>
@@ -448,7 +448,7 @@
 		<s:Label text="Veículos" fontSize="14" fontWeight="bold"/>
 		<s:Spacer height="5"/>
 		
-		<s:BorderContainer width="605" height="110">
+		<s:BorderContainer width="605" height="130" cornerRadius="26" borderWeight="6" dropShadowVisible="true">
 			<s:layout>
 				<s:VerticalLayout/>
 			</s:layout>
@@ -482,8 +482,8 @@
 		<s:Label text="Tipos de Cargas" fontSize="14" fontWeight="bold"/>
 		<s:Spacer height="5"/>
 		
-		<s:BorderContainer x="0" width="608" height="121">
-			<s:HGroup>
+		<s:BorderContainer x="0" width="610" height="150" cornerRadius="26" borderWeight="6" dropShadowVisible="true">
+			<s:HGroup paddingLeft="10" paddingBottom="10" paddingTop="10" paddingRight="10">
 				<s:Button label="Selecionar Todos" click="selecinarTodasAsCargas(event)" verticalCenter="0"/>
 				
 				<mx:List id="listCargas" x="96" width="416" height="119"

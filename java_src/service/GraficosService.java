@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import dao.GraficosDAO;
-import dto.ValorGrafico;
+import dto.DuplaValores;
 
 public class GraficosService {
 	
@@ -16,13 +16,13 @@ public class GraficosService {
 	SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 	
 	
-	public  List<ValorGrafico> graficoValorPorMes(Long idEstrada, Date dataInicio, Date dataFim){
+	public  List<DuplaValores> graficoValorPorMes(Long idEstrada, Date dataInicio, Date dataFim){
 		
 		List<Object[]> retornoDAO = graficosDAO.graficoValorPorMes(idEstrada, dataInicio, dataFim);
-		List<ValorGrafico> retornoService = new ArrayList<ValorGrafico>();
+		List<DuplaValores> retornoService = new ArrayList<DuplaValores>();
 		
 		for( Object[] array : retornoDAO){
-			ValorGrafico valorGrafico = new ValorGrafico();
+			DuplaValores valorGrafico = new DuplaValores();
 			valorGrafico.setDescricao(substituirMes(Integer.valueOf((String)array[0])));
 			valorGrafico.setValor((Float)array[1]);
 			
@@ -34,13 +34,13 @@ public class GraficosService {
 	}
 	
 	
-	public List<ValorGrafico> graficoTiposDeVeiculos(Long idEstrada, Date dataInicio, Date dataFim){
+	public List<DuplaValores> graficoTiposDeVeiculos(Long idEstrada, Date dataInicio, Date dataFim){
 		
 		List<Object[]> retornoDAO = graficosDAO.graficoTiposDeVeiculos(idEstrada, dataInicio, dataFim);
-		List<ValorGrafico> retornoService = new ArrayList<ValorGrafico>();
+		List<DuplaValores> retornoService = new ArrayList<DuplaValores>();
 		
 		for( Object[] array : retornoDAO){
-			ValorGrafico valorGrafico = new ValorGrafico();
+			DuplaValores valorGrafico = new DuplaValores();
 			valorGrafico.setDescricao((String)array[0]);
 			
 			BigInteger bigValor = (BigInteger)array[1];
@@ -53,14 +53,14 @@ public class GraficosService {
 		return retornoService;
 	}
 	
-	public List<ValorGrafico> graficoPesoPorSemana(Long idEstrada, Date dataInicio, Date dataFim){
+	public List<DuplaValores> graficoPesoPorSemana(Long idEstrada, Date dataInicio, Date dataFim){
 		
 		List<Object[]> retornoDAO = graficosDAO.graficoPesoPorSemana(idEstrada, dataInicio, dataFim);
-		List<ValorGrafico> retornoService = new ArrayList<ValorGrafico>();
+		List<DuplaValores> retornoService = new ArrayList<DuplaValores>();
 
 		
 		for( Object[] array : retornoDAO){
-			ValorGrafico valorGrafico = new ValorGrafico();
+			DuplaValores valorGrafico = new DuplaValores();
 			valorGrafico.setDescricao(substituirDiasDaSemana(Integer.valueOf((String)array[0])));
 			
 			Double valorDouble = (Double)array[1];
@@ -73,14 +73,14 @@ public class GraficosService {
 		return retornoService;
 	}
 	
-	public List<ValorGrafico> graficoTipoDeCargaPorSemana(Long idEstrada, Integer diaSemana, Date dataInicio, Date dataFim){
+	public List<DuplaValores> graficoTipoDeCargaPorSemana(Long idEstrada, Integer diaSemana, Date dataInicio, Date dataFim){
 		
 		List<Object[]> retornoDAO = graficosDAO.graficoTipoDeCargaPorSemana(idEstrada, diaSemana, dataInicio, dataFim);
-		List<ValorGrafico> retornoService = new ArrayList<ValorGrafico>();
+		List<DuplaValores> retornoService = new ArrayList<DuplaValores>();
 
 		
 		for( Object[] array : retornoDAO){
-			ValorGrafico valorGrafico = new ValorGrafico();
+			DuplaValores valorGrafico = new DuplaValores();
 			valorGrafico.setDescricao((String)array[0]);
 			
 			Double valorDouble = (Double)array[1];

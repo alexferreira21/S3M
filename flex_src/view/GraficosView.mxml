@@ -6,7 +6,8 @@
 
 	<fx:Metadata>
 		[Event(name="voltarEvent", type="flash.events.Event")]
-	</fx:Metadata>		
+	</fx:Metadata>	
+	
 	<fx:Script>
 		<![CDATA[
 			import events.EstradaSelecionadaEvent;
@@ -17,7 +18,7 @@
 			protected function estradaSelecionada(event: EstradaSelecionadaEvent):void
 			{
 				graficosEstrada.estradaSelecionada = event.estrada;
-				vsGraficosView.selectedChild = INavigatorContent(vsGraficosView.getChildByName('graficosEstrada'));
+				vsGraficosView.selectedChild = graficosEstrada;
 			}
 			
 		]]>

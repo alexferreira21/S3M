@@ -15,7 +15,7 @@
 			
 			protected function gerenciarPortais(event:MouseEvent):void
 			{
-				vs.selectedChild= INavigatorContent(vs.getChildByName('ncPortais'));
+				vs.selectedChild= ncPortais;
 				
 				if(gerenciarPortalView != null)
 				{
@@ -27,8 +27,8 @@
 			
 			protected function gerenciarEstradas(event:MouseEvent):void
 			{
-				vs.selectedChild= INavigatorContent(vs.getChildByName('ncEstradas'));		
-			 	if(gerenciarEstradaView != null)
+				vs.selectedChild= ncEstradas;		
+				if(gerenciarEstradaView != null)
 				{
 					gerenciarEstradaView.mapa.atualizarMapa();
 				} 
@@ -36,46 +36,49 @@
 			
 		]]>
 	</fx:Script>
-
+	
 	
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	
-	 
-	<mx:ViewStack id="vs" height="100%" width="100%"> 
+	<s:VGroup height="100%" width="100%">
 		
-		<s:NavigatorContent id="menuPrincipal">
-			<s:VGroup verticalCenter="0" horizontalCenter="0">
-				<s:Image width="333" height="153" source="@Embed('assets/logoS3M.png')"/>
-				<s:Spacer height="50"/>
-				<s:Button id="btGerenciarPortais" width="334" height="43" label="Gerenciar Portais"  click="gerenciarPortais(event)"/>
-				<s:Spacer height="10"/>
-				<s:Button id="btGerenciarEstradas" width="333" height="43" label="Gerenciar Estradas"  click="gerenciarEstradas(event)"/>
-				<s:Spacer height="10"/>
-				<s:Button id="btGeradorTrafego" width="333" height="43" label="Gerador de Tráfego" click="{vs.selectedChild= INavigatorContent(vs.getChildByName('geradorTrafegoView'))}"/>
-				<s:Spacer height="10"/>
-				<s:Button id="btGraficos" width="333" height="43" label="Gráficos" click="{vs.selectedChild= INavigatorContent(vs.getChildByName('ncGraficos'))}"/>
-					
-			</s:VGroup>
+		<!-- COLOCAR UM HEADER BONITO AQUI! -->
+		
+		<mx:ViewStack id="vs" height="100%" width="100%"> 
 			
-		</s:NavigatorContent>
-		
-		<s:NavigatorContent id="ncPortais">
-			<view:GerencialPortalView id="gerenciarPortalView" voltarEvent="{vs.selectedIndex = 0}" />
-		</s:NavigatorContent>
-		
-		<s:NavigatorContent id="ncEstradas">
-			<view:GerenciarEstradaView id="gerenciarEstradaView" voltarEvent="{vs.selectedIndex = 0}" />
-		</s:NavigatorContent>
-		
-		<view:GeradorTrafegoView id="geradorTrafegoView" voltarEvent="{vs.selectedIndex = 0}" />
-		
-		<s:NavigatorContent id="ncGraficos">
-			<view:GraficosView voltarEvent="{vs.selectedIndex = 0}"/>
-		</s:NavigatorContent>
-		
-		
-	</mx:ViewStack>		  
-	
+			<s:NavigatorContent id="menuPrincipal">
+				<s:VGroup verticalCenter="0" horizontalCenter="0" gap="10">
+					<s:Image width="333" height="153" source="@Embed('assets/logoS3M.png')"/>
+					<s:Spacer height="40"/>
+					<s:Button id="btGerenciarPortais" width="334" height="43" label="Gerenciar Portais"  click="gerenciarPortais(event)"/>
+					<s:Button id="btGerenciarEstradas" width="333" height="43" label="Gerenciar Estradas"  click="gerenciarEstradas(event)"/>
+					<s:Button id="btGeradorTrafego" width="333" height="43" label="Gerador de Tráfego" click="{vs.selectedChild= geradorTrafegoView}"/>
+					<s:Button id="btGraficos" width="333" height="43" label="Gráficos" click="{vs.selectedChild = ncGraficos}"/>
+					<s:Button id="btRelatorios" width="333" height="43" label="Relatórios de Carga" click="{vs.selectedChild = ncRelatorios}"/>
+					
+				</s:VGroup>
+				
+			</s:NavigatorContent>
+			
+			<s:NavigatorContent id="ncPortais">
+				<view:GerencialPortalView id="gerenciarPortalView" voltarEvent="{vs.selectedIndex = 0}" />
+			</s:NavigatorContent>
+			
+			<s:NavigatorContent id="ncEstradas">
+				<view:GerenciarEstradaView id="gerenciarEstradaView" voltarEvent="{vs.selectedIndex = 0}" />
+			</s:NavigatorContent>
+			
+			<view:GeradorTrafegoView id="geradorTrafegoView" voltarEvent="{vs.selectedIndex = 0}" />
+			
+			<s:NavigatorContent id="ncGraficos">
+				<view:GraficosView voltarEvent="{vs.selectedIndex = 0}"/>
+			</s:NavigatorContent>
+			
+			<view:RelatoriosView id="ncRelatorios" voltarEvent="{vs.selectedIndex = 0}"/>
+			
+			
+		</mx:ViewStack>		  
+	</s:VGroup>
 </s:Application>

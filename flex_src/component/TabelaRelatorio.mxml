@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="324" height="100%" 
+		 cornerRadius="26" borderWeight="6" dropShadowVisible="true" xmlns:dto="dto.*" xmlns:entity="entity.*">
+	
+	<fx:Declarations>
+		<s:ArrayCollection id="dataprovider"/>
+		<entity:UF id="uf"/>
+	</fx:Declarations>
+	
+
+	
+	<s:BorderContainer x="98" y="19" backgroundColor="0x3399ff" borderWeight="6" cornerRadius="26">
+		<s:Label id="lbUF" text="{uf.sigla}" x="24" y="29" fontSize="42"/>
+		
+	</s:BorderContainer>
+	
+	<mx:DataGrid id="dgUF" x="30" y="169" dataProvider="{dataprovider}">
+		<mx:columns>
+			<mx:DataGridColumn headerText="UF" dataField="sigla" width="30"/>				
+			<mx:DataGridColumn headerText="Veículos" dataField="veiculos" width="70"/>				
+			<mx:DataGridColumn headerText="Peso (ton)" dataField="qtd" width="90"/>				
+			<mx:DataGridColumn headerText="Valor (R$)" dataField="qtd" width="60"/>				
+		</mx:columns>
+	</mx:DataGrid>
+	
+	
+</s:BorderContainer>

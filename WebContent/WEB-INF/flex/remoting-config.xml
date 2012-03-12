@@ -40,9 +40,16 @@
 		</properties>
 	</destination>
 	
-	<destination id="graficosService">
+	<destination id="graficoService">
 		<properties>
 			<source>service.GraficosService</source>
+			<scope>application</scope>
+		</properties>
+	</destination>
+	
+	<destination id="relatorioService">
+		<properties>
+			<source>service.RelatorioService</source>
 			<scope>application</scope>
 		</properties>
 	</destination>

@@ -83,7 +83,7 @@
 					<s:ComboBox dataProvider="{new ArrayCollection(['BR 101'])}"/>
 				</s:FormItem>
 				<s:Spacer height="10"/>
-				<s:Button label="Selecionar" click="{vsTelaPrincipal.selectedChild = INavigatorContent(vsTelaPrincipal.getChildByName('ncGraficos'))}"/>
+				<s:Button label="Selecionar" click="{vsTelaPrincipal.selectedChild = ncGraficos}"/>
 			</s:VGroup>
 		</s:NavigatorContent>
 		

@@ -9,7 +9,7 @@ package controller
 		
 		public function GraficosController(callbackSucesso:Function)
 		{
-			super('graficosService')
+			super('graficoService')
 			this.responder = new Responder(callbackSucesso,defaultFault); 
 		}
 		

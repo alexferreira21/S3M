@@ -61,7 +61,7 @@
 					case EDICAO_PORTAL_ORIGEM:
 						_portalOrigem = portalSelecionado;
 						_portalString = _portalOrigem.nome + " " + _portalOrigem.municipio.nome + ", " + _portalOrigem.municipio.uf.sigla;
-						vsSegmentos.selectedChild = INavigatorContent(vsSegmentos.getChildByName("confirmacaoPortalView"));
+						vsSegmentos.selectedChild = confirmacaoPortalView;
 						tiKM.setFocus();
 						break;
 					case EDICAO_PORTAL_DESTINO:
@@ -74,7 +74,7 @@
 							_segmentoEmEdicao.portalOrigem = ultimoSegmento.portalDestino;
 							_segmentoEmEdicao.kmInicial = ultimoSegmento.kmFinal;
 						}
-						vsSegmentos.selectedChild = INavigatorContent(vsSegmentos.getChildByName("confirmacaoPortalView"));
+						vsSegmentos.selectedChild = confirmacaoPortalView;
 						tiKM.setFocus();
 						break;
 				}
@@ -100,7 +100,7 @@
 				}
 				
 				_segmentoEmEdicao.nome = tiNomeSegmento.text;
-				vsSegmentos.selectedChild = INavigatorContent(vsSegmentos.getChildByName("selecaoPortalView"));
+				vsSegmentos.selectedChild = selecaoPortalView;
 			}			
 			
 			protected function irParaSelecaoPortalDestino():void
@@ -117,7 +117,7 @@
 				emSelecaoPortal = EDICAO_PORTAL_DESTINO;
 				this.currentState = "StatePortalDestino";
 				tiKM.text = "";
-				vsSegmentos.selectedChild = INavigatorContent(vsSegmentos.getChildByName("selecaoPortalView"));
+				vsSegmentos.selectedChild = selecaoPortalView;
 			}
 			
 			protected function salvarSegmento():void
@@ -146,7 +146,7 @@
 				if(tiKM){
 					tiKM.text = null;
 				}
-				vsSegmentos.selectedChild = INavigatorContent(vsSegmentos.getChildByName("nomeSegmento"));
+				vsSegmentos.selectedChild = nomeSegmento;
 				
 			}
 			
@@ -166,7 +166,7 @@
 			{
 				_segmentoEmEdicao = new Segmento();	
 				_segmentoEmEdicao.estrada = estrada; //Tentar colocar no construtor, ver se não dá problema no BlazeDS
-				vsSegmentos.selectedChild = INavigatorContent(vsSegmentos.getChildByName("nomeSegmento"));
+				vsSegmentos.selectedChild = nomeSegmento;
 				tiNomeSegmento.setFocus();
 			}
 			

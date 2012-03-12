@@ -1,6 +1,6 @@
 package dto;
 
-public class ValorGrafico {
+public class DuplaValores {
 	
 	private String descricao;
 	private Float valor;
