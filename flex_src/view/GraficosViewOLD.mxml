@@ -12,10 +12,6 @@
 		</fx:Array>
 	</fx:Declarations>
 
-	<fx:Metadata>
-		[Event(name="voltarEvent", type="flash.events.Event")]
-	</fx:Metadata>
-
 	<fx:Script>
 		<![CDATA[
 			import mx.collections.ArrayCollection;
@@ -169,7 +165,7 @@
 							<mx:Legend x="326" y="10" color="0x323232" dataProvider="{linechart}"/>
 						</s:NavigatorContent>
 					</mx:ViewStack>
-					<s:Image click="{dispatchEvent(new Event('voltarEvent',true))}" source="@Embed('assets/ico-voltar.png')"/>
+					
 				</s:HGroup>
 		</s:NavigatorContent>
 		

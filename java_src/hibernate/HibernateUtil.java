@@ -13,12 +13,14 @@ import entity.Especie_Tipo;
 import entity.Estrada;
 import entity.FluxoAlternativo;
 import entity.Municipio;
+import entity.Perfil;
 import entity.Portal;
 import entity.Registro;
 import entity.Segmento;
 import entity.TipoMercadoria;
 import entity.UF;
 import entity.UnidadeMedida;
+import entity.Usuario;
 import entity.Veiculo;
 
 public class HibernateUtil {
@@ -42,7 +44,9 @@ public class HibernateUtil {
 		.addAnnotatedClass(CargaPredominante.class)
 		.addAnnotatedClass(UnidadeMedida.class)
 		.addAnnotatedClass(TipoMercadoria.class)
-		.addAnnotatedClass(Registro.class);
+		.addAnnotatedClass(Registro.class)
+		.addAnnotatedClass(Usuario.class)
+		.addAnnotatedClass(Perfil.class);
 		config.configure("hibernate.cfg.xml");
 		
 		//new SchemaExport(config).create(true, true);

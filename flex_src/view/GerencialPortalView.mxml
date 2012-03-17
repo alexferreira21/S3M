@@ -189,7 +189,7 @@
 			}
 			
 			
-			protected function sairEdicao():void
+			public function sairEdicao():void
 			{
 				
 				portalController.portalEmEdicao = null;
@@ -253,12 +253,6 @@
 				vsPortal.selectedChild = edicao;
 			}
 			
-			protected function voltarParaMenu(event:MouseEvent):void
-			{
-				sairEdicao();
-				dispatchEvent(new Event('voltarEvent'));
-			}
-			
 			protected function novoPortal(event:MouseEvent):void
 			{
 				emEdicao = true;
@@ -317,7 +311,6 @@
 					
 					<s:VGroup>
 						<s:Button id="btNovoPortal" label="AdicionarPortal" click="novoPortal(event)"/>
-						<s:Button id="btVoltar" label="Voltar" click="voltarParaMenu(event)"/>
 					</s:VGroup>
 				</s:HGroup>
 			</s:NavigatorContent>

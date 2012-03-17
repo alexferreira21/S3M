@@ -5,7 +5,6 @@
 		 >
 	
 	<fx:Metadata>
-		[Event(name="voltarEvent", type="flash.events.Event")]
 		[Event(name="dataAlterada", type="events.DataSelecionadaEvent")]
 	</fx:Metadata>
 	<fx:Script>
@@ -32,8 +31,6 @@
 	<s:HGroup id="group" width="100%" horizontalAlign="center">
 		<component:BRDatefield id="dfDataInicial" change="dataAlterada(event)" selectedDate="@{dataInical}"/>
 		<component:BRDatefield id="dfDataFinal" change="dataAlterada(event)" selectedDate="@{dataFinal}"/>
-		<s:Spacer width="{(group.width - btVoltar.width)/2}"/>
-		<s:Button id="btVoltar" label="voltar" click="{dispatchEvent(new Event('voltarEvent',true))}"/>
 	</s:HGroup>
 	
 	

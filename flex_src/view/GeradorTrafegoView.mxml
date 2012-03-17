@@ -5,9 +5,6 @@
 					show="onShow()" xmlns:component="component.*"
 					>
 	
-	<fx:Metadata>
-		[Event(name="voltarEvent", type="flash.events.Event")]
-	</fx:Metadata>
 	<fx:Script>
 		<![CDATA[
 			import controller.CargaController;
@@ -360,157 +357,159 @@
 		]]>
 	</fx:Script>
 	
-	<s:VGroup horizontalAlign="center" horizontalCenter="0" paddingTop="10">
-		<s:Label text="Gerador de Tráfego" fontSize="16" fontWeight="bold"/>
-		<s:Spacer height="15"/>
+	<s:Scroller height="100%" width="100%">
 		
-		<s:Label text="Datas" fontSize="14" fontWeight="bold"/>
-		<s:Spacer height="5"/>
-		<s:BorderContainer width="606" height="98" cornerRadius="26" borderWeight="6" dropShadowVisible="true">
-			<s:layout>
-				<s:VerticalLayout/>
-			</s:layout>
+		<s:VGroup horizontalAlign="center" horizontalCenter="0" paddingTop="10">
+			<s:Label text="Gerador de Tráfego" fontSize="16" fontWeight="bold"/>
+			<s:Spacer height="15"/>
 			
-			<s:HGroup>
-				<s:FormItem id="fiDataInicial" label="Data Inicial" >
-					<component:BRDatefield id="dfDataInicial"/>
-				</s:FormItem>
+			<s:Label text="Datas" fontSize="14" fontWeight="bold"/>
+			<s:Spacer height="5"/>
+			<s:BorderContainer width="606" height="98" cornerRadius="26" borderWeight="6" dropShadowVisible="true">
+				<s:layout>
+					<s:VerticalLayout/>
+				</s:layout>
 				
-				<s:FormItem id="fiDataFinal" label="Data Final" >
-					<component:BRDatefield id="dfDataFinal"/>
-				</s:FormItem>
-			</s:HGroup>
+				<s:HGroup>
+					<s:FormItem id="fiDataInicial" label="Data Inicial" >
+						<component:BRDatefield id="dfDataInicial"/>
+					</s:FormItem>
+					
+					<s:FormItem id="fiDataFinal" label="Data Final" >
+						<component:BRDatefield id="dfDataFinal"/>
+					</s:FormItem>
+				</s:HGroup>
+				
+				<s:HGroup>
+					<s:FormItem label="Entre">
+						<s:HGroup>
+							<s:NumericStepper id="nsHoraInicial" maximum="23"/>
+							<s:Label text=":" paddingTop="8"/>
+							<s:NumericStepper id="nsMinutoInicial" maximum="59"/>
+						</s:HGroup>
+					</s:FormItem>
+					
+					<s:FormItem label="Até">
+						<s:HGroup>
+							<s:NumericStepper id="nsHoraFinal" maximum="23"/>
+							<s:Label text=":" paddingTop="8"/>
+							<s:NumericStepper id="nsMinutoFinal" maximum="59"/>
+						</s:HGroup>
+					</s:FormItem>					
+				</s:HGroup>
+			</s:BorderContainer> 
 			
-			<s:HGroup>
-				<s:FormItem label="Entre">
-					<s:HGroup>
-						<s:NumericStepper id="nsHoraInicial" maximum="23"/>
-						<s:Label text=":" paddingTop="8"/>
-						<s:NumericStepper id="nsMinutoInicial" maximum="59"/>
-					</s:HGroup>
-				</s:FormItem>
+			<s:Spacer height="15"/>
+			<s:Label text="Estrada" fontSize="14" fontWeight="bold"/>
+			<s:Spacer height="5"/>
+			<s:BorderContainer width="608" cornerRadius="26" borderWeight="6" dropShadowVisible="true">
+				<s:layout>
+					<s:HorizontalLayout/>
+				</s:layout>
 				
-				<s:FormItem label="Até">
-					<s:HGroup>
-						<s:NumericStepper id="nsHoraFinal" maximum="23"/>
-						<s:Label text=":" paddingTop="8"/>
-						<s:NumericStepper id="nsMinutoFinal" maximum="59"/>
-					</s:HGroup>
-				</s:FormItem>					
-			</s:HGroup>
-		</s:BorderContainer> 
-		
-		<s:Spacer height="15"/>
-		<s:Label text="Estrada" fontSize="14" fontWeight="bold"/>
-		<s:Spacer height="5"/>
-		<s:BorderContainer width="608" cornerRadius="26" borderWeight="6" dropShadowVisible="true">
-			<s:layout>
-				<s:HorizontalLayout/>
-			</s:layout>
+				<s:VGroup paddingLeft="10" paddingTop="10">
+					<s:Label text="Estrada" fontWeight="bold"/>	
+					<s:ComboBox id="cbEstrada" labelField="nome" dataProvider="{estradas}" change="onEstradaChange(event)"/>
+					<s:Spacer height="30"/>
+					
+					<s:Label text="Segmento Inicial" fontWeight="bold"/>	
+					<s:ComboBox id="cbSegInicial" labelField="nome" change="onSegInicialChange(event)"/>
+					
+					<s:Label text="Segmento Final" fontWeight="bold"/>	
+					<s:ComboBox id="cbSegFinal" labelField="nome" change="onSegFinalChange(event)"/>
+				</s:VGroup>
+				
+				<s:Spacer width="150"/>
+				
+				<s:VGroup paddingTop="10" paddingBottom="5">
+					<s:Label text="Entradas" fontWeight="bold"/>
+					<mx:DataGrid id="dgEntradas" editable="true" rowCount="3">
+						<mx:columns>
+							<mx:DataGridColumn headerText="Nome" dataField="portal.nome" editable="false"/>						
+							<mx:DataGridColumn headerText="%" dataField="percentual" editable="true"/>						
+						</mx:columns>
+					</mx:DataGrid>
+					
+					
+					
+					<s:Spacer height="10"/>
+					<s:Label text="Saidas" fontWeight="bold"/>
+					<mx:DataGrid id="dgSaidas" editable="true" rowCount="3">
+						<mx:columns>
+							<mx:DataGridColumn headerText="Nome" dataField="portal.nome" editable="false"/>						
+							<mx:DataGridColumn headerText="%" dataField="percentual" editable="true"/>						
+						</mx:columns>
+					</mx:DataGrid>
+				</s:VGroup>
+			</s:BorderContainer>
 			
-			<s:VGroup paddingLeft="10" paddingTop="10">
-				<s:Label text="Estrada" fontWeight="bold"/>	
-				<s:ComboBox id="cbEstrada" labelField="nome" dataProvider="{estradas}" change="onEstradaChange(event)"/>
-				<s:Spacer height="30"/>
-				
-				<s:Label text="Segmento Inicial" fontWeight="bold"/>	
-				<s:ComboBox id="cbSegInicial" labelField="nome" change="onSegInicialChange(event)"/>
-				
-				<s:Label text="Segmento Final" fontWeight="bold"/>	
-				<s:ComboBox id="cbSegFinal" labelField="nome" change="onSegFinalChange(event)"/>
-			</s:VGroup>
+			<s:Spacer height="15"/>
+			<s:Label text="Veículos" fontSize="14" fontWeight="bold"/>
+			<s:Spacer height="5"/>
 			
-			<s:Spacer width="150"/>
-			
-			<s:VGroup paddingTop="10" paddingBottom="5">
-				<s:Label text="Entradas" fontWeight="bold"/>
-				<mx:DataGrid id="dgEntradas" editable="true" rowCount="3">
-					<mx:columns>
-						<mx:DataGridColumn headerText="Nome" dataField="portal.nome" editable="false"/>						
-						<mx:DataGridColumn headerText="%" dataField="percentual" editable="true"/>						
-					</mx:columns>
-				</mx:DataGrid>
+			<s:BorderContainer width="605" height="130" cornerRadius="26" borderWeight="6" dropShadowVisible="true">
+				<s:layout>
+					<s:VerticalLayout/>
+				</s:layout>
 				
-				
+				<s:HGroup>
+					<s:FormItem id="fiQtdCaminhoes" label="Caminhões">
+						<s:TextInput id="tiQtdCaminhoes" restrict="0-9" width="50" text="0"/>
+					</s:FormItem>
+					
+					<s:FormItem id="fiQtdOutrosVeiculos" label="Outros Veículos">
+						<s:TextInput id="tiQdtOutrosVeiculos" restrict="0-9" width="50" text="0"/>
+					</s:FormItem>
+					
+					<s:Label text="Total: " paddingTop="17"/>
+					<s:Label text="{parseInt(tiQtdCaminhoes.text) + parseInt(tiQdtOutrosVeiculos.text)}" paddingTop="17"/>
+				</s:HGroup>
 				
 				<s:Spacer height="10"/>
-				<s:Label text="Saidas" fontWeight="bold"/>
-				<mx:DataGrid id="dgSaidas" editable="true" rowCount="3">
-					<mx:columns>
-						<mx:DataGridColumn headerText="Nome" dataField="portal.nome" editable="false"/>						
-						<mx:DataGridColumn headerText="%" dataField="percentual" editable="true"/>						
-					</mx:columns>
-				</mx:DataGrid>
-			</s:VGroup>
-		</s:BorderContainer>
-		
-		<s:Spacer height="15"/>
-		<s:Label text="Veículos" fontSize="14" fontWeight="bold"/>
-		<s:Spacer height="5"/>
-		
-		<s:BorderContainer width="605" height="130" cornerRadius="26" borderWeight="6" dropShadowVisible="true">
-			<s:layout>
-				<s:VerticalLayout/>
-			</s:layout>
+				
+				<s:Label text="Velocidades" fontWeight="bold" paddingLeft="15"/>
+				<s:HGroup paddingLeft="15">
+					<s:Label text="Entre" paddingTop="8"/>
+					<s:NumericStepper id="nsVelocidadeInferior" width="45" maximum="300"/>
+					<s:Label text="e" paddingTop="8"/>
+					<s:NumericStepper id="nsVelocidadeSuperior" width="45" maximum="300"/>
+					<s:Label text="Km/h" paddingTop="8"/>
+				</s:HGroup>
+			</s:BorderContainer>
+			
+			<s:Spacer height="15"/>
+			<s:Label text="Tipos de Cargas" fontSize="14" fontWeight="bold"/>
+			<s:Spacer height="5"/>
+			
+			<s:BorderContainer x="0" width="610" height="150" cornerRadius="26" borderWeight="6" dropShadowVisible="true">
+				<s:HGroup paddingLeft="10" paddingBottom="10" paddingTop="10" paddingRight="10">
+					<s:Button label="Selecionar Todos" click="selecinarTodasAsCargas(event)" verticalCenter="0"/>
+					
+					<mx:List id="listCargas" x="96" width="416" height="119"
+							 alternatingItemColors="[#EEEEEE, white]" labelField="descricao" rowCount="5">
+						<mx:itemRenderer>
+							<fx:Component>
+								<mx:CheckBox selectedField="isSelected"
+											 change="onChange(event);"
+											 selected="@{data.isSelected}">
+									<fx:Script>
+										<![CDATA[
+											private function onChange(evt:Event):void {
+												data.isSelected = !data.isSelected;
+											}
+										]]>
+									</fx:Script>
+								</mx:CheckBox>
+							</fx:Component>
+						</mx:itemRenderer>
+					</mx:List>
+				</s:HGroup>
+			</s:BorderContainer>
 			
 			<s:HGroup>
-				<s:FormItem id="fiQtdCaminhoes" label="Caminhões">
-					<s:TextInput id="tiQtdCaminhoes" restrict="0-9" width="50" text="0"/>
-				</s:FormItem>
-				
-				<s:FormItem id="fiQtdOutrosVeiculos" label="Outros Veículos">
-					<s:TextInput id="tiQdtOutrosVeiculos" restrict="0-9" width="50" text="0"/>
-				</s:FormItem>
-				
-				<s:Label text="Total: " paddingTop="17"/>
-				<s:Label text="{parseInt(tiQtdCaminhoes.text) + parseInt(tiQdtOutrosVeiculos.text)}" paddingTop="17"/>
+				<s:Button id="btGerar" label="Gerar!" click="gerarTrafego(event)"/>
 			</s:HGroup>
 			
-			<s:Spacer height="10"/>
-			
-			<s:Label text="Velocidades" fontWeight="bold" paddingLeft="15"/>
-			<s:HGroup paddingLeft="15">
-				<s:Label text="Entre" paddingTop="8"/>
-				<s:NumericStepper id="nsVelocidadeInferior" width="45" maximum="300"/>
-				<s:Label text="e" paddingTop="8"/>
-				<s:NumericStepper id="nsVelocidadeSuperior" width="45" maximum="300"/>
-				<s:Label text="Km/h" paddingTop="8"/>
-			</s:HGroup>
-		</s:BorderContainer>
-		
-		<s:Spacer height="15"/>
-		<s:Label text="Tipos de Cargas" fontSize="14" fontWeight="bold"/>
-		<s:Spacer height="5"/>
-		
-		<s:BorderContainer x="0" width="610" height="150" cornerRadius="26" borderWeight="6" dropShadowVisible="true">
-			<s:HGroup paddingLeft="10" paddingBottom="10" paddingTop="10" paddingRight="10">
-				<s:Button label="Selecionar Todos" click="selecinarTodasAsCargas(event)" verticalCenter="0"/>
-				
-				<mx:List id="listCargas" x="96" width="416" height="119"
-						 alternatingItemColors="[#EEEEEE, white]" labelField="descricao" rowCount="5">
-					<mx:itemRenderer>
-						<fx:Component>
-							<mx:CheckBox selectedField="isSelected"
-										 change="onChange(event);"
-										 selected="@{data.isSelected}">
-								<fx:Script>
-									<![CDATA[
-										private function onChange(evt:Event):void {
-											data.isSelected = !data.isSelected;
-										}
-									]]>
-								</fx:Script>
-							</mx:CheckBox>
-						</fx:Component>
-					</mx:itemRenderer>
-				</mx:List>
-			</s:HGroup>
-		</s:BorderContainer>
-		
-		<s:HGroup>
-			<s:Button id="btGerar" label="Gerar!" click="gerarTrafego(event)"/>
-			<s:Button id="btVoltar" label="Voltar" click="{dispatchEvent(new Event('voltarEvent'))}"/>
-		</s:HGroup>
-		
-	</s:VGroup>
+		</s:VGroup>
+	</s:Scroller>
 </s:NavigatorContent>

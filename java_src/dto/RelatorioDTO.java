@@ -7,7 +7,7 @@ import entity.UF;
 public class RelatorioDTO {
 	
 	private UF uf;
-	private List<UfInfo> destinos;
+	private List destinos;
 	
 	
 	public UF getUf() {
@@ -16,10 +16,10 @@ public class RelatorioDTO {
 	public void setUf(UF uf) {
 		this.uf = uf;
 	}
-	public List<UfInfo> getDestinos() {
+	public List getDestinos() {
 		return destinos;
 	}
-	public void setDestinos(List<UfInfo> destinos) {
+	public void setDestinos(List destinos) {
 		this.destinos = destinos;
 	}
 

@@ -6,7 +6,6 @@
 	
 	<fx:Metadata>
 		[Event(name="estradaSelecionada", type="events.EstradaSelecionadaEvent")]
-		[Event(name="voltarEvent", type="flash.events.Event")]
 	</fx:Metadata>	
 	
 	
@@ -54,7 +53,6 @@
 		<s:Spacer height="10"/>
 		<s:HGroup>
 			<s:Button label="Selecionar" click="selecionarEstrada()"/>
-			<s:Button label="Voltar" click="{dispatchEvent(new Event('voltarEvent',true))}"/>
 		</s:HGroup>
 	</s:VGroup>
 	

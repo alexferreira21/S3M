@@ -3,10 +3,6 @@
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:view="view.*" height="100%" width="100%">
 
-
-	<fx:Metadata>
-		[Event(name="voltarEvent", type="flash.events.Event")]
-	</fx:Metadata>	
 	
 	<fx:Script>
 		<![CDATA[
