@@ -4,7 +4,7 @@ package entity
 	public class Perfil
 	{
 		
-		public var id: Number;
+		public var idPerfil: Number;
 		public var descricao: String;
 	}
 }

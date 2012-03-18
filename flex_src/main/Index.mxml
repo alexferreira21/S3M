@@ -7,7 +7,7 @@
 		<![CDATA[
 			import com.google.maps.Map;
 			
-			import controller.LoginController;
+			import controller.UsuarioController;
 			
 			import entity.Usuario;
 			
@@ -63,6 +63,10 @@
 						gerenciarPortalView.sairEdicao();
 					}
 					
+					case 7:
+					{
+						usuariosCRUD.sairEdicao();
+					}
 						
 					default:
 					{
@@ -79,7 +83,7 @@
 			
 			protected function loginHandler(event: LoginEvent):void
 			{
-				new LoginController(loginResult).login(event.login, event.senha);
+				new UsuarioController(loginResult).login(event.login, event.senha);
 				
 			}
 			
@@ -123,6 +127,7 @@
 					<s:Button id="btGeradorTrafego" width="333" height="43" label="Gerador de Tráfego" click="{vs.selectedChild= geradorTrafegoView}"/>
 					<s:Button id="btGraficos" width="333" height="43" label="Gráficos" click="{vs.selectedChild = ncGraficos}"/>
 					<s:Button id="btRelatorios" width="333" height="43" label="Relatórios de Carga" click="{vs.selectedChild = ncRelatorios}"/>
+					<s:Button id="btUsuarios" width="333" height="43" label="Usuários" click="{vs.selectedChild = usuariosCRUD}"/>
 					
 				</s:VGroup>
 				
@@ -143,6 +148,8 @@
 			</s:NavigatorContent>
 			
 			<view:RelatoriosView id="ncRelatorios"/>
+			
+			<view:UsuarioCRUD id="usuariosCRUD"/>
 			
 			
 		</mx:ViewStack>		  

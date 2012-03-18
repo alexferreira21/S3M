@@ -2,7 +2,7 @@
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx" width="324" height="100%" 
-		 cornerRadius="26" borderWeight="6" dropShadowVisible="true" xmlns:dto="dto.*" xmlns:entity="entity.*">
+		 styleName="bordaCheia" xmlns:dto="dto.*" xmlns:entity="entity.*">
 	
 	<fx:Declarations>
 		<s:ArrayCollection id="dataprovider"/>

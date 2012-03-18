@@ -54,9 +54,9 @@
 		</properties>
 	</destination>
 	
-	<destination id="loginService">
+	<destination id="usuarioService">
 		<properties>
-			<source>service.LoginService</source>
+			<source>service.UsuarioService</source>
 			<scope>application</scope>
 		</properties>
 	</destination>

@@ -28,7 +28,7 @@
 	</fx:Script>
 	
 	
-	<s:BorderContainer>
+	<s:BorderContainer styleName="bordaCheia">
 		<s:layout>
 			<s:VerticalLayout/>
 		</s:layout>

@@ -1,5 +1,6 @@
 package entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -11,16 +12,17 @@ public class Perfil {
 
 	@Id
 	@GeneratedValue
-	private Long id;
+	@Column(name = "id")
+	private Long idPerfil;
 	
 	private String descricao;
 
-	public Long getId() {
-		return id;
+	public Long getIdPerfil() {
+		return idPerfil;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setidPerfil(Long id) {
+		this.idPerfil = id;
 	}
 
 	public String getDescricao() {
