@@ -3,12 +3,20 @@
 @namespace mx "library://ns.adobe.com/flex/mx";
 
 
+s|Button
+{
+	cornerRadius: 6;
+}
+
+
 .bordaCheia
 {
 	cornerRadius: 26;
 	borderWeight: 6;
 	dropShadowVisible: true;
 }
+
+
 
 
 

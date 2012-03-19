@@ -42,7 +42,7 @@ public class UsuarioService {
 		Perfil perfil = (Perfil)session.createCriteria(Perfil.class).add(Restrictions.eq("idPerfil", usuario.getPerfil().getIdPerfil())).uniqueResult();
 		usuario.setPerfil(perfil);
 		
-		if (usuario.getId() != null) {
+		if (usuario.getId() == null) {
 			session.saveOrUpdate(usuario);
 		}
 		else

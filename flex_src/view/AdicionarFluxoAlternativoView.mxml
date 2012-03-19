@@ -123,16 +123,16 @@
 		
 		<s:NavigatorContent id="selecaoPortal">
 			<s:layout>
-				<s:VerticalLayout/>
+				<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
 			</s:layout>
 			
-			<s:Label text="Selecione no mapa o portal do fluxo alternativo"/>
+			<s:Label text="Selecione no mapa o portal do fluxo alternativo" fontWeight="bold" fontSize="26"/>
 			<s:Button label="Cancelar" click="{AlertUtil.criarJanelaConfirmacao('Tem certeza de que deseja cancelar?', 'Cancelar Seleção',this,cancelarEdicao)}"/>
 		</s:NavigatorContent>
 		
 		<s:NavigatorContent id="confirmacao">
 			<s:layout>
-				<s:VerticalLayout/>
+				<s:VerticalLayout verticalAlign="middle" horizontalAlign="center"/>
 			</s:layout>				
 			
 			<s:FormItem label="Portal Selecionado">
@@ -144,8 +144,8 @@
 			</s:FormItem>
 			
 			<s:HGroup>
-				<s:Button id="btSalval" label="Salvar" click="salvarFluxoAlternativo(event)"/>
-				<s:Button id="btCancelar" label="Cancelar" click="{AlertUtil.criarJanelaConfirmacao('Tem certeza de que deseja cancelar?', 'Cancelar Edição',this,cancelarEdicao)}"/>
+				<s:Button id="btSalval" label="Salvar" click="salvarFluxoAlternativo(event)" skinClass="skins.BotaoAzulSkin" height="20"/>
+				<s:Button id="btCancelar" label="Cancelar" click="{AlertUtil.criarJanelaConfirmacao('Tem certeza de que deseja cancelar?', 'Cancelar Edição',this,cancelarEdicao)}" height="20"/>
 			</s:HGroup>
 		</s:NavigatorContent>
 		

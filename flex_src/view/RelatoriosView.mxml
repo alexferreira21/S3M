@@ -4,6 +4,10 @@
 					xmlns:mx="library://ns.adobe.com/flex/mx" height="100%" width="100%"
 					xmlns:component="component.*">
 	
+	<s:layout>
+		<s:VerticalLayout verticalAlign="middle" horizontalAlign="center"/>
+	</s:layout>
+	
 	<fx:Script>
 		<![CDATA[
 			import component.TabelaRelatorio;
@@ -55,7 +59,6 @@
 					tabela.uf = item.uf;
 					tabela.dataprovider = item.destinos;
 					
-					principalGroup.addElement(tabela);
 				}
 			}
 			
@@ -63,19 +66,11 @@
 	</fx:Script>
 	
 	
-	<s:VGroup horizontalAlign="center" height="100%" width="100%">
-		<component:RelatorioHeader id="header" gerarRelatorio="gerarRelatorio(event)"/>
+	<component:RelatorioHeader id="header" gerarRelatorio="gerarRelatorio(event)"/>
 		
-		<s:Scroller  height="100%" width="100%">
-			<s:HGroup id="principalGroup" horizontalAlign="center" height="100%" width="100%">
 				
 				
 				
 				
-				
-			</s:HGroup>
-		</s:Scroller>
-	</s:VGroup>
-	
 	
 </s:NavigatorContent>

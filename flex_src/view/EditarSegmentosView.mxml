@@ -181,7 +181,7 @@
 					<component:SubmitTextInput id="tiNomeSegmento" submitFunction="irParaSelecaoPortal"/>
 				</s:FormItem>
 				<s:HGroup>
-					<s:Button  label="Próximo..." click="irParaSelecaoPortal()"/>
+					<s:Button  label="Próximo..." click="irParaSelecaoPortal()" skinClass="skins.BotaoAzulSkin"/>
 					<s:Button label="Cancelar" click="{AlertUtil.criarJanelaConfirmacao('Tem certeza de que deseja cancelar a edição?','Cancelar Edição',this,cancelarEdicao)}"/>
 				</s:HGroup>
 			</s:VGroup>
@@ -191,7 +191,7 @@
 			<s:VGroup paddingTop="30" horizontalAlign="center" width="100%" height="100%">
 				<s:Label x="264" y="74" text="Selecione no mapa o portal de origem."
 						 text.StatePortalDestino="Selecione no mapa o próximo portal da estrada"
-						 text.StatePortalOrigem="Selecione no mapa o primeiro portal da estrada."/>
+						 text.StatePortalOrigem="Selecione no mapa o primeiro portal da estrada." fontWeight="bold" fontSize="26"/>
 				<s:Button label="Cancelar" click="{AlertUtil.criarJanelaConfirmacao('Tem certeza de que deseja cancelar a edição?','Cancelar Edição',this,cancelarEdicao)}"/>
 			</s:VGroup>
 		</s:NavigatorContent>
@@ -211,7 +211,7 @@
 					<s:Button id="btAcao" label="Próximo..."
 							  label.StatePortalDestino="Terminar"
 							  click.StatePortalOrigem="irParaSelecaoPortalDestino()"
-							  click.StatePortalDestino="salvarSegmento()"/>
+							  click.StatePortalDestino="salvarSegmento()" skinClass="skins.BotaoAzulSkin"/>
 					
 					<s:Spacer width="20"/>
 					

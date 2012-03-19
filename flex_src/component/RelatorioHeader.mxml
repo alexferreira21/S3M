@@ -57,14 +57,14 @@
 	
 	
 	<s:BorderContainer width="100%" height="100%" styleName="bordaCheia">
-		<s:Label x="170" y="10" text="Relatório de Destinos das Mercadorias"/>
-		<s:Label x="420" y="44" text="Data inicial"/>
+		<s:Label x="114" y="10" text="Relatório de Destinos das Mercadorias" fontWeight="bold" fontSize="22"/>
+		<s:Label x="274" y="49" text="Data inicial"/>
 		<component:BRDatefield id="dfDataInicial" x="274" y="65"/>
-		<s:Label x="274" y="45" text="Data FInal"/>
+		<s:Label x="419" y="49" text="Data Final"/>
 		<component:BRDatefield id="dfDataFinal" x="419" y="64"/>
 		<s:Label x="86" y="49" text="Tipo da Mercadoria"/>
 		<s:ComboBox id="cbTipoMercadoria" x="66" y="66" labelField="descricao"/>
-		<s:Button id="btGerar" x="231" y="114" width="105" height="24" label="Gerar" click="btGerar_clickHandler(event)"/>
+		<s:Button id="btGerar" x="231" y="114" width="105" height="25" label="Gerar" click="btGerar_clickHandler(event)" skinClass="skins.BotaoAzulSkin"/>
 		
 		
 		

@@ -374,10 +374,16 @@
 		<mx:ViewStack id="vsEstrada" height="20%" width="100%" creationPolicy="all" resizeEffect="Resize">
 			
 			<s:NavigatorContent id="exibicaoEstradas">
-				<s:HGroup height="100%" width="100%">
-					
-					<component:LocalizarCoordenada novaCoordenada="centralizarMapa(event)"/>
-					<s:Spacer width="200"/> 
+				<s:HGroup height="100%" width="100%" gap="20">
+					<s:BorderContainer height="100%" styleName="bordaCheia">
+						<s:layout>
+							<s:VerticalLayout horizontalAlign="center" paddingLeft="20" paddingRight="20" paddingTop="20"/>
+						</s:layout>
+						<component:LocalizarCoordenada novaCoordenada="centralizarMapa(event)"/>
+						<s:Spacer height="5"/>
+						<s:Button id="btNovaEstrada"  label="Adicionar Estrada"  click="novaEstrada(event)" 
+								  height="55" skinClass="skins.BotaoVerdeSkin"/>
+					</s:BorderContainer>
 					
 					<mx:DataGrid id="dgEstradas" dataProvider="{estradaController.estradas}" height="100%" width="100%"
 								 doubleClickEnabled="true" itemDoubleClick="centralizarNoInicioDaEstrada(event)">
@@ -399,10 +405,7 @@
 						</mx:columns>
 						
 					</mx:DataGrid>
-					
-					<s:VGroup paddingLeft="15">
-						<s:Button id="btNovaEstrada"  label="Nova Estrada"  click="novaEstrada(event)"/>
-					</s:VGroup>
+						
 				</s:HGroup>
 			</s:NavigatorContent>
 			
@@ -412,14 +415,14 @@
 						<component:SubmitTextInput id="tiNomeEstrada" submitFunction="novoSegmento"/>
 					</s:FormItem>
 					<s:HGroup>
-						<s:Button id="btAdicionarSegmentos" label="Adicionar Segmentos" click="novoSegmento()"/>
-						<s:Button id="btVoltarParaExibicao" label="Voltar" click="voltarParaExibicao_Handler()"/>			
+						<s:Button id="btAdicionarSegmentos" label="Adicionar Segmentos" click="novoSegmento()" skinClass="skins.BotaoAzulSkin" height="20"/>
+						<s:Button id="btVoltarParaExibicao" label="Voltar" click="voltarParaExibicao_Handler()" height="20"/>			
 					</s:HGroup>
 				</s:VGroup>
 			</s:NavigatorContent>
 			
 			<s:NavigatorContent id="edicaoEstrada">
-				<s:HGroup height="100%" width="100%" horizontalAlign="center">
+				<s:HGroup height="100%" width="100%" horizontalAlign="center" verticalAlign="middle">
 					<s:VGroup horizontalAlign="center">
 						<s:HGroup>
 							<s:FormItem label="Nome da Estrada">
@@ -434,7 +437,7 @@
 							<mx:ColorPicker id="colorPicker" change="mudarCorEstrada(event)"/>
 						</s:FormItem>
 						<s:HGroup>
-							<s:Button  label="Salvar"  click="salvarEstrada()"/>
+							<s:Button  label="Salvar"  click="salvarEstrada()" skinClass="skins.BotaoAzulSkin"/>
 							<s:Button  label="Cancelar"  click="{AlertUtil.criarJanelaConfirmacao('Tem certeza de que deseja cancelar a edição','Cancelar Edição',this,cancelarEdicaoEstrada)}"/>
 						</s:HGroup>
 					</s:VGroup>	
@@ -450,7 +453,7 @@
 						</mx:columns>
 					</mx:DataGrid>
 					
-					<s:Button label="Adicionar Segmento" click="novoSegmento()"/>
+					<s:Button label="Adicionar Segmento" click="novoSegmento()" height="40" skinClass="skins.BotaoVerdeSkin"/>
 					
 					<s:Spacer width="100"/>
 					
@@ -470,7 +473,7 @@
 						</mx:columns>
 					</mx:DataGrid>
 
-					<s:Button id="btAdicionarFluxoAlternativo" label="Adicioanar Fluxo Alternativo" click="novoFluxoAlternativo()"/>
+					<s:Button id="btAdicionarFluxoAlternativo" label="Adicioanar Fluxo Alternativo" click="novoFluxoAlternativo()" skinClass="skins.BotaoVerdeSkin" height="40"/>
 					
 				</s:HGroup>
 			</s:NavigatorContent>

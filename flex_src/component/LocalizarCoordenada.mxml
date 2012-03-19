@@ -33,15 +33,20 @@
 		]]>
 	</fx:Script>
 	
-	<s:Form>
-		<s:FormItem label="Latitude">
-			<s:TextInput id="tiLat" restrict="0-9\-\."/>
-		</s:FormItem>
-		<s:FormItem label="Longitude">
-			<s:TextInput id="tiLng" restrict="0-9\-\."/>
-		</s:FormItem>
-	</s:Form>
+		<s:VGroup styleName="bordaCheia" verticalAlign="middle">
+			<s:Label text="Localizar Coordenada" fontWeight="bold"/>
+		<s:HGroup verticalAlign="bottom" gap="5">
+			<s:VGroup>
+				<s:Label text="Latitude"/>
+				<s:TextInput id="tiLat" restrict="0-9\-\."/>
+			</s:VGroup>
+			<s:VGroup>
+				<s:Label text="Longitude"/>
+				<s:TextInput id="tiLng" restrict="0-9\-\."/>
+			</s:VGroup>
+			<s:Button id="btIr" x="52" y="111" width="40" height="22" label="Ir"   click="irParaCoordenada(event)"/>
+		</s:HGroup>
+		</s:VGroup>
 	
-	<s:Button id="btIr" x="52" y="111" width="151" height="22" label="Ir para Coordenada"   click="irParaCoordenada(event)"/>
 	
 </s:Group>

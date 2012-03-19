@@ -28,30 +28,30 @@
 	</fx:Script>
 	
 	
+		
+	
 	<s:BorderContainer styleName="bordaCheia">
 		<s:layout>
-			<s:VerticalLayout/>
+			<s:VerticalLayout gap="10" paddingTop="20" paddingLeft="20" paddingRight="20" paddingBottom="20" horizontalAlign="center"/>
 		</s:layout>
 		
+		<s:Image width="333" height="153" source="@Embed('assets/logoS3M.png')"/>
+		<s:Spacer height="30"/>
+		
 		<s:Form defaultButton="{btSubmit}">
-			
-			<s:FormItem label="Usuário">
-				<s:TextInput id="tiUsuario" />
-			</s:FormItem>
-			
-			<s:FormItem label="Senha">
-				<s:TextInput id="tiSenha" displayAsPassword="true"/>
-			</s:FormItem>
-			
-			<s:Button id="btSubmit" label="Enviar" click="btSubmit_clickHandler(event)"/>
-			
+			<s:VGroup horizontalAlign="center">
+				<s:FormItem label="Usuário">
+					<s:TextInput id="tiUsuario" />
+				</s:FormItem>
+				
+				<s:FormItem label="Senha">
+					<s:TextInput id="tiSenha" displayAsPassword="true"/>
+				</s:FormItem>
+				
+				<s:Button id="btSubmit" label="Entrar" click="btSubmit_clickHandler(event)" skinClass="skins.BotaoAzulSkin" height="35" width="100"/>
+			</s:VGroup>
 		</s:Form>
 		
 		
 	</s:BorderContainer>	
-	
-	
-	
-	
-	
 </s:VGroup>

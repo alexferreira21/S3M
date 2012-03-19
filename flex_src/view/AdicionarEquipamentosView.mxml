@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx">
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009"
+		   xmlns:s="library://ns.adobe.com/flex/spark"
+		   xmlns:mx="library://ns.adobe.com/flex/mx"
+		   width="292" height="113">
 	
 	
 	<fx:Metadata>
@@ -69,18 +70,18 @@
 	</fx:Declarations>
 	
 	
-	
-	<s:Label x="18" y="20" text="Nome"/>
-	<s:TextInput id="tiNomeEquipamento" x="81" y="14"/>
+		<s:Label x="18" y="20" text="Nome"/>
+		<s:TextInput id="tiNomeEquipamento" x="81" y="14"/>
 	
 	<s:Label x="10" y="55" text="Sentido"/>
 	<s:ComboBox id="cbSentido" x="81" y="48" dataProvider="{sentidoProvider}"
 				labelFunction="SentidoEnum.sentidoLabelFunction"/>
+
+	<s:Spacer height="10"/>
 	
-	<s:HGroup x="-2" y="142">
-		<s:Button id="btSalvar" label="Salvar" click="salvarEquipamento(event)"/>
-		<s:Button id="btCancelar" label="Cancelar" click="cancelarEdicao(event)"/>
-	</s:HGroup>
+		<s:Button id="btSalvar" x="59" y="84" label="Salvar" click="salvarEquipamento(event)"
+				  skinClass="skins.BotaoAzulSkin"/>
+		<s:Button id="btCancelar" x="138" y="84" label="Cancelar" click="cancelarEdicao(event)" cornerRadius="12"/>
 	
 	
-</s:Group>
+</mx:Canvas>

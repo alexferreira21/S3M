@@ -1,6 +1,7 @@
 package entity
 {
 	[RemoteClass(alias="entity.Perfil")]
+	[Bindable]
 	public class Perfil
 	{
 		

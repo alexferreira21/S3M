@@ -14,6 +14,9 @@
 				import mx.core.FlexGlobals;
 				import mx.core.UIComponent;
 				
+				[Bindable]
+				public var telaSelecionada: String = "";
+				
 				private function centraliza(obj: Object):Number
 				{
 					return (this.height - obj.height)/2 - 5;
@@ -40,7 +43,7 @@
 	</s:states>
 		
 		<s:Image  x="0" id="imLogo" width="40" height="40" source="@Embed('assets/logoHeader.png')"/>
-		<s:Label  x="{imLogo.width + 20}" y="{centraliza(lbTitulo)}" id="lbTitulo" color="#FFFFFF" text="Sistema de Monitoramento da Movimentação de Mercadorias"/>
+		<s:Label  x="{imLogo.width + 20}" y="{centraliza(lbTitulo)}" id="lbTitulo" color="#FFFFFF" text="Sistema de Monitoramento da Movimentação de Mercadorias {telaSelecionada}"/>
 		<s:Label  x="{this.width - btVoltar.width - lbUsuario.width - 50}"  y="{centraliza(lbUsuario)}" id="lbUsuario" color="#FFFFFF" text="Usuário: {FlexGlobals.topLevelApplication.usuarioLogado.nome}"/>
 		<mx:LinkButton id="btVoltar" x="{this.width - btVoltar.width - 10}"  y="0" width="120" height="40"  click="{dispatchEvent(new Event('voltarEvent',true))}"
 				  label.VIEW="Voltar para o início" label.HOME="Sair do sistema" color="{Color.WHITE}"/>

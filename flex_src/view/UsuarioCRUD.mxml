@@ -107,9 +107,10 @@
 	
 	<fx:Declarations>
 		<s:ArrayList id="perfis">
-			<entity:Perfil idPerfil="0" descricao="Administrador"/>
-			<entity:Perfil idPerfil="1" descricao="Analista de Transportes"/>
-			<entity:Perfil idPerfil="2" descricao="Gerador de Tráfego"/>
+			<entity:Perfil idPerfil="1" descricao="Administrador"/>
+			<entity:Perfil idPerfil="2" descricao="Analista de Transportes"/>
+			<entity:Perfil idPerfil="3" descricao="Gerador de Tráfego"/>
+			<entity:Perfil idPerfil="4" descricao="Gestor de Infraestrutura"/>
 		</s:ArrayList>
 	</fx:Declarations>
 	
@@ -119,18 +120,17 @@
 	</s:states>
 	
 	
-	<s:VGroup height="100%" width="100%">
+	<s:VGroup height="100%" width="100%"  verticalAlign="middle" horizontalAlign="center">
 		
 		
-		<s:HGroup height="100" width="100%" horizontalAlign="center" verticalAlign="middle">
-			<s:Button id="btAdicionarUsuario" label.VIEW="Adicionar Usuário" label.EDIT="Salvar Usuário" skinClass="skins.BotaoGande"
-					  click.VIEW="adicionarUsuario(event)" click.EDIT="salvarEdicao()"/>
-		</s:HGroup>
-		
+		<s:Spacer height="20"/>
+		<s:Label text.VIEW="Usuários do sistema" text.EDIT="Edição de Usuário" fontWeight="bold" fontSize="22"/>
+		<s:Spacer height="7"/>
 		<mx:ViewStack id="vsUsuarios" width="100%" height="100%">
 			
 			<s:NavigatorContent id="ncView">
-				<s:DataGrid id="dgUsuario" width="100%" height="100%">
+				
+				<s:DataGrid id="dgUsuario" width="100%" height="100%" horizontalScrollPolicy="off">
 					<s:columns>
 						<s:ArrayCollection>
 							<s:GridColumn dataField="nome" headerText="Nome" width="{dgUsuario.width * 0.3}"/>
@@ -157,11 +157,18 @@
 						</s:ArrayCollection>				
 					</s:columns>
 				</s:DataGrid>
+				
 			</s:NavigatorContent>
 			
 			<s:NavigatorContent id="ncEdit" width="100%" height="100%">
-				<s:VGroup width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
+				<s:layout>
+					<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
+				</s:layout>
+				
 					<s:BorderContainer styleName="bordaCheia">
+						<s:layout>
+							<s:VerticalLayout horizontalAlign="center" verticalAlign="middle" paddingBottom="10" paddingTop="10"/>
+						</s:layout>
 						
 						<s:Form defaultButton="{btAdicionarUsuario}">
 							<s:FormItem label="Nome">
@@ -179,22 +186,16 @@
 							<s:FormItem label="Senha">
 								<s:TextInput id="tiSenha" text="@{usuarioEmEdicao.senha}" displayAsPassword="true"/>
 							</s:FormItem>
-							
-							
 						</s:Form>
+						<s:Button label="Cancelar" click="sairEdicao(); vsUsuarios.selectedChild = ncView"/>
 					</s:BorderContainer>
-					
-				</s:VGroup>
 			</s:NavigatorContent>
-			
 			
 		</mx:ViewStack>
 		
-		
-		
-		
-		
-		
-		
+		<s:Button id="btAdicionarUsuario" width="220" height="80" skinClass="skins.BotaoVerdeSkin"
+				  label.EDIT="Salvar Usuário" click.EDIT="salvarEdicao()"
+				  x.VIEW="480" y.VIEW="530" width.VIEW="288" height.VIEW="58"
+				  label.VIEW="Adicionar Usuário" click.VIEW="adicionarUsuario(event)"/>
 	</s:VGroup>
 </s:NavigatorContent>

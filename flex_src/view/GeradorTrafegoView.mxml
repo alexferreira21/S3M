@@ -360,14 +360,11 @@
 	<s:Scroller height="100%" width="100%">
 		
 		<s:VGroup horizontalAlign="center" horizontalCenter="0" paddingTop="10">
-			<s:Label text="Gerador de Tráfego" fontSize="16" fontWeight="bold"/>
-			<s:Spacer height="15"/>
-			
 			<s:Label text="Datas" fontSize="14" fontWeight="bold"/>
 			<s:Spacer height="5"/>
 			<s:BorderContainer width="606" height="98" styleName="bordaCheia">
 				<s:layout>
-					<s:VerticalLayout/>
+					<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
 				</s:layout>
 				
 				<s:HGroup>
@@ -381,19 +378,19 @@
 				</s:HGroup>
 				
 				<s:HGroup>
-					<s:FormItem label="Entre">
+					<s:FormItem label="Horário Inicial">
 						<s:HGroup>
-							<s:NumericStepper id="nsHoraInicial" maximum="23"/>
+							<component:TimePickerNumericStepper id="nsHoraInicial" maximum="23"/>
 							<s:Label text=":" paddingTop="8"/>
-							<s:NumericStepper id="nsMinutoInicial" maximum="59"/>
+							<component:TimePickerNumericStepper id="nsMinutoInicial" maximum="59"/>
 						</s:HGroup>
 					</s:FormItem>
 					
-					<s:FormItem label="Até">
+					<s:FormItem label="Horário Final">
 						<s:HGroup>
-							<s:NumericStepper id="nsHoraFinal" maximum="23"/>
+							<component:TimePickerNumericStepper id="nsHoraFinal" maximum="23"/>
 							<s:Label text=":" paddingTop="8"/>
-							<s:NumericStepper id="nsMinutoFinal" maximum="59"/>
+							<component:TimePickerNumericStepper id="nsMinutoFinal" maximum="59"/>
 						</s:HGroup>
 					</s:FormItem>					
 				</s:HGroup>
@@ -449,10 +446,10 @@
 			
 			<s:BorderContainer width="605" height="130" styleName="bordaCheia">
 				<s:layout>
-					<s:VerticalLayout/>
+					<s:VerticalLayout horizontalAlign="center" verticalAlign="middle" gap="10"/>
 				</s:layout>
 				
-				<s:HGroup>
+				<s:HGroup >
 					<s:FormItem id="fiQtdCaminhoes" label="Caminhões">
 						<s:TextInput id="tiQtdCaminhoes" restrict="0-9" width="50" text="0"/>
 					</s:FormItem>
@@ -460,12 +457,10 @@
 					<s:FormItem id="fiQtdOutrosVeiculos" label="Outros Veículos">
 						<s:TextInput id="tiQdtOutrosVeiculos" restrict="0-9" width="50" text="0"/>
 					</s:FormItem>
-					
 					<s:Label text="Total: " paddingTop="17"/>
 					<s:Label text="{parseInt(tiQtdCaminhoes.text) + parseInt(tiQdtOutrosVeiculos.text)}" paddingTop="17"/>
+					
 				</s:HGroup>
-				
-				<s:Spacer height="10"/>
 				
 				<s:Label text="Velocidades" fontWeight="bold" paddingLeft="15"/>
 				<s:HGroup paddingLeft="15">
@@ -481,33 +476,34 @@
 			<s:Label text="Tipos de Cargas" fontSize="14" fontWeight="bold"/>
 			<s:Spacer height="5"/>
 			
-			<s:BorderContainer x="0" width="610" height="150" styleName="bordaCheia">
-				<s:HGroup paddingLeft="10" paddingBottom="10" paddingTop="10" paddingRight="10">
-					<s:Button label="Selecionar Todos" click="selecinarTodasAsCargas(event)" verticalCenter="0"/>
-					
-					<mx:List id="listCargas" x="96" width="416" height="119"
-							 alternatingItemColors="[#EEEEEE, white]" labelField="descricao" rowCount="5">
-						<mx:itemRenderer>
-							<fx:Component>
-								<mx:CheckBox selectedField="isSelected"
-											 change="onChange(event);"
-											 selected="@{data.isSelected}">
-									<fx:Script>
-										<![CDATA[
-											private function onChange(evt:Event):void {
-												data.isSelected = !data.isSelected;
-											}
-										]]>
-									</fx:Script>
-								</mx:CheckBox>
-							</fx:Component>
-						</mx:itemRenderer>
-					</mx:List>
-				</s:HGroup>
+			<s:BorderContainer x="0" width="610" height="180" styleName="bordaCheia">
+				<s:layout>
+					<s:VerticalLayout paddingLeft="10" paddingBottom="10" paddingTop="10" paddingRight="10" horizontalAlign="center" verticalAlign="middle"/>
+				</s:layout>
+				
+				<mx:List id="listCargas" x="96" width="416" height="119"
+						 alternatingItemColors="[#EEEEEE, white]" labelField="descricao" rowCount="5">
+					<mx:itemRenderer>
+						<fx:Component>
+							<mx:CheckBox selectedField="isSelected"
+										 change="onChange(event);"
+										 selected="@{data.isSelected}">
+								<fx:Script>
+									<![CDATA[
+										private function onChange(evt:Event):void {
+											data.isSelected = !data.isSelected;
+										}
+									]]>
+								</fx:Script>
+							</mx:CheckBox>
+						</fx:Component>
+					</mx:itemRenderer>
+				</mx:List>
+				<s:Button label="Selecionar Todos" click="selecinarTodasAsCargas(event)" verticalCenter="0"/>
 			</s:BorderContainer>
 			
 			<s:HGroup>
-				<s:Button id="btGerar" label="Gerar!" click="gerarTrafego(event)"/>
+				<s:Button id="btGerar" label="Gerar" height="40" width="150" skinClass="skins.BotaoVerdeSkin" click="gerarTrafego(event)"/>
 			</s:HGroup>
 			
 		</s:VGroup>

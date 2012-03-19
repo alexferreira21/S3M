@@ -28,6 +28,8 @@
 			
 			protected function gerenciarPortais(event:MouseEvent):void
 			{
+				header.telaSelecionada = "> Gerenciar Portais";
+				
 				vs.selectedChild= ncPortais;
 				
 				if(gerenciarPortalView != null)
@@ -40,6 +42,8 @@
 			
 			protected function gerenciarEstradas(event:MouseEvent):void
 			{
+				header.telaSelecionada = "> Gerenciar Estradas";
+				
 				vs.selectedChild= ncEstradas;		
 				if(gerenciarEstradaView != null)
 				{
@@ -49,6 +53,8 @@
 			
 			protected function voltarEventHandler(event:Event):void
 			{
+				header.telaSelecionada = "";
+				
 				switch(vs.selectedIndex)
 				{
 					case 1:
@@ -57,15 +63,19 @@
 						usuarioLogado = null;
 						break;
 					}
-					
+						
 					case 2:
 					{
 						gerenciarPortalView.sairEdicao();
+						vs.selectedChild = menuPrincipal;
+						break;
 					}
-					
+						
 					case 7:
 					{
 						usuariosCRUD.sairEdicao();
+						vs.selectedChild = menuPrincipal;
+						break;
 					}
 						
 					default:
@@ -118,18 +128,46 @@
 				
 			</s:NavigatorContent>
 			
-			<s:NavigatorContent id="menuPrincipal">
-				<s:VGroup verticalCenter="0" horizontalCenter="0" gap="10">
+			<s:NavigatorContent id="menuPrincipal" creationPolicy="all">
+				<s:BorderContainer styleName="bordaCheia" verticalCenter="0" horizontalCenter="0">
+					<s:layout>
+						<s:VerticalLayout gap="10" paddingTop="20" paddingLeft="20" paddingRight="20" paddingBottom="20"/>
+					</s:layout>
+
 					<s:Image width="333" height="153" source="@Embed('assets/logoS3M.png')"/>
 					<s:Spacer height="40"/>
-					<s:Button id="btGerenciarPortais" width="334" height="43" label="Gerenciar Portais"  click="gerenciarPortais(event)"/>
-					<s:Button id="btGerenciarEstradas" width="333" height="43" label="Gerenciar Estradas"  click="gerenciarEstradas(event)"/>
-					<s:Button id="btGeradorTrafego" width="333" height="43" label="Gerador de Tráfego" click="{vs.selectedChild= geradorTrafegoView}"/>
-					<s:Button id="btGraficos" width="333" height="43" label="Gráficos" click="{vs.selectedChild = ncGraficos}"/>
-					<s:Button id="btRelatorios" width="333" height="43" label="Relatórios de Carga" click="{vs.selectedChild = ncRelatorios}"/>
-					<s:Button id="btUsuarios" width="333" height="43" label="Usuários" click="{vs.selectedChild = usuariosCRUD}"/>
 					
-				</s:VGroup>
+					<s:Button id="btGerenciarPortais" width="334" height="43" label="Gerenciar Portais"  click="gerenciarPortais(event)"
+							  visible="{usuarioLogado.perfil.idPerfil == 1 || usuarioLogado.perfil.idPerfil == 4}"
+							  includeInLayout="{usuarioLogado.perfil.idPerfil == 1 || usuarioLogado.perfil.idPerfil == 4}" 
+							  skinClass="skins.BotaoAzulSkin"/>
+					
+					<s:Button id="btGerenciarEstradas" width="333" height="43" label="Gerenciar Estradas"  click="gerenciarEstradas(event)"
+							  visible="{usuarioLogado.perfil.idPerfil == 1 || usuarioLogado.perfil.idPerfil == 4}"
+							  includeInLayout="{usuarioLogado.perfil.idPerfil == 1 || usuarioLogado.perfil.idPerfil == 4}" 
+							  skinClass="skins.BotaoAzulSkin"/>
+					
+					<s:Button id="btGeradorTrafego" width="333" height="43" label="Gerador de Tráfego" click="header.telaSelecionada = '> Gerador de Tráfego'; vs.selectedChild= geradorTrafegoView"
+							  visible="{usuarioLogado.perfil.idPerfil == 1 || usuarioLogado.perfil.idPerfil == 3}"
+							  includeInLayout="{usuarioLogado.perfil.idPerfil == 1 || usuarioLogado.perfil.idPerfil == 3}" 
+							  skinClass="skins.BotaoAzulSkin"/>
+					
+					<s:Button id="btGraficos" width="333" height="43" label="Gráficos" click="header.telaSelecionada = '> Gráficos'; vs.selectedChild = ncGraficos"
+							  visible="{usuarioLogado.perfil.idPerfil == 1 || usuarioLogado.perfil.idPerfil == 2}"
+							  includeInLayout="{usuarioLogado.perfil.idPerfil == 1 || usuarioLogado.perfil.idPerfil == 2}" 
+							  skinClass="skins.BotaoAzulSkin"/>
+					
+					<s:Button id="btRelatorios" width="333" height="43" label="Relatório de Carga" click="header.telaSelecionada = '> Relatório de Carga'; vs.selectedChild = ncRelatorios;"
+							  visible="{usuarioLogado.perfil.idPerfil == 1 || usuarioLogado.perfil.idPerfil == 2}"
+							  includeInLayout="{usuarioLogado.perfil.idPerfil == 1 || usuarioLogado.perfil.idPerfil == 2}" 
+							  skinClass="skins.BotaoAzulSkin"/>
+					
+					<s:Button id="btUsuarios" width="333" height="43" label="Gerenciar Usuários" click="header.telaSelecionada = '> Gerenciar Usuários';vs.selectedChild = usuariosCRUD"
+							  visible="{usuarioLogado.perfil.idPerfil == 1}"
+							  includeInLayout="{usuarioLogado.perfil.idPerfil == 1}" 
+							  skinClass="skins.BotaoAzulSkin"/>
+					
+				</s:BorderContainer>
 				
 			</s:NavigatorContent>
 			
@@ -152,6 +190,7 @@
 			<view:UsuarioCRUD id="usuariosCRUD"/>
 			
 			
-		</mx:ViewStack>		  
+		</mx:ViewStack>		
+		<s:Label text="Versão 1.0 - Por Alexandre Ferreira e Grace Rodrigues" textAlign="right" visible="{vs.selectedIndex == 0}" includeInLayout="{vs.selectedIndex == 0}" width="100%"/>
 	</s:VGroup>
 </s:Application>
