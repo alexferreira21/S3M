@@ -39,6 +39,8 @@
 				}
 				
 				var evt: RelatorioEvent = new RelatorioEvent(RelatorioEvent.GERAR_RELATORIO, cbTipoMercadoria.selectedItem);
+				evt.dataInicial = dfDataInicial.selectedDate;
+				evt.dataFinal = dfDataFinal.selectedDate;
 				dispatchEvent(evt);				
 			}
 			
@@ -58,7 +60,7 @@
 	
 	<s:BorderContainer width="100%" height="100%" styleName="bordaCheia">
 		<s:Label x="114" y="10" text="Relatório de Destinos das Mercadorias" fontWeight="bold" fontSize="22"/>
-		<s:Label x="274" y="49" text="Data inicial"/>
+		<s:Label x="274" y="49" text="Data Inicial"/>
 		<component:BRDatefield id="dfDataInicial" x="274" y="65"/>
 		<s:Label x="419" y="49" text="Data Final"/>
 		<component:BRDatefield id="dfDataFinal" x="419" y="64"/>

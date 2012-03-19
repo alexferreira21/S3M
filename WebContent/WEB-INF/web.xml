@@ -23,12 +23,12 @@
 	</servlet>
 
 	<servlet>
-		<servlet-name>ServletReport</servlet-name>
-		<servlet-class>servlets.ServletReport</servlet-class>
+		<servlet-name>RelatorioCargas</servlet-name>
+		<servlet-class>servlets.RelatorioCargas</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>ServletReport</servlet-name>
-		<url-pattern>/ServletReport</url-pattern>
+		<servlet-name>RelatorioCargas</servlet-name>
+		<url-pattern>/RelatorioCargas</url-pattern>
 	</servlet-mapping>
 		<!-- begin rds <servlet> <servlet-name>RDSDispatchServlet</servlet-name> 
 			<display-name>RDSDispatchServlet</display-name> <servlet-class>flex.rds.server.servlet.FrontEndServlet</servlet-class> 

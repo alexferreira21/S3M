@@ -27,6 +27,7 @@
 			import mx.collections.IList;
 			import mx.controls.Alert;
 			import mx.events.FlexEvent;
+			import mx.formatters.DateFormatter;
 			import mx.rpc.events.ResultEvent;
 			
 			import spark.events.IndexChangeEvent;
@@ -38,10 +39,16 @@
 				
 				cursorManager.setBusyCursor(); */
 				
-				var request:URLRequest = new URLRequest("http://localhost/S3M/ServletReport");
+				var formatter: DateFormatter = new DateFormatter();
+				formatter.formatString = "DD/MM/YY";
+				
+				var request:URLRequest = new URLRequest("http://localhost/S3M/RelatorioCargas");
 				
 				var vars:URLVariables  = new URLVariables();
 				vars.time = getTimer();
+				vars.tipoMercadoria = event.tipoMercadoria.idTipoMercadoria;
+				vars.dataInicial = formatter.format(event.dataInicial);
+				vars.dataFinal = formatter.format(event.dataFinal);
 				request.data = vars;		
 				request.method = URLRequestMethod.POST;
 				

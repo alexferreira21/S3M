@@ -49,15 +49,19 @@
 	</fx:Script>
 	
 	
-	<s:VGroup verticalCenter="0" horizontalCenter="0"  horizontalAlign="center">
+	<s:BorderContainer verticalCenter="0" horizontalCenter="0" styleName="bordaCheia">
+		<s:layout>
+			<s:VerticalLayout horizontalAlign="center"/>
+		</s:layout>
+		
 		<s:FormItem label="Selecione a Estrada">
 			<s:ComboBox id="cbEstrada" dataProvider="{estradas}" labelField="nome"/>
 		</s:FormItem>
 		<s:Spacer height="10"/>
 		<s:HGroup>
-			<s:Button label="Selecionar" click="selecionarEstrada()"/>
+			<s:Button label="Selecionar" click="selecionarEstrada()" skinClass="skins.BotaoAzulSkin" height="30"/>
 		</s:HGroup>
-	</s:VGroup>
+	</s:BorderContainer>
 	
 	
 	

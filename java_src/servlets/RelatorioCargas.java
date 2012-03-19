@@ -30,7 +30,7 @@ import flex.messaging.io.ArrayList;
  */
 
 @SuppressWarnings("serial")
-public class ServletReport extends HttpServlet {
+public class RelatorioCargas extends HttpServlet {
 	
 	private static final String FILE_PATH = "C:\\Users\\Alexandre\\Projeto Final\\Workspace\\S3M\\WebContent\\report\\cargasPorUf.jasper";
 
@@ -40,24 +40,24 @@ public class ServletReport extends HttpServlet {
 		
 		HashMap parameters = new HashMap();
 		
+		String idMercadoria = request.getParameter("tipoMercadoria");
+		String ini = request.getParameter("dataInicial");
+		String fim = request.getParameter("dataFinal");
 		
 		RelatorioService service = new RelatorioService();
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-		Date ini = new Date();
-		Date fim = new Date();
+		Date dataInicial = new Date();
+		Date dataFinal = new Date();
 		try {
-			ini = formatter.parse("01/01/2012");
-			fim = formatter.parse("01/08/2012");
+			dataInicial = formatter.parse(ini);
+			dataFinal = formatter.parse(fim);
 		} catch (ParseException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
-		List<RelatorioDTO> dados = service.destinosPorUFeTipoMercadoria(2L, ini, fim);
+		List<RelatorioDTO> dados = service.destinosPorUFeTipoMercadoria(Long.parseLong(idMercadoria), dataInicial, dataFinal);
 		
-//		String idMercadoria = request.getParameter("idMercadoria");
-//		String ini = request.getParameter("dtInicial");
-//		String fim = request.getParameter("dtFinal");
 		
 		byte[] bytes = null;			
 		

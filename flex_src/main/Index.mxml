@@ -71,6 +71,13 @@
 						break;
 					}
 						
+					case 5:
+					{
+						graficosView.vsGraficosView.selectedIndex = 0;
+						vs.selectedChild = menuPrincipal;
+						break;
+					}
+						
 					case 7:
 					{
 						usuariosCRUD.sairEdicao();
@@ -133,7 +140,7 @@
 					<s:layout>
 						<s:VerticalLayout gap="10" paddingTop="20" paddingLeft="20" paddingRight="20" paddingBottom="20"/>
 					</s:layout>
-
+					
 					<s:Image width="333" height="153" source="@Embed('assets/logoS3M.png')"/>
 					<s:Spacer height="40"/>
 					
@@ -182,7 +189,7 @@
 			<view:GeradorTrafegoView id="geradorTrafegoView"/>
 			
 			<s:NavigatorContent id="ncGraficos">
-				<view:GraficosView/>
+				<view:GraficosView id="graficosView"/>
 			</s:NavigatorContent>
 			
 			<view:RelatoriosView id="ncRelatorios"/>
