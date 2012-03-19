@@ -46,7 +46,8 @@
 				
 				var vars:URLVariables  = new URLVariables();
 				vars.time = getTimer();
-				vars.tipoMercadoria = event.tipoMercadoria.idTipoMercadoria;
+				vars.idTipoMercadoria = event.tipoMercadoria.idTipoMercadoria;
+				vars.tipoMercadoria = event.tipoMercadoria.descricao;
 				vars.dataInicial = formatter.format(event.dataInicial);
 				vars.dataFinal = formatter.format(event.dataFinal);
 				request.data = vars;		

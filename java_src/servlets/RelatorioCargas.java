@@ -38,9 +38,9 @@ public class RelatorioCargas extends HttpServlet {
 	protected void service(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		
-		HashMap parameters = new HashMap();
+		HashMap<String,Object> parameters = new HashMap<String,Object>();
 		
-		String idMercadoria = request.getParameter("tipoMercadoria");
+		String idMercadoria = request.getParameter("idTipoMercadoria");
 		String ini = request.getParameter("dataInicial");
 		String fim = request.getParameter("dataFinal");
 		
@@ -58,6 +58,29 @@ public class RelatorioCargas extends HttpServlet {
 		
 		List<RelatorioDTO> dados = service.destinosPorUFeTipoMercadoria(Long.parseLong(idMercadoria), dataInicial, dataFinal);
 		
+		Long totalGeralVeiculos = 0L;
+		Double totalGeralPeso = 0.0; 
+		Double totalGeralValor = 0.0;
+
+		for(RelatorioDTO item : dados)
+		{
+			item.setTotalVeiculos();
+			totalGeralVeiculos = totalGeralVeiculos + Long.parseLong(item.getTotalVeiculos());
+			
+			item.setTotalPeso();
+			totalGeralPeso = totalGeralPeso + Double.parseDouble(item.getTotalPeso());
+			
+			item.setTotalValor();
+			totalGeralValor = totalGeralValor + Double.parseDouble(item.getTotalValor());
+		}
+		
+
+		parameters.put("tipoMercadoria", request.getParameter("tipoMercadoria"));
+		parameters.put("dtInicial", ini);
+		parameters.put("dtFinal", fim);
+		parameters.put("totalGeralVeiculos", totalGeralVeiculos);
+		parameters.put("totalGeralPeso", totalGeralPeso);
+		parameters.put("totalGeralValor", totalGeralValor);
 		
 		byte[] bytes = null;			
 		
