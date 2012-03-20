@@ -10,7 +10,18 @@
 	
 	<fx:Metadata>
 		[Event(name="dataAlterada", type="events.DataSelecionadaEvent")]
+		[Event(name="salvarImagem", type="flash.events.Event")]
 	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			protected function btSalvarImagem_clickHandler(event:MouseEvent):void
+			{
+				dispatchEvent(new Event("salvarImagem"));
+			}
+		]]>
+	</fx:Script>
+	
 	<fx:Script>
 		<![CDATA[
 			import events.DataSelecionadaEvent;
@@ -36,6 +47,7 @@
 	<component:BRDatefield id="dfDataInicial" change="dataAlterada(event)" selectedDate="@{dataInical}"/>
 	<s:Label text="Data Final: "/>
 	<component:BRDatefield id="dfDataFinal" change="dataAlterada(event)" selectedDate="@{dataFinal}"/>
+	<s:Button id="btSalvarImagem" label="Salvar como imagem" height="20" click="btSalvarImagem_clickHandler(event)" skinClass="skins.BotaoVerdeSkin"/>
 	
 	
 	

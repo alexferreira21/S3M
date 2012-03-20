@@ -209,6 +209,13 @@
 			
 			protected function salvarEdicao(event:MouseEvent):void
 			{
+				
+				if(dgEquipamentos.dataProvider == null || ArrayCollection(dgEquipamentos.dataProvider).length == 0)
+				{
+					AlertUtil.criarJanelaErro("É necessário criar pelo menos um equipamento","Erro",this);
+					return;
+				}
+				
 				portalController.portalEmEdicao.nome = tiNome.text;
 				portalController.portalEmEdicao.altitude = parseFloat(tiAltitude.text);
 				
