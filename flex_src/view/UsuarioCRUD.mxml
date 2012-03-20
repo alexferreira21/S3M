@@ -193,9 +193,8 @@
 			
 		</mx:ViewStack>
 		
-		<s:Button id="btAdicionarUsuario" width="220" height="80" skinClass="skins.BotaoVerdeSkin"
+		<s:Button id="btAdicionarUsuario" width="220" height="50" skinClass="skins.BotaoVerdeSkin"
 				  label.EDIT="Salvar Usuário" click.EDIT="salvarEdicao()"
-				  x.VIEW="480" y.VIEW="530" width.VIEW="288" height.VIEW="58"
 				  label.VIEW="Adicionar Usuário" click.VIEW="adicionarUsuario(event)"/>
 	</s:VGroup>
 </s:NavigatorContent>
