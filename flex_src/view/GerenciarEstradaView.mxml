@@ -461,15 +461,6 @@
 						<mx:columns>
 							<mx:DataGridColumn dataField="portal.nome" headerText="Portal"/>
 							<mx:DataGridColumn dataField="tipo" headerText="Tipo" labelFunction="TipoFluxoAlternativoEnum.fluxoAlternativoDataGridLabelFunction"/>
-							<mx:DataGridColumn headerText="Ações" width="80">
-								<mx:itemRenderer>
-									<fx:Component>
-										<mx:HBox paddingLeft="5">
-											<s:Image   source="@Embed('assets/excluirIcon.png')"  click="dispatchEvent(new Event('removerFluxoAlternativo', true))"/>
-										</mx:HBox>
-									</fx:Component>
-								</mx:itemRenderer>
-							</mx:DataGridColumn>
 						</mx:columns>
 					</mx:DataGrid>
 
